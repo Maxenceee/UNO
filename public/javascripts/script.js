@@ -387,6 +387,22 @@ g.scale = function(a, b) {
     this.height *= b;
     return this
 };
+var mergeProto = function(a, b) {
+    return function(t, e) {
+        if ("function" != typeof e && null !== e)
+            throw new TypeError("Super expression must either be null or a function, not " + typeof e);
+        t.prototype = Object.create(e && e.prototype, {
+            constructor: {
+                value: t,
+                enumerable: !1,
+                writable: !0,
+                configurable: !0
+            }
+        }),
+        e && (Object.setPrototypeOf ? Object.setPrototypeOf(t, e) : t.__proto__ = e)
+    }(a, b)
+}
+
 
 var moveEffect = function() {
     console.log();
@@ -409,8 +425,25 @@ Lf = function(a, b) {
     return a-c
 };
 
+var CallBack = function() {}
+CallBack.prototype.on = function(t, e) {
+    this.listeners = this.listeners || {}
+    this.listeners[t] || (this.listeners[t] = []),
+    this.listeners[t].push(e);
+}
+CallBack.prototype.emit = function(t) {
+    for (var e = arguments.length, n = Array(e > 1 ? e - 1 : 0), o = 1; o < e; o++)
+        n[o - 1] = arguments[o];
+    var i = this.listeners[t];
+    i && i.length && i.forEach(function(t) {
+        return t.apply(void 0, n)
+    })
+}
+
+
 var cardEvents = function(a, c) {
     this.event = null;
+    this.caller = null;
     a && this.dispatchEvent(...arguments);
 }
 var ce = cardEvents.prototype;
@@ -419,19 +452,22 @@ ce.dispatchEvent = function(a, b, c) {
     if (d) {
         throw Error("Event already exist");
     }
-
+    this.caller = b;
     this.event = c;
-    b.addEventListener(a[1], this.event);
+    this.name = a;
+    for(var i = 0; i < a.length; i++)
+        b.addEventListener(a[i], this.event, {passive: true});
 };
 ce.removeEvent = function() {
-
+    for(var i = 0; i < a.length; i++)
+        this.caller.removeEventListener(this.name[i], this.event);
 };
 
 var Card = function(a, b) {
     this.left = null || a.left;
     this.top = null || a.top;
     this.card = this.I("DIV", (a && r(a)) || b || "card", this.I("CANVAS", "card-canvas"));
-    (a && typeof a == "object") && this.placeCard();
+    (a && typeof a == "object") && this.moveTo();
     this.width = S;
     this.height = T;
 };
@@ -452,9 +488,11 @@ c.createCardPatern = function(a, b) {
     this.patern = !ma(a) ? [0, 240*a.x, 360*a.y, 240, 360] : [0, 240*a, 360*b, 240, 360]
 };
 c.moveTo = function(a) {
-    this.left = a.left;
-    this.top = a.top;
-    this.placeCard();
+    a && (this.left = a.left, this.top = a.top)
+    // console.log("m->", this.left, this.top);
+    this.card.style.left = this.left+"px";
+    this.card.style.top = this.top+"px";
+    // console.log(this.card);
 },
 c.I = function(a, b, c) {
     return Le(document, arguments)
@@ -468,28 +506,29 @@ c.zc = function(a, b) {
         a = c.getElementsByClassName(a)[0];
     return a || null
 };
-c.placeCard = function() {
-    this.card.style.left = this.left+"px";
-    this.card.style.top = this.top+"px";
-};
 c.dragMoveStart = function(a) {
+    let d = (a.clientX && a) || (a.changedTouches && a.changedTouches.length ? a.changedTouches[0] : null);
     this.dragging = true;
-    this.deltaX = (a.clientX - this.left);
-    this.deltaY = (a.clientY - this.top);
+    this.deltaX = (d.clientX - this.left);
+    this.deltaY = (d.clientY - this.top);
     this.lt = this.left;
     this.tp = this.top;
     this.card.style.transition = "";
+    this.tzIdx = this.card.style.zIndex;
     this.card.style.zIndex = "10001";
 }
 c.dragMove = function(a) {
-    console.log(this.deltaX, a.clientX, );
-    this.moveTo(new O(a.clientX-this.deltaX, a.clientY-this.deltaY));
+    a.preventDefault();
+    let d = (a.clientX && a) || (a.changedTouches && a.changedTouches.length ? a.changedTouches[0] : null);
+    // console.log(this.deltaX, d.clientX);
+    this.moveTo(new O(d.clientX-this.deltaX, d.clientY-this.deltaY));
 }
 c.dragMoveEnd = function() {
     console.log('drag end');
     this.dragging = false;
     this.card.style.transition = "left 500ms, top 500ms";
-    this.card.style.zIndex = "";
+    this.card.style.zIndex = this.tzIdx
+    // window.setTimeout(() => , 500)
     this.moveTo(new O(this.lt, this.tp));
 }
 c.initEvents = function() {
@@ -505,24 +544,45 @@ c.initEvents = function() {
     this.event.push(new cardEvents(["touchend", "mouseup"], this.card, function() {
         d.dragMoveEnd();
     }));
+    // this.event.push(new cardEvents(["click"], this.card, function() {
+    //     console.log('click event');
+    // }));
 }
+defineCode = function(a, b) {
+    a.cardCode = b;
+    console.log(a.cardCode);
+}
+
 
 var Pile = function(a, b, c, d) {
     this.pile = new Card(a, d);
     this.pile.drawcard(c, b);
+    this.pile.canv().style.zIndex = "10001";
     this.listen();
-    return this.pile
+    return this
 };
+mergeProto(Pile, CallBack);
 var p = Pile.prototype;
+p.gtc = function() {
+    return this.pile
+}
 p.listen = function() {
-    this.listener = function() {
-        console.log("click");
-    }
-    this.pile.canv().addEventListener('click', this.listener);
+    this.clickEvent = new cardEvents(["click"], this.pile.canv(), function(a) {
+        this.emit('create');
+    }.bind(this));
 };
 p.rmlisten = function() {
-    this.pile.canv().removeEventListener('click', this.listener);
+    this.clickEvent.removeEvent();
 };
+
+var Pack = function(a, b) {
+    this.pack = new Card(a, b);
+    this.pack.canv().style.zIndex = 0;
+}
+var p = Pack.prototype;
+p.gtp = function() {
+    return this.pack
+}
 
 randomInt = function(mn, mx) {
     if (!mx) mx = mn, mn = 0
@@ -539,7 +599,7 @@ Loader.prototype.create = function(a) {
     return this.loader
 }
 Loader.prototype.remove = function() {
-    this.loader.remove();
+    this.loader.remove();   
 }
 
 var Socket = function() {
@@ -555,12 +615,16 @@ var Socket = function() {
 
     this.socket.onmessage = (message) => {
         try {
-            let msg = JSON.parse(message.data);
+            let msg = this.p(message.data);
             console.log(msg);
             if (msg.isConnected) {
                 this.loader.remove();
-                this.deck = msg.deck;
-                this.emit('connection', this.deck);
+                this.deck = msg.deck.player;
+                this.full = msg.deck.full;
+                this.emit('connection', this.deck, this.full);
+            }
+            if (msg.begin) {
+                this.emit('gamebegin', msg.startCard, msg.full, msg.player, msg.turn)
             }
         } catch (error) {
             console.log(error);
@@ -572,79 +636,119 @@ var Socket = function() {
         this.emit('close');
     }
 }
+mergeProto(Socket, CallBack);
 var s = Socket.prototype;
-s.on = function(t, e) {
-    this.listeners = this.listeners || {}
-    this.listeners[t] || (this.listeners[t] = []),
-    this.listeners[t].push(e);
+s.j = function(a) {
+    return JSON.stringify(a);
 }
-s.emit = function(t) {
-    for (var e = arguments.length, n = Array(e > 1 ? e - 1 : 0), o = 1; o < e; o++)
-        n[o - 1] = arguments[o];
-    var i = this.listeners[t];
-    i && i.length && i.forEach(function(t) {
-        return t.apply(void 0, n)
-    })
+s.p = function(a) {
+    return JSON.parse(a);
+}
+s.begin = function(a) {
+    let m = this.j({ready: a}); 
+    this.socket.send(m);
 }
 
 var Game = function() {}
 var g = Game.prototype;
 g.start = function() {
     this.connectionCreated = false;
+    this.canPlay = false;
     this.deckContainer = Fe(document, "game-root");
 
-    var gameSocket = new Socket;
+    var gameSocket = this.gameSocket = new Socket;
     console.log(gameSocket);
 
-    gameSocket.on('connection', function(a) {
+    gameSocket.on('connection', function(a, b) {
         console.log('connection starting game', a);
         this.connectionCreated = true;
-        this.drawDeck(a);
+        this.drawDeck(a, b);
     }.bind(this));
 
-    gameSocket.on('disconnection', function() {
-        console.log('opponent disconnected');
-    });
+    gameSocket.on('gamebegin', function(a, b, c, d) {
+        console.log('game begin');
+        console.log(a, b, c, d);
+        this.full = b;
+        this.player = c;
+        this.canPlay = c == d;
+        this.createPack(a);
+    }.bind(this));
+
     gameSocket.on('close', function() {
         console.log('received close');
-    });
+    }.bind(this));
 };
-g.drawDeck = function(a) {
+g.drawDeck = function(a, b) {
     this.deck = a;
-    this.cards = {};
+    this.full = b;
+    this.cards = [];
     this.pileCoords = new O(window.innerWidth - 200, 50)
     let pile = new Pile(new O(0, 0), qe, this.deckContainer, "pile");
-    pile.moveTo(this.pileCoords);
+    pile.gtc().moveTo(this.pileCoords);
+    this.pileEvent(pile);
 
     this.deck && this.deck.forEach((e, i) => {
-        let ncard = new Card(this.pileCoords);
-        ncard.createCardPatern(this.codeToCoord(e));
-        ncard.drawcard(this.deckContainer);
-        ncard.initEvents();
-        this.cards[e] = ncard;
+        this.crtCrad(e);
     });
+    this.placeDeck();
     window.setTimeout(() => {
-        this.placeDeck();
+        this.gameSocket.begin(true);
     }, 500);
 };
-g.updateDeck = function() {
-
-};
+g.crtCrad = function(a) {
+    let ncard = new Card(this.pileCoords);
+    ncard.createCardPatern(this.codeToCoord(a));
+    defineCode(ncard, a);
+    ncard.drawcard(this.deckContainer);
+    ncard.initEvents();
+    this.cards.push(ncard);
+}
+g.createPack = function(a) {
+    this.packCoords = new O(window.innerWidth/2-S/2, 50);
+    this.gamepack = new Pack(this.pileCoords, "pile");
+    console.log(this.gamepack);
+    var b = this.gamepack;
+    b.gtp().createCardPatern(this.codeToCoord(a));
+    defineCode(b.gtp(), a);
+    b.gtp().drawcard(this.deckContainer);
+    window.setTimeout(() => {
+        b.gtp().moveTo(this.packCoords);
+    }, 500);
+}
+g.updateDeck = function() {};
 g.placeDeck = function() {
     let n = window.innerWidth,
         o = this.deck.length,
         p = (n-S*o)/2,
-        q = p < n/6 ? (p = n/6, ((n-(n/6)*2)/o)) : S+10,
+        e = o >= 10 ? 10 : 6,
+        q = p < n/e ? (p = n/e, ((n-(n/e)*2)/o)) : S+10,
         r = 0,
-        s = 0;
+        s = 0,
+        c = [],
+        d = this.cards.sort(function(a, b) {
+            return a.cardCode >= b.cardCode;
+        });
 
-    for(var i in this.cards) {
-        // r < o/2 ? s += r > 0 ? 20 : 0 : s -= 20
-        let t = p+q*r,
-            u = window.innerHeight-300-s;
-        this.cards[i].moveTo(new O(t, u));
-        r++;
+    console.log(n, p, e, q, n/e, d);
+    for(var j = 0; j < o; j++) {
+        let t = (p+q*j).toFixed(3),
+            u = window.innerHeight-300-s,
+            v = d[j];
+        c.push([v, t, u, j]);
     }
+    // console.log(c);
+    var w = window.setInterval(() => {
+        if (r == o) return clearInterval(w);
+        let d = c[r];
+        // console.log(r, d);
+        d[0].moveTo(new O(d[1], d[2]));
+        d[0].canv().style.zIndex = d[3];
+        r++;
+    }, 50);
+    // for(var i in this.cards) {
+    //     // r < o/2 ? s += r > 0 ? 20 : 0 : s -= 20
+        
+    // }
 };
 g.codeToCoord = function(a) {
     function e(h) {
@@ -654,7 +758,8 @@ g.codeToCoord = function(a) {
             case "G": return 2
             case "B": return 3
             case "F":
-            case "C": return 4
+            case "C":
+            case "Z": return 4
             case "D": return 10
             case "P": return 11
             case "V": return 12
@@ -665,6 +770,18 @@ g.codeToCoord = function(a) {
         c = e(a.slice(1)) || parseInt(a.slice(1));
     return {x: c, y: b}
 };
+g.pileEvent = function(a) {
+    var n = this;
+    // console.log(n);
+    a.on('create', function() {
+        let b = n.full.shift();
+        n.deck.push(b), n.crtCrad(b);
+        // console.log(b, n.deck, n.cards);
+        window.setTimeout(() => {
+            n.placeDeck();
+        }, 50);
+    });
+}
 
 var Hh = function() {
     var started = null;
