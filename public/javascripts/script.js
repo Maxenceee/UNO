@@ -326,7 +326,10 @@ g.toString = function() {
     return "(" + this.left + ", " + this.top + " - " + this.width + "w x " + this.height + "h)"
 };
 g.contains = function(a) {
-    return a instanceof Ae ? a.x >= this.left && a.x <= this.left + this.width && a.y >= this.top && a.y <= this.top + this.height : this.left <= a.left && this.left + this.width >= a.left + a.width && this.top <= a.top && this.top + this.height >= a.top + a.height
+    return this.left <= a.left && this.left + this.width >= a.left + a.width && this.top <= a.top && this.top + this.height >= a.top + a.height
+};
+g.inter = function(a) {
+    return (this.left <= a.left && this.left + this.width >= a.left || this.left >= a.left && this.left + this.width >= a.left + a.width) && (this.top <= a.top && this.top + this.height >= a.top || this.top >= a.top && this.top + this.height >= a.top + a.height)
 };
 g.Ac = function() {
     return new Be(this.width, this.height)
@@ -471,6 +474,7 @@ var Card = function(a, b) {
     this.width = S;
     this.height = T;
 };
+mergeProto(Card, CallBack);
 var c = Card.prototype;
 c.drawcard = function(a, b, c) {
     let patern = this.patern ? this.patern : !ma(b) ? b : [0, 240*b, 360*c, 240, 360]
@@ -478,15 +482,19 @@ c.drawcard = function(a, b, c) {
     this.wa.width = uf().width;
     this.wa.height = uf().height;
 
-    d = new Qf(this.wa);
+    this.d = new Qf(this.wa);
     jf(this.card, this.width, this.height);
     a.appendChild(this.card);
-    d.ta(patern, 0, 0);
+    this.d.ta(patern, 0, 0);
     this.card.style.transition = "left 500ms, top 500ms";
 };
 c.createCardPatern = function(a, b) {
     this.patern = !ma(a) ? [0, 240*a.x, 360*a.y, 240, 360] : [0, 240*a, 360*b, 240, 360]
 };
+c.redrawcard = function(b, c) {
+    let patern = this.patern ? this.patern : !ma(b) ? b : [0, 240*b, 360*c, 240, 360]
+    this.d.ta(patern, 0, 0);
+}
 c.moveTo = function(a) {
     a && (this.left = a.left, this.top = a.top)
     // console.log("m->", this.left, this.top);
@@ -523,13 +531,21 @@ c.dragMove = function(a) {
     // console.log(this.deltaX, d.clientX);
     this.moveTo(new O(d.clientX-this.deltaX, d.clientY-this.deltaY));
 }
-c.dragMoveEnd = function() {
-    console.log('drag end');
-    this.dragging = false;
-    this.card.style.transition = "left 500ms, top 500ms";
-    this.card.style.zIndex = this.tzIdx
+c.dragMoveEnd = function(a) {
+    let d = (a.clientX && a) || (a.changedTouches && a.changedTouches.length ? a.changedTouches[0] : null),
+        e = this;
+    console.log(d.clientX, d.clientY);
+    e.dragging = false;
+    e.card.style.transition = "left 500ms, top 500ms";
+    e.card.style.zIndex = e.tzIdx
     // window.setTimeout(() => , 500)
-    this.moveTo(new O(this.lt, this.tp));
+    e.emit('dragend', function(a, b, c) {
+        let n = new O(d.clientX-e.deltaX, d.clientY-e.deltaY, e.width, e.height),
+            m = a.sqrt().inter(n),
+            o = m && iscompatible(a.gtp().cardCode, e.cardCode);
+        e.moveTo(o ? a.sqrt() : new O(e.lt, e.tp));
+        o && b(m, e, c);
+    })
 }
 c.initEvents = function() {
     this.event = [];
@@ -541,17 +557,21 @@ c.initEvents = function() {
     this.event.push(new cardEvents(["touchmove", "mousemove"], document, function(a) {
         d.dragging && d.dragMove(a);
     }));
-    this.event.push(new cardEvents(["touchend", "mouseup"], this.card, function() {
-        d.dragMoveEnd();
+    this.event.push(new cardEvents(["touchend", "mouseup"], this.card, function(a) {
+        d.dragMoveEnd(a);
     }));
     // this.event.push(new cardEvents(["click"], this.card, function() {
     //     console.log('click event');
     // }));
+};
+c.delete = function() {
+    this.canv().remove();
+    delete this;
 }
 defineCode = function(a, b) {
     a.cardCode = b;
     console.log(a.cardCode);
-}
+};
 
 
 var Pile = function(a, b, c, d) {
@@ -565,7 +585,7 @@ mergeProto(Pile, CallBack);
 var p = Pile.prototype;
 p.gtc = function() {
     return this.pile
-}
+};
 p.listen = function() {
     this.clickEvent = new cardEvents(["click"], this.pile.canv(), function(a) {
         this.emit('create');
@@ -577,12 +597,20 @@ p.rmlisten = function() {
 
 var Pack = function(a, b) {
     this.pack = new Card(a, b);
-    this.pack.canv().style.zIndex = 0;
-}
+    this.pack.canv().style.zIndex = -1;
+};
 var p = Pack.prototype;
 p.gtp = function() {
     return this.pack
-}
+};
+p.sqrt = function() {
+    let b = this.pack
+    return new O(b.left, b.top, b.width, b.height)
+};
+p.update = function(a) {
+    this.pack.createCardPatern(codeToCoord(a));
+    this.pack.redrawcard();
+};
 
 randomInt = function(mn, mx) {
     if (!mx) mx = mn, mn = 0
@@ -696,11 +724,15 @@ g.drawDeck = function(a, b) {
     }, 500);
 };
 g.crtCrad = function(a) {
-    let ncard = new Card(this.pileCoords);
-    ncard.createCardPatern(this.codeToCoord(a));
+    let ncard = new Card(this.pileCoords),
+        p = this;
+    ncard.createCardPatern(codeToCoord(a));
     defineCode(ncard, a);
     ncard.drawcard(this.deckContainer);
     ncard.initEvents();
+    ncard.on('dragend', function(n) {
+        n(p.gamepack, p.playCard, p);
+    });
     this.cards.push(ncard);
 }
 g.createPack = function(a) {
@@ -708,7 +740,7 @@ g.createPack = function(a) {
     this.gamepack = new Pack(this.pileCoords, "pile");
     console.log(this.gamepack);
     var b = this.gamepack;
-    b.gtp().createCardPatern(this.codeToCoord(a));
+    b.gtp().createCardPatern(codeToCoord(a));
     defineCode(b.gtp(), a);
     b.gtp().drawcard(this.deckContainer);
     window.setTimeout(() => {
@@ -734,23 +766,48 @@ g.placeDeck = function() {
         let t = (p+q*j).toFixed(3),
             u = window.innerHeight-300-s,
             v = d[j];
+
         c.push([v, t, u, j]);
     }
-    // console.log(c);
     var w = window.setInterval(() => {
         if (r == o) return clearInterval(w);
         let d = c[r];
-        // console.log(r, d);
+
         d[0].moveTo(new O(d[1], d[2]));
         d[0].canv().style.zIndex = d[3];
         r++;
     }, 50);
-    // for(var i in this.cards) {
-    //     // r < o/2 ? s += r > 0 ? 20 : 0 : s -= 20
-        
-    // }
 };
-g.codeToCoord = function(a) {
+g.playCard = function(a, b, c) {
+    if (a) {
+        let id = c.cards.findIndex(function (obj) {
+            return obj.cardCode == b.cardCode;
+        });
+        window.setTimeout(() => {
+            c.gamepack.update(b.cardCode);
+            b.delete();
+        }, 500);
+        c.gamepack.gtp().cardCode = b.cardCode
+        console.log(c.gamepack);
+        id !== -1 && (c.cards.splice(id, 1), c.deck.splice(id, 1))
+        c.placeDeck();
+    }
+}
+g.pileEvent = function(a) {
+    var n = this;
+    a.on('create', function() {
+        let b = n.full.shift();
+        n.deck.push(b), n.crtCrad(b);
+        window.setTimeout(() => {
+            n.placeDeck();
+        }, 50);
+    });
+}
+iscompatible = function(a, b) {
+    console.log(a, b);
+    return a[0] == b[0] || a[1] == b[1] || (a[0] == "Z" || b[0] == "Z")
+}
+codeToCoord = function(a) {
     function e(h) {
         switch (h) {
             case "R": return 0
@@ -770,18 +827,6 @@ g.codeToCoord = function(a) {
         c = e(a.slice(1)) || parseInt(a.slice(1));
     return {x: c, y: b}
 };
-g.pileEvent = function(a) {
-    var n = this;
-    // console.log(n);
-    a.on('create', function() {
-        let b = n.full.shift();
-        n.deck.push(b), n.crtCrad(b);
-        // console.log(b, n.deck, n.cards);
-        window.setTimeout(() => {
-            n.placeDeck();
-        }, 50);
-    });
-}
 
 var Hh = function() {
     var started = null;
