@@ -710,7 +710,7 @@ g.drawDeck = function(a, b) {
     this.deck = a;
     this.full = b;
     this.cards = [];
-    this.pileCoords = new O(window.innerWidth - 200, 50)
+    this.pileCoords = new O(window.innerWidth - 200, window.innerHeight/2-T)
     let pile = new Pile(new O(0, 0), qe, this.deckContainer, "pile");
     pile.gtc().moveTo(this.pileCoords);
     this.pileEvent(pile);
@@ -736,7 +736,7 @@ g.crtCrad = function(a) {
     this.cards.push(ncard);
 }
 g.createPack = function(a) {
-    this.packCoords = new O(window.innerWidth/2-S/2, 50);
+    this.packCoords = new O(window.innerWidth/2-S/2, window.innerHeight/2-T);
     this.gamepack = new Pack(this.pileCoords, "pile");
     console.log(this.gamepack);
     var b = this.gamepack;
@@ -761,10 +761,10 @@ g.placeDeck = function() {
             return a.cardCode >= b.cardCode;
         });
 
-    console.log(n, p, e, q, n/e, d);
+    // console.log(n, p, e, q, n/e, d);
     for(var j = 0; j < o; j++) {
         let t = (p+q*j).toFixed(3),
-            u = window.innerHeight-300-s,
+            u = window.innerHeight-250-s,
             v = d[j];
 
         c.push([v, t, u, j]);
