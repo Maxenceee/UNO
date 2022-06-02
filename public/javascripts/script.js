@@ -570,7 +570,6 @@ c.delete = function() {
 }
 defineCode = function(a, b) {
     a.cardCode = b;
-    console.log(a.cardCode);
 };
 
 
@@ -594,6 +593,10 @@ p.listen = function() {
 p.rmlisten = function() {
     this.clickEvent.removeEvent();
 };
+p.delete = function() {
+    this.gtc().delete();
+    delete this;
+}
 
 var Pack = function(a, b) {
     this.pack = new Card(a, b);
@@ -611,6 +614,10 @@ p.update = function(a) {
     this.pack.createCardPatern(codeToCoord(a));
     this.pack.redrawcard();
 };
+p.delete = function() {
+    this.gtp().delete();
+    delete this;
+}
 
 randomInt = function(mn, mx) {
     if (!mx) mx = mn, mn = 0
@@ -704,14 +711,34 @@ g.start = function() {
 
     gameSocket.on('close', function() {
         console.log('received close');
+        this.stop();
     }.bind(this));
 };
+g.stop = function() {
+    this.connectionCreated = false;
+    this.canPlay = false;
+    var ld = new Loader;
+    ld.create(Fe(document, "solitaire-mode-dialog-close"));
+    setTimeout(() => {
+        ld.remove();
+        this.reset();
+    }, 5000);
+};
+g.reset = function() {
+    var cnt = Fe(document, "dialog-container");
+    cnt.classList.remove('-hide-dialog');
+    this.gamepack.delete();
+    this.cards.forEach(e => {
+        e.delete();
+    })
+    this.pile.delete();
+}
 g.drawDeck = function(a, b) {
     this.deck = a;
     this.full = b;
     this.cards = [];
     this.pileCoords = new O(window.innerWidth - 200, window.innerHeight/2-T)
-    let pile = new Pile(new O(0, 0), qe, this.deckContainer, "pile");
+    let pile = this.pile = new Pile(new O(0, 0), qe, this.deckContainer, "pile");
     pile.gtc().moveTo(this.pileCoords);
     this.pileEvent(pile);
 
@@ -743,6 +770,7 @@ g.createPack = function(a) {
     b.gtp().createCardPatern(codeToCoord(a));
     defineCode(b.gtp(), a);
     b.gtp().drawcard(this.deckContainer);
+    
     window.setTimeout(() => {
         b.gtp().moveTo(this.packCoords);
     }, 500);
@@ -792,6 +820,7 @@ g.playCard = function(a, b, c) {
         id !== -1 && (c.cards.splice(id, 1), c.deck.splice(id, 1))
         c.placeDeck();
     }
+    if (c.cards.length === 0) console.log("game, end"), c.stop();
 }
 g.pileEvent = function(a) {
     var n = this;
@@ -820,7 +849,7 @@ codeToCoord = function(a) {
             case "D": return 10
             case "P": return 11
             case "V": return 12
-            default: return undefined
+            default: return null
         }
     }
     let b = e(a.slice(0, 1)),
