@@ -13,8 +13,7 @@ Array.prototype.shuffle = function() {
       currentIndex--;
   
       // And swap it with the current element.
-      [this[currentIndex], this[randomIndex]] = [
-        this[randomIndex], this[currentIndex]];
+      [this[currentIndex], this[randomIndex]] = [this[randomIndex], this[currentIndex]];
     }
 }
 
