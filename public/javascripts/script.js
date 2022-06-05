@@ -70,15 +70,60 @@ ca = "function" == typeof Object.create ? Object.create : function(a) {
     var b = function() {};
     b.prototype = a;
     return new b
-}
+},
 Bf = function() {
     return 589824 < window.innerHeight * window.innerWidth
+},
+je = function(a) {
+    return "string" == typeof a
 }
 
-var Me = function(a, b) {
-    let e = document.createElement(a);
-    e.classList.add(b);
-    return e
+var Me = function(a, b, c) {
+    return Le(document, arguments)
+},
+Le = function(a, b) {
+    var c = String(b[0]),
+        d = b[1],
+        e = b[2] || null;
+    c = a.createElement(c);
+    if (e && e.in) c.innerHTML = e.in;
+
+    b && (d && typeof e !== "object" && !je(d) ? Ne(c, d, e) : (e && e.type ? c.setAttribute(e.type, d) : d && (c.className = d)));
+    return c
+},
+Ne = function(b, c, d) {
+    function e(h, i) {
+        b.setAttribute(h, i);
+    }
+    for (var i = 0; i < Math.min(c.length, d.length); i++) {
+        e(c[i], d[i]);
+    }
+},
+Mc = function(a, b) {
+    a.classList.add(b);
+},
+Mr = function(a, b) {
+    a.classList.remove(b);
+},
+Ms = function(a, b, c) {
+    je(b) ? a.setAttribute(b, c !== undefined ? c : "") : Ne(a, b, c)
+},
+Md = function(a, b) {
+    (b.length > 1) ? dj(a, b) : a.appendChild(b);
+    return a
+},
+Mg = function(a, b) {
+    return a.getElementsByClassName(b)
+},
+Mqa = function(a, b) {
+    return a.querySelectorAll(b)
+},
+Mq = function(a, b) {
+    return a.querySelector(b)
+},
+dj = function(a, b) {
+    for(var i = 0; i < b.length; i++) 
+        a.appendChild(b[i]);
 },
 ba = function(a) {
     var b = "undefined" != typeof Symbol && Symbol.iterator && a[Symbol.iterator];
@@ -230,6 +275,9 @@ ma = function(a) {
 Fe = function(a, b) {
     return r(b) ? a.getElementById(b) : b
 },
+Fa = function(a, b) {
+    return r(b) ? a.getElementsByClassName(b)[0] : b
+},
 l = function(a, b) {
     a.prototype = ca(b.prototype);
     a.prototype.constructor = a;
@@ -296,7 +344,7 @@ var me = function() {
 };
 l(me, ie);
 var le = [{
-        filename: "images/UNO_cards_deck.svg",
+        filename: "images/UNO_cards.svg",
         // filename: "images/card-sprite.2.png",
         size: [3360, 893]
     }],
@@ -570,7 +618,6 @@ c.dragMoveEnd = function(a) {
     if (!this.gameParent.canPlay) return
     let d = (a.clientX && a) || (a.changedTouches && a.changedTouches.length ? a.changedTouches[0] : null),
         e = this;
-    console.log();
     e.dragging = false;
     e.card.style.transition = "left 500ms, top 500ms, rotate 500ms";
     e.card.style.zIndex = e.tzIdx
@@ -625,6 +672,7 @@ p.gtc = function() {
 p.listen = function() {
     this.clickEvent = new CardEvents(["click"], this.pile.canv(), function(a) {
         if(!this.gameParent.canPlay) return
+        this.gameParent.canPlay = false;
         this.emit('create');
     }.bind(this));
 };
@@ -696,11 +744,24 @@ var Socket = function() {
                     f = this.full = msg.full;
                 this.emit('connection', d, f);
             }
+            if (msg.setId) {
+                this.gameid = msg.setId.id;
+            }
             if (msg.begin) {
                 this.emit('gamebegin', msg.startCard, msg.full, msg.player, msg.turn, msg.canPlay);
             }
+            if (msg.currentPlayer) {
+                if (this.gameid !== msg.playerid) this.emit('updatecurrentplayer', msg.currentPlayer);
+            }
+            if (msg.canPlay) {
+                this.emit('canplay', msg.canPlay);
+            }
             if(msg.update) {
-                this.emit('update', msg.update);
+                console.log(this.gameid, msg.update.playerid);
+                if (this.gameid !== msg.update.playerid) this.emit('update', msg.update);
+            }
+            if (msg.USER_DISCONNECTED) {
+                this.emit('userdisconnetion');
             }
         } catch (error) {
             console.log(error);
@@ -721,23 +782,32 @@ s.p = function(a) {
     return JSON.parse(a);
 };
 s.begin = function(a) {
-    let m = this.j({ready: a}); 
+    let m = this.j({ready: a, username: this.gameParent.unsername}); 
     this.socket.send(m);
 };
-s.sendUpdate = function(a, b, c, d) {
-    let m = this.j({update: {card: a, played: c, deckSize: b, fromPile: d}});
+s.sendUpdate = function(a, b, c) {
+    console.log(a, b, c);
+    let m = this.j({update: {playerid: this.gameid, card: a, deckSize: b, ...c}});
+    console.log(m);
     this.socket.send(m);
+};
+s.end = function() {
+    this.socket.send(this.j({USER_DISCONNECTION: true, connectionEnd: true}));
+    delete this;
 };
 
 var Game = function() {}
 var g = Game.prototype;
-g.start = function() {
+g.start = function(a) {
+    this.unsername = a.length ? a : null
     this.connectionCreated = false;
     this.canPlay = false;
     this.deckContainer = Fe(document, "game-root");
+    this.closeGame();
 
     var gameSocket = this.gameSocket = new Socket;
     console.log(gameSocket);
+    kfg(this, gameSocket);
 
     gameSocket.on('connection', function(a, b) {
         console.log('connection starting game', a, b);
@@ -757,6 +827,10 @@ g.start = function() {
         this.createPack(a);
     }.bind(this));
 
+    gameSocket.on('canplay', function(a) {
+        this.canPlay = a;
+    }.bind(this));
+
     gameSocket.on('close', function() {
         console.log('received close');
         this.stop();
@@ -765,28 +839,41 @@ g.start = function() {
     gameSocket.on('update', function(a) {
         console.log("update", a);
         this.canPlay = a.canPlay;
-        if (a.played) 
-            this.gamepack.gtp().cardCode = a.card,
-            this.gamepack.update(a.card);
-        if (a.fromPile) {
-            let id = this.full.findIndex(function (obj) {
-                return obj.cardCode == a.card;
-            });
-            this.full.splice(id, 1);
+        if (a.fromPile == true) {
+            for(var i = 0; i < a.pileChanges.length; i++) {
+                let id = this.full.findIndex(function (obj) {
+                    return obj == a.pileChanges[i];
+                });
+                this.full.splice(id, 1);
+            }
         }
+        if (a.played == true) 
+            this.gamepack.gtp().cardCode = a.card,
+            this.gamepack.update(a.card),
+            this.playCardEffects(a.card);
+        
         this.updateOpponentDeck(a.deckSize);
+    }.bind(this));
 
+    gameSocket.on('updatecurrentplayer', function(a) {
+        this.updateCurrentPlayer(a);
+    }.bind(this));
+
+    gameSocket.on('userdisconnetion', function() {
+        this.stop();
     }.bind(this));
 };
 g.stop = function() {
     this.connectionCreated = false;
     this.canPlay = false;
+    this.gameSocket.end();
     var ld = new Loader;
     ld.create(Fe(document, "solitaire-mode-dialog-close"));
+    Fe(document, "close-btn").classList.add("-show");
     this.reset();
     setTimeout(() => {
         ld.remove();
-    }, 5000);
+    }, 1000);
     
 };
 g.reset = function() {
@@ -800,6 +887,17 @@ g.reset = function() {
         e.delete();
     })
     this.pile.delete();
+};
+g.closeGame = function() {
+    let t = this,
+        v = Fe(document, "close-btn");
+    v.classList.add("-show");
+    v.onclick = () => {
+        let mess = "You are going to leave the game. There is no way back.";
+        new AlertPopup(mess, "Leave", function() {
+            t.stop();
+        }, "Stay here");
+    }
 };
 g.drawDeck = function(a, b) {
     this.deck = a;
@@ -816,7 +914,9 @@ g.drawDeck = function(a, b) {
         this.crtCrad(e);
     });
     this.placeDeck();
-    this.gameSocket.begin(true);
+    setTimeout(() => {
+        this.gameSocket.begin(true);
+    }, 1000);
 };
 g.crtCrad = function(a) {
     let ncard = new Card(this.pileCoords),
@@ -827,6 +927,7 @@ g.crtCrad = function(a) {
     ncard.initEvents();
     kfg(this, ncard);
     ncard.on('dragend', function(n) {
+        this.canPlay = false;
         n(p.gamepack, p.playCard, p);
     });
     this.cards.push(ncard);
@@ -893,27 +994,30 @@ g.playCard = function(a, b, c) {
         c.placeDeck();
     }
     if (c.cards.length === 0) console.log("game, end"), c.stop();
-    c.sendGameUpdate(b.cardCode, true);
+    c.sendGameUpdate(b.cardCode, {played: true, fromPile: false, pileChanges: [], changedColor: false});
 };
 g.pileEvent = function(a) {
     var n = this;
     a.on('create', function() {
-        let b = n.full.shift();
-        n.deck.push(b), n.crtCrad(b);
+        let b = [],
+            d = n.full.shift();
+        b.push(d);
+        n.deck.push(d), n.crtCrad(d);
         window.setTimeout(() => {
             n.placeDeck();
         }, 50);
-        n.sendGameUpdate(b, false, true);
+        n.sendGameUpdate(null, {played: false, fromPile: true, pileChanges: b, changedColor: false});
     });
 };
-g.sendGameUpdate = function(a, b, c) {
+g.sendGameUpdate = function(a, b) {
     this.canPlay = false;
-    this.gameSocket.sendUpdate(a, this.deck.length, b, c || false);
+    this.gameSocket.sendUpdate(a, this.deck.length, b);
 };
 g.createOpponentDeck = function() {
     this.oppn = this.oppn || []
     for(var i = 0; i < 7; i++) {
         let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: 80, height: 120});
+        oc.gtc().canv().style.zIndex = 0;
         oc.gtc().moveTo(this.pileCoords);
         this.oppn.push(oc);
     }
@@ -926,6 +1030,7 @@ g.updateOpponentDeck = function(a) {
         for(var i = 0; i < a; i++) {
             if (!this.oppn[i]) {
                 let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: 80, height: 120});
+                oc.gtc().canv().style.zIndex = 0;
                 oc.gtc().moveTo(this.pileCoords);
                 this.oppn.push(oc);
             }
@@ -950,7 +1055,6 @@ g.placeOpponentDeck = function() {
         e = 80,
         c = [],
         d = this.oppn;
-    console.log(s, f, d);
     // console.log(n, p, e, q, n/e, d);
     for(var j = 0; j < o; j++) {
         let t = (p+q*j).toFixed(3),
@@ -969,6 +1073,30 @@ g.placeOpponentDeck = function() {
         rtcp(d[0], d[4]);
         r++;
     }, 50);
+};
+g.playCardEffects = function(a) {
+    console.log(a);
+    // (a[1] == "V") && this.addCardsToDeck(2);
+    // (a[0] == "Z") && this.addCardsToDeck(4);
+    (a[1] == "V") ? this.addCardsToDeck(2) : (a[0] == "Z" && a[1] == "1") ? this.addCardsToDeck(4) : console.log("no effect");
+};
+g.addCardsToDeck = function(a) {
+    console.log(a);
+    let b = [];
+    for(var i = 0; i < a; i++) {
+        let d = this.full.shift();
+        b.push(d);
+        this.deck.push(d), this.crtCrad(d);
+    }
+    window.setTimeout(() => {
+        this.placeDeck();
+    }, 50);
+    this.sendGameUpdate(null, {played: false, fromPile: true, pileChanges: b, changedColor: false});
+};
+p.updateCurrentPlayer = function(a) {
+
+    let n = Fa(document, "display") || Md(Me("div", "display"), Md(Me("div", "display-inner"), Md(Me("h1", "", {in: a+" is playing"}), Me("div", "dot-typing"))))
+    Md(document.body, n);
 };
 
 iscompatible = function(a, b) {
@@ -1001,6 +1129,48 @@ rtcp = function(a, b) {
     a.gtc().canv().style.transform = "rotateZ("+b+"deg)"
 }
 
+var AlertPopup = function(t, a, b, c, d) {
+    let l = Me("div", "ad-error-pn-c");
+    Md(document.body, l);
+    if (!b) {
+        l.innerHTML = '<div class="ad-error-panel"><div class="ad-err"><p>'+t+'</p></div><div id="ad-err-close-btn" class="ad-err-close">Fermer</div></div>';
+    } else {
+        if (c) {
+            l.innerHTML = '<div class="ad-error-panel"><div class="ad-err"><p>'+t+'</p></div><div class="ad-btn"><div id="ad-err-reset-btn" class="ad-err-close ad-demi ad-demi-sup">'+a+'</div><div id="ad-err-close-btn" class="ad-err-close ad-demi">'+c+'</div></div></div>';
+            Fe(document, 'ad-err-reset-btn').addEventListener("click", b);
+            Fe(document, 'ad-err-reset-btn').addEventListener("click", function() {l.remove()});
+        } else {
+            l.innerHTML = '<div class="ad-error-panel"><div class="ad-err"><p>'+t+'</p></div><div id="ad-err-close-btn" class="ad-err-close">'+a+'</div></div>';
+            Fe(document, 'ad-err-close-btn').addEventListener("click", b);
+        }
+    }
+    if (d) {
+        Fe(document, 'ad-err-close-btn').addEventListener("click", d);
+    }
+    Fe(document, 'ad-err-close-btn').addEventListener("click", function() {l.remove()});
+    return l
+}
+
+var UsernamePopup = function(t, a) {
+    let l = Me("div", "ad-error-pn-c");
+    Md(document.body, l);
+    l.innerHTML = '<div class="ad-error-panel grow-anim"><div class="ad-err"><p style="min-height: auto;">'+t+'</p><div class="fr-text-field"><input autofocus required maxlength="15" type="text" id="on-user-input" class="SIU-tf"><label for="name" class="label-name"><span class="content-name">Username</span></label></div></div><div id="ad-err-close-btn" class="ad-err-close">Save</div></div>';
+    var pp = () => {
+        let str = Fe(document, 'on-user-input').value;
+        if (!/\s/.test(str)) {
+            a(str);
+            document.body.removeChild(l);
+        } else {
+            Fe(document, 'on-user-input').classList.add('wrong-enter-r');
+        }
+    };
+    Fe(document, 'ad-err-close-btn').addEventListener("click", pp);
+    window.onkeyup = (key) => {
+        key.keyCode === 13 && pp()
+    }
+    return l
+};
+
 var Hh = function() {
     var started = null;
     if(!started) {
@@ -1025,8 +1195,12 @@ var Hh = function() {
     cnt.classList.remove('-hide-dialog');
 
     Fe(document, "start-easy-btn").onclick = () => {
-        cnt.classList.add('-hide-dialog');
         started = new Game;
-        started.start();
+        cnt.classList.add('-hide-dialog');
+        setTimeout(() => {
+            new UsernamePopup("Choose your username", function(a) {
+                started.start(a);
+            });
+        }, 100);
     }
 }());
