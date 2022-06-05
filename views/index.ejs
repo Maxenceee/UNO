@@ -6,8 +6,30 @@
 		<link rel="icon" type="image/ico" href="/images/2133115.png" sizes="512x512">
 		<link rel="apple-touch-icon" href="/images/2133115.png" sizes="512x512">
 		<link rel="shortcut icon" type="image/png" href="/images/2133115.png"/>
+		<script>
+			var Me = function(a, b) {
+				let e = document.createElement(a);
+				e.classList.add(b);
+				return e
+			},
+			Pe = function(a, b) {
+				a.appendChild(b)
+			}
+			var Loader = function() {
+				let a = Me("DIV", "box-loader");
+				a.innerHTML = '<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"/></svg></div>';
+				this.loader = a
+			}
+			Loader.prototype.create = function(a) {
+				Pe(a, this.loader);
+				return this.loader
+			}
+			Loader.prototype.remove = function() {
+				this.loader.remove();   
+			}
+		</script>
 	</head>
-	<body>
+	<body class="loading">
 		<section>
 			<div id="solitaire-mode-dialog-close"></div>
 			<div id="game-root"></div>
@@ -44,6 +66,7 @@
 				</div>
 			</div>
 		</section>
+		<object id="sheep" type="image/svg+xml" data="/images/sheep-animated.svg"></object>
 		<script type="text/javascript">
 			this.gbar_ = {
 				CONFIG: [[[["style.css"], ["script.js"]], ["/stylesheets/", "/javascripts/"]]],
@@ -63,6 +86,7 @@
 				}
 		
 				try {
+					_.loader = new Loader().create(document.body);
 					var Kd;
 					window.gbar_ && window.gbar_.CONFIG ? Kd = window.gbar_.CONFIG[0] || {} : Kd = [];
 		
@@ -115,8 +139,7 @@
 					_.cmp = function() {
 						if (this.fileLoaded) {
 							document.body.classList.remove('loading');
-							document.body.removeChild(document.getElementById('DOMLoadElement'));
-							document.documentElement.classList.remove('DOMNtLoad');
+							_.loader.remove();
 						}
 					};
 		
