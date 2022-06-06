@@ -51,7 +51,7 @@ wss.on('connection', async function(ws) {
         }
         if (msg.USER_DISCONNECTION) {
             console.log(ws.id, "disconnected");
-            pool.disconnected(ws.id);
+            pool && pool.disconnected(ws.id);
             removeClient(ws.id, CLIENTS);
             removeClient(ws.id, WAITINGPLAYERS);
             ws.close();
@@ -60,10 +60,9 @@ wss.on('connection', async function(ws) {
 
     ws.on('close', async function() {
         console.log(ws.id, "disconnected");
-
         console.log("number of client", CLIENTS.length);
         let pool = await getPoolById(ws.poolId);
-        pool.disconnected(ws.id);
+        pool && pool.disconnected(ws.id);
         removeClient(ws.id, CLIENTS);
         removeClient(ws.id, WAITINGPLAYERS);
     });
@@ -108,7 +107,7 @@ p.beginGame = function() {
     this.sendId();
     this.sendAll({begin: true, player: 1, turn: 0, startCard: tk.c, full: tk.f, canPlay: false});
     this.players[this.currentPlaying].send(j({canPlay: true}));
-    this.sendAll({currentPlayer: this.players[this.currentPlaying].username, id: this.players[this.currentPlaying].id});
+    this.sendAll({currentPlayer: {username: this.players[this.currentPlaying].username, id: this.players[this.currentPlaying].id}});
 };
 p.setPropety = function(a, b) {
     for (var i=0; i < this.players.length; i++) {
@@ -121,9 +120,13 @@ p.update = function(a) {
     this.sendAll({update: {...a.update, canPlay: false}});
 
     if (eff && eff.reverse == true) this.direction = !this.direction;
-    this.currentPlaying = newPlayerFromDirection(this.currentPlaying, this.direction, this.poolSize, eff);
-    this.players[this.currentPlaying].send(j({canPlay: true}));
-    this.sendAll({currentPlayer: this.players[this.currentPlaying].username, id: a.update.playerid});
+    let nplayer = newPlayerFromDirection(this.currentPlaying, this.direction, this.poolSize, eff),
+        isSame = newPlayerFromDirection(nplayer, !this.direction, this.poolSize, eff) == nplayer;
+    console.log("same player", isSame);
+    this.currentPlaying = nplayer;
+    this.players[this.currentPlaying].send(j({canPlay: true, isSame: isSame}));
+    console.log("player turn", this.currentPlaying);
+    this.sendAll({currentPlayer: {username: this.players[this.currentPlaying].username, id:  this.players[this.currentPlaying].id}});
 };
 p.playersAllReady = function() {
     return this.playerReady == this.poolSize
@@ -187,8 +190,8 @@ p.disconnected = function(a) {
 var newPlayerFromDirection = function(a, b, c, d) {
     let v = d && d.pass ? 2 : 1,
         s = !b ? a-v : a+v;
-    s > c-1 && (s = 0)
-    s < 0 && (s = c-1)
+    s > c-1 && (s = s-c)
+    s < 0 && (s = c+s)
     return s
 },
 cardAsEffects = function(a) {

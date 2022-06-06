@@ -90,7 +90,7 @@ section #game-root .opponent {
 
 .box-loader {
   position: absolute;
-  z-index: 400;
+  z-index: 50005;
   top: 0;
   left: 0;
   width: 100%;
@@ -278,7 +278,7 @@ section #game-root .opponent {
   display: -ms-flexbox;
   display: flex;
   position: absolute;
-  z-index: 1000;
+  z-index: 10000;
   -webkit-animation: show-pan 0.2s ease-in-out forwards;
           animation: show-pan 0.2s ease-in-out forwards;
 }
@@ -289,7 +289,7 @@ section #game-root .opponent {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 10000;
   pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
   -webkit-transition: opacity 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -650,8 +650,8 @@ section #game-root .opponent {
   left: -100%;
   width: 50px;
   height: 50px;
-  -webkit-animation: sheep-anim 65s linear infinite 2s;
-          animation: sheep-anim 65s linear infinite 2s;
+  -webkit-animation: sheep-anim 65s linear infinite 20s;
+          animation: sheep-anim 65s linear infinite 20s;
 }
 
 @-webkit-keyframes sheep-anim {
@@ -755,6 +755,30 @@ section #game-root .opponent {
           transform: rotateZ(45deg);
 }
 
+.deck-toggle {
+  z-index: 100;
+  position: fixed;
+  bottom: 20px;
+  right: 25px;
+  width: 50px;
+  height: 50px;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.deck-toggle.-show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.deck-toggle .lc-in {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
 .ad-error-pn-c {
   position: fixed;
   top: 0;
@@ -772,7 +796,9 @@ section #game-root .opponent {
       -ms-flex-align: center;
           align-items: center;
   background-color: rgba(0, 0, 0, 0.075);
-  z-index: 10000;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 50004;
 }
 
 .ad-error-panel, .ad-status-panel {
@@ -786,7 +812,6 @@ section #game-root .opponent {
   background-color: #FFF;
   -webkit-box-shadow: 0 5px 15px 5px rgba(0, 0, 0, 0.05);
           box-shadow: 0 5px 15px 5px rgba(0, 0, 0, 0.05);
-  z-index: 10000;
   opacity: 0;
   -webkit-animation: show-pan 0.3s ease-in-out forwards;
           animation: show-pan 0.3s ease-in-out forwards;
@@ -987,110 +1012,128 @@ section #game-root .opponent {
   position: absolute;
   top: 20px;
   left: 20px;
-  height: 50px;
-  width: 100px;
-}
-
-.display .display-innner {
-  position: relative;
-  width: 100%;
-  height: 100%;
+  height: -webkit-max-content;
+  height: -moz-max-content;
+  height: max-content;
+  width: 200px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
   -webkit-box-orient: vertical;
+  -webkit-box-direction: reverse;
+      -ms-flex-direction: column-reverse;
+          flex-direction: column-reverse;
+}
+
+.display .display-inner {
+  position: relative;
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
 }
 
-.display .display-innner .display-innner-t {
-  width: 100%;
-  text-align: center;
-  line-height: 30px;
-  font-size: 1.5em;
-  font-weight: 300;
+.display .display-inner.txt-only .display-inner-p {
+  font-size: 1em;
+  margin: 0;
+  color: #008744;
 }
 
-.display .display-innner .dot-typing {
+.display .display-inner .display-inner-p {
+  text-align: center;
+  line-height: 30px;
+  font-size: 1.2em;
+  font-weight: 300;
+  margin-right: 20px;
+}
+
+.display .display-inner .dot-typing {
+  --dot-color: #000;
   position: relative;
   left: -9999px;
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 5px;
-  background-color: #fff;
-  color: #fff;
-  -webkit-box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
-          box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+  background-color: var(--dot-color);
+  color: var(--dot-color);
+  -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+          box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   -webkit-animation: dotTyping 1.5s infinite linear;
           animation: dotTyping 1.5s infinite linear;
 }
 
 @-webkit-keyframes dotTyping {
   0% {
-    -webkit-box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
-            box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   16.667% {
-    -webkit-box-shadow: 9984px -10px 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
-            box-shadow: 9984px -10px 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+    -webkit-box-shadow: 9984px -10px 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+            box-shadow: 9984px -10px 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   33.333% {
-    -webkit-box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
-            box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   50% {
-    -webkit-box-shadow: 9984px 0 0 0 #fff, 9999px -10px 0 0 #fff, 10014px 0 0 0 #fff;
-            box-shadow: 9984px 0 0 0 #fff, 9999px -10px 0 0 #fff, 10014px 0 0 0 #fff;
+    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px -10px 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px -10px 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   66.667% {
-    -webkit-box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
-            box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   83.333% {
-    -webkit-box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px -10px 0 0 #fff;
-            box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px -10px 0 0 #fff;
+    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px -10px 0 0 var(--dot-color);
+            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px -10px 0 0 var(--dot-color);
   }
   100% {
-    -webkit-box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
-            box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
 }
 
 @keyframes dotTyping {
   0% {
-    -webkit-box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
-            box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   16.667% {
-    -webkit-box-shadow: 9984px -10px 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
-            box-shadow: 9984px -10px 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+    -webkit-box-shadow: 9984px -10px 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+            box-shadow: 9984px -10px 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   33.333% {
-    -webkit-box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
-            box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   50% {
-    -webkit-box-shadow: 9984px 0 0 0 #fff, 9999px -10px 0 0 #fff, 10014px 0 0 0 #fff;
-            box-shadow: 9984px 0 0 0 #fff, 9999px -10px 0 0 #fff, 10014px 0 0 0 #fff;
+    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px -10px 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px -10px 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   66.667% {
-    -webkit-box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
-            box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   83.333% {
-    -webkit-box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px -10px 0 0 #fff;
-            box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px -10px 0 0 #fff;
+    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px -10px 0 0 var(--dot-color);
+            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px -10px 0 0 var(--dot-color);
   }
   100% {
-    -webkit-box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
-            box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
 }
 /*# sourceMappingURL=style.css.map */

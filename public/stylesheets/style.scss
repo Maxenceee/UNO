@@ -95,7 +95,7 @@ section {
 
 .box-loader {
 	position: absolute;
-	z-index: 400;
+	z-index: 50005;
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -221,7 +221,7 @@ section {
 	display: -webkit-flex;
 	display: flex;
 	position: absolute;
-	z-index: 1000;
+	z-index: 10000;
 
 	animation: show-pan 0.2s ease-in-out forwards;
 }
@@ -232,7 +232,7 @@ section {
 	bottom: 0;
 	left: 0;
 	right: 0;
-	z-index: 1000;
+	z-index: 10000;
 	pointer-events: auto;
 	-webkit-tap-highlight-color: transparent;
 	-webkit-transition: opacity 400ms cubic-bezier(0.25,0.8,0.25,1);
@@ -557,7 +557,7 @@ section {
 	left: -100%;
 	width: 50px;
 	height: 50px;
-	animation: sheep-anim 65s linear infinite 2s;
+	animation: sheep-anim 65s linear infinite 20s;
 }
 
 @keyframes sheep-anim {
@@ -618,6 +618,29 @@ section {
 	}
 }
 
+.deck-toggle {
+	z-index: 100;
+	position: fixed;
+	bottom: 20px;
+	right: 25px;
+	width: 50px;
+	height: 50px;
+	opacity: 0;
+	visibility: hidden;
+
+	&.-show {
+		opacity: 1;
+		visibility: visible;
+	}
+
+	.lc-in {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+}
+
 .ad-error-pn-c {
     position: fixed;
     top: 0;
@@ -629,7 +652,9 @@ section {
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.075);
-    z-index: 10000;
+	backdrop-filter: blur(5px);
+	-webkit-backdrop-filter: blur(5px);
+    z-index: 50004;
 }
 
 .ad-error-panel, .ad-status-panel {
@@ -640,7 +665,6 @@ section {
     overflow: hidden;
     background-color: #FFF;
     box-shadow: 0 5px 15px 5px rgba(0, 0, 0, 0.05);
-    z-index: 10000;
 	opacity: 0;
 
 	animation: show-pan 0.3s ease-in-out forwards;
@@ -812,35 +836,46 @@ section {
 .display {
 	position: absolute;
 	top: 20px; left: 20px;
-	height: 50px;
-	width: 100px;
+	height: max-content;
+	width: 200px;
+	display: flex;
+	justify-content: flex-start;
+	flex-direction: column-reverse;
 
-	.display-innner {
+	.display-inner {
 		position: relative;
 		width: 100%;
-		height: 100%;
 		display: flex;
-		flex-direction: column;
-		justify-content: center;
+		flex-direction: row;
+		justify-content: flex-start;
 		align-items: center;
 
-		.display-innner-t {
-			width: 100%;
+		&.txt-only {
+			.display-inner-p {
+				font-size: 1em;
+				margin: 0;
+				color: #008744;
+			}
+		}
+
+		.display-inner-p {
 			text-align: center;
 			line-height: 30px;
-			font-size: 1.5em;
+			font-size: 1.2em;
 			font-weight: 300;
+			margin-right: 20px;
 		}
 
 		.dot-typing {
+			--dot-color: #000;
 			position: relative;
 			left: -9999px;
-			width: 10px;
-			height: 10px;
+			width: 8px;
+			height: 8px;
 			border-radius: 5px;
-			background-color: #fff;
-			color: #fff;
-			box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+			background-color: var(--dot-color);
+			color: var(--dot-color);
+			box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 			animation: dotTyping 1.5s infinite linear;
 		}
 	}
@@ -848,24 +883,24 @@ section {
   
 @keyframes dotTyping {
 	0% {
-	  box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+	  box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 	}
 	16.667% {
-	  box-shadow: 9984px -10px 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+	  box-shadow: 9984px -10px 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 	}
 	33.333% {
-	  box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+	  box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 	}
 	50% {
-	  box-shadow: 9984px 0 0 0 #fff, 9999px -10px 0 0 #fff, 10014px 0 0 0 #fff;
+	  box-shadow: 9984px 0 0 0 var(--dot-color), 9999px -10px 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 	}
 	66.667% {
-	  box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+	  box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 	}
 	83.333% {
-	  box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px -10px 0 0 #fff;
+	  box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px -10px 0 0 var(--dot-color);
 	}
 	100% {
-	  box-shadow: 9984px 0 0 0 #fff, 9999px 0 0 0 #fff, 10014px 0 0 0 #fff;
+	  box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 	}
 }
