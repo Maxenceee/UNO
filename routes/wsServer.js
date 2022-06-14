@@ -273,7 +273,7 @@ var createPlayerDeck = function(a) {
     }
     fullDeck.shuffle();
     fullDeck.shuffle();
-    return {decks: tts() || pall, full: fullDeck}
+    return {decks: pall, full: fullDeck}
 },
 takeCard = function(fullDeck) {
     let c = fullDeck.shift(),
