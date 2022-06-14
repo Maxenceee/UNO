@@ -904,3 +904,54 @@ section {
 	  box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 	}
 }
+
+.x-box {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	background-color: rgb(89, 255, 0);
+	background: repeating-conic-gradient(
+		from 0deg,
+		#ff264A 0deg 90deg,
+		#26dbff 90deg 180deg,
+		#fffb26 180deg 270deg,
+		#265cff 270deg 360deg
+	);
+}
+
+.tooltip {
+    display: inline-block;
+
+	.tooltiptext {
+		visibility: hidden;
+		width: 150px;
+		background-color: #555;
+		color: #fff;
+		text-align: center;
+		padding: 5px;
+		border-radius: 6px;
+		position: absolute;
+		bottom: 125%;
+		left: 50%;
+		margin-left: -75px;
+		opacity: 0;
+		transition: opacity 0.3s 0.5s;
+		z-index: 100;
+	}
+	
+	.tooltiptext::after {
+		content: "";
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		margin-left: -5px;
+		border-width: 5px;
+		border-style: solid;
+		border-color: #555 transparent transparent transparent;
+	}
+	
+	&:hover .tooltiptext {
+		visibility: visible;
+		opacity: 1;
+	}
+}

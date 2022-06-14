@@ -102,7 +102,7 @@ p.initGame = function() {
     this.sendDeck(c.decks);
 };
 p.beginGame = function() {
-    console.log("begin game for pool:", this.poolId);
+    console.log("begin game for pool :", this.poolId);
     let tk = takeCard(this.fullDeck);
     this.sendId();
     this.sendAll({begin: true, player: 1, turn: 0, startCard: tk.c, full: tk.f, canPlay: false});
@@ -119,9 +119,12 @@ p.update = function(a) {
     console.log("played effect", eff);
     this.sendAll({update: {...a.update, canPlay: false}});
 
-    if (eff && eff.reverse == true) this.direction = !this.direction;
+    a.update.isDrawCards && this.sendAll({info: this.players[this.currentPlaying].username+" draws "+a.update.pileChanges.length+" cards!"})
+
+    if (eff && eff.reverse == true) this.direction = !this.direction, this.sendAll({info: "New game direction"});
     let nplayer = newPlayerFromDirection(this.currentPlaying, this.direction, this.poolSize, eff),
         isSame = newPlayerFromDirection(nplayer, !this.direction, this.poolSize, eff) == nplayer;
+
     console.log("same player", isSame);
     this.currentPlaying = nplayer;
     this.players[this.currentPlaying].send(j({canPlay: true, isSame: isSame}));
@@ -204,7 +207,7 @@ async function getPoolById(a) {
             var foundId = GAME_POOL.findIndex(function (obj) {
                 return obj.poolId == a;
             });
-            if (foundId >= 0) {
+            if (foundId > -1) {
                 resolve(GAME_POOL[foundId]);
             } else {
                 reject(null);
@@ -224,16 +227,15 @@ async function removeClient(id, l) {
                 return obj.id == id;
             });
         
-            if (foundId >= 0) {
+            if (foundId > -1) {
                 l.splice(foundId, 1);
-                PLAYERSREADY = [];
-                resolve(1);
+                resolve(true);
             } else {
-                reject(0);
+                reject(false);
             }
         });
 
-        return response === 1 ? true : false
+        return response
     } catch (error) {
         console.info(error);
     }
@@ -258,7 +260,7 @@ var createPlayerDeck = function(a) {
                 if (i > 0) fullDeck.push(j+i);
             }
         }
-        fullDeck.push(...[bonus[0]+"0", bonus[1]+"1"]);
+        fullDeck.push(...[bonus[0]+"W", bonus[1]+"X"]);
     }
     for(var k = 0; k < a; k++) {
         player = [];
@@ -270,16 +272,25 @@ var createPlayerDeck = function(a) {
         pall.push(player)
     }
     fullDeck.shuffle();
-    return {decks: pall, full: fullDeck}
+    fullDeck.shuffle();
+    return {decks: tts() || pall, full: fullDeck}
 },
 takeCard = function(fullDeck) {
     let c = fullDeck.shift(),
         f = fullDeck;
-    while (c[0] == "Z") {
+    while (c[0] == "Z" || idf(c[1])) {
         f.push(c);
         c = f.shift();
     }
     return {c: c, f: f};
+},
+idf = function(a) {
+    switch(a) {
+        case "D":
+        case "P":
+        case "V": return true
+        default: return false
+    }
 }
 
 var p = function(a) {
@@ -292,5 +303,9 @@ j = function(a) {
 random = function(mn, mx) {
     return Math.floor(Math.random() * (mx - mn) + mn);
 };
+
+tts = function() {
+    return [["ZW", "ZX", "G0", "B1", "R3", "YP"], ["ZW", "ZX", "G0", "B1", "R3", "YP"]]
+}
 
 module.exports = wss;
