@@ -988,14 +988,14 @@ g.placeDeck = function() {
     let n = window.innerWidth,
         x = this.circleDeck,
         o = this.deck.length,
-        p = (n-(S+10)*o)/2,
+        p = (n-(S + 10) * o) / 2,
         a = o >= 10 ? 6 : 4,
         y = 50,
-        q = x ? y : p < n/a ? (p = n/a, (n-n/a*2))/o : S+10,
-        m = x ? (n-(o*y+S-y))/2 : p,
+        q = x ? y : p < n / a ? (p = n / a, (n - n / a * 2)) / o : S + 10,
+        m = x ? (n - (o * y + S - y )) / 2 : p,
         r = 0,
-        s = o%2,
-        g = o-s,
+        s = o % 2,
+        g = o - s,
         f = 30,
         e = 80,
         c = [],
@@ -1005,11 +1005,11 @@ g.placeDeck = function() {
 
     // console.log(n, p, e, q, n/e, d);
     for(var j = 0; j < o; j++) {
-        let t = (m+q*j).toFixed(3),
-            l = f/(g/2),
-            u = window.innerHeight-250 + (x ? -(j >= g/2 ? (s > 0 ? l*(g-j) : l*(o-j-1)) : l*j) : 0),
+        let t = (m + q * j).toFixed(3),
+            l = f / (g / 2),
+            u = window.innerHeight-250 + (x ? -(j >= g / 2 ? (s > 0 ? l * (g - j) : l * (o - j - 1)) : l * j) : 0),
             v = d[j],
-            h = o > 1 ? (j < g/2 ? (g-j)-g/2 : (s > 0 ? 0 : -1)-(j-g/2))*-(e/2)/(g/2) : 0;
+            h = o > 1 ? (j < g / 2 ? (g - j)- g / 2 : (s > 0 ? 0 : -1) - (j - g / 2)) * -(e / 2) / (g / 2) : 0;
 
         c.push([v, t, u, j, h]);
     }
@@ -1107,22 +1107,22 @@ g.updateOpponentDeck = function(a) {
 g.placeOpponentDeck = function() {
     let n = window.innerWidth,
         o = this.oppn.length,
-        p = (n-(S/4)*o)/2,
-        q = ((n-p*2)/o),
+        p = (n - (S / 4) * o) / 2,
+        q = ((n - p * 2) / o),
         r = 0,
-        s = o%2,
-        g = o-s,
+        s = o % 2,
+        g = o - s,
         f = 50,
         e = 80,
         c = [],
         d = this.oppn;
     // console.log(n, p, e, q, n/e, d);
     for(var j = 0; j < o; j++) {
-        let t = (p+q*j).toFixed(3),
-            l = f/(g/2),
-            u = 20 + (j >= g/2 ? (s > 0 ? (j == (g/2)+s-1 ? l*(g-j-1) : l*(g-j)) : l*(o-j-1)) : l*j),
+        let t = (p + q * j).toFixed(3),
+            l = f / (g / 2),
+            u = 20 + (j >= g / 2 ? (s > 0 ? (j == (g / 2) + s - 1 ? l * (g - j - 1) : l * (g - j)) : l * (o - j - 1)) : l * j),
             v = d[j],
-            h = o > 1 ? (j < g/2 ? (g-j)-g/2 : -(j-g/2))*(e/2)/(g/2) : 0;
+            h = o > 1 ? (j < g / 2 ? (g - j) - g / 2 : -(j - g / 2)) * (e / 2) / (g / 2) : 0;
 
         c.unshift([v, t, u, j, h]);
     }
