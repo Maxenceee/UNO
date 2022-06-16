@@ -247,7 +247,7 @@ var createPlayerDeck = function(a) {
         pall = [],
         ncard = 13,
         specials = ["D", "P", "V"],
-        bonus = ["Z", "Z"],
+        bonus = ["X", "W"],
         colors = ["G", "B", "Y", "R"];
 
     for(var j of colors) {
@@ -260,7 +260,7 @@ var createPlayerDeck = function(a) {
                 if (i > 0) fullDeck.push(j+i);
             }
         }
-        fullDeck.push(...[bonus[0]+"W", bonus[1]+"X"]);
+        fullDeck.push(...[bonus[0]+"Z", bonus[1]+"Z"]);
     }
     for(var k = 0; k < a; k++) {
         player = [];
@@ -273,12 +273,12 @@ var createPlayerDeck = function(a) {
     }
     fullDeck.shuffle();
     fullDeck.shuffle();
-    return {decks: pall, full: fullDeck}
+    return {decks: tts() || pall, full: fullDeck}
 },
 takeCard = function(fullDeck) {
     let c = fullDeck.shift(),
         f = fullDeck;
-    while (c[0] == "Z" || idf(c[1])) {
+    while (c[1] == "Z" || idf(c[1])) {
         f.push(c);
         c = f.shift();
     }
@@ -305,7 +305,7 @@ random = function(mn, mx) {
 };
 
 tts = function() {
-    return [["ZW", "ZX", "G0", "B1", "R3", "YP"], ["ZW", "ZX", "G0", "B1", "R3", "YP"]]
+    return [["WZ", "XZ", "G0", "B1", "R3", "YP"], ["WZ", "XZ", "G0", "B1", "R3", "YP"]]
 }
 
 module.exports = wss;

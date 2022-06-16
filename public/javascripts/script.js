@@ -73,9 +73,6 @@ ca = "function" == typeof Object.create ? Object.create : function(a) {
 },
 Bf = function() {
     return 589824 < window.innerHeight * window.innerWidth
-},
-je = function(a) {
-    return "string" == typeof a
 }
 
 var Me = function(a, b, c) {
@@ -91,7 +88,7 @@ Le = function(a, b) {
     b && (d && typeof e !== "object" && !je(d) ? Ne(c, d, e) : (e && e.type ? c.setAttribute(e.type, d) : d && (c.className = d)));
     return c
 },
-Ne = function(b, c, d) {
+Na = function(b, c, d) {
     function e(h, i) {
         b.setAttribute(h, i);
     }
@@ -105,8 +102,11 @@ Mc = function(a, b) {
 Mr = function(a, b) {
     a.classList.remove(b);
 },
+jl = function(a) {
+    return "string" == typeof a
+},
 Ms = function(a, b, c) {
-    je(b) ? a.setAttribute(b, c !== undefined ? c : "") : Ne(a, b, c)
+    jl(b) ? a.setAttribute(b, c !== undefined ? c : "") : Na(a, b, c)
 },
 Md = function(a, b) {
     (b.length > 1) ? dj(a, b) : a.appendChild(b);
@@ -351,7 +351,7 @@ var le = [{
     ne = [0, 0, 0, 240, 360],
     oe = [0, 0, 1440, 240, 360],
     pe = [0, 240, 1440, 240, 360],
-    qe = [0, 0, 1440, 240, 360];
+    qe = [0, 0, 2160, 240, 360];
 oa(me);
 
 var Cf = function(a, b, e) {
@@ -512,12 +512,12 @@ CallBack.prototype.emit = function(t) {
 }
 
 
-var CardEvents = function(a, c) {
+var Events = function(a, c) {
     this.event = null;
     this.caller = null;
     a && this.dispatchEvent(...arguments);
 }
-var ce = CardEvents.prototype;
+var ce = Events.prototype;
 ce.dispatchEvent = function(a, b, c) {
     let d = this.event;
     if (d) {
@@ -534,7 +534,7 @@ ce.removeEvent = function() {
         this.caller.removeEventListener(this.name[i], this.event);
 };
 var jdf = function(a, b, c, d) {
-    a.push(new CardEvents(b, c, d));
+    a.push(new Events(b, c, d));
 },
 jdg = function(a, b) {
     for(var i = 0; i < a.length; i++) {
@@ -569,7 +569,9 @@ c.drawcard = function(a, b, c) {
     this.card.style.transition = "left 500ms ease, top 500ms ease, rotate 500ms ease";
 };
 c.createCardPatern = function(a, b) {
-    this.patern = !ma(a) ? [0, 240*a.x, 360*a.y, 240, 360] : [0, 240*a, 360*b, 240, 360]
+    console.log(a, b);
+    this.patern = [0, 240*(a.x + (b || 0)), 360*a.y, 240, 360]
+    console.log(this.patern);
 };
 c.redrawcard = function(b, c) {
     let patern = this.patern ? this.patern : !ma(b) ? b : [0, 240*b, 360*c, 240, 360]
@@ -627,17 +629,17 @@ c.dragMoveEnd = function(a) {
     e.emit('dragend', function(a, b, c) {
         let n = new O(d.clientX-e.deltaX, d.clientY-e.deltaY, e.width, e.height),
             m = a.sqrt().inter(n) || (e.lt == e.left && e.tp == e.top),
-            o = m && iscompatible(a.gtp().cardCode, e.cardCode);
+            o = m && iscompatible(a.gtp().cardCode, e.cardCode, a.customColor);
         e.moveTo(o ? a.sqrt() : new O(e.lt, e.tp));
         (e.card.style.transform = !o ? e.trotate : "rotate(0deg)");
         (o && m) && b(e, c);
-    })
+    });
 };
 c.clickEnd = function(a) {
     if (!this.gameParent.canPlay) return
     let e = this;
     e.emit('dragend', function(a, b, c) {
-        let o = iscompatible(a.gtp().cardCode, e.cardCode);
+        let o = iscompatible(a.gtp().cardCode, e.cardCode, a.customColor);
         o && e.moveTo(a.sqrt());
         o && b(m, e, c);
     })
@@ -669,7 +671,7 @@ p.gtc = function() {
     return this.pile
 };
 p.listen = function() {
-    this.clickEvent = new CardEvents(["click"], this.pile.canv(), function(a) {
+    this.clickEvent = new Events(["click"], this.pile.canv(), function(a) {
         if(!this.gameParent.canPlay) return
         this.gameParent.canPlay = false;
         this.emit('create');
@@ -695,8 +697,9 @@ p.sqrt = function() {
     let b = this.pack;
     return new O(b.left, b.top, b.width, b.height)
 };
-p.update = function(a) {
-    this.pack.createCardPatern(codeToCoord(a));
+p.update = function(a, b) {
+    this.customColor = b || null;
+    this.pack.createCardPatern(codeToCoord(a), hjr(b));
     this.pack.redrawcard();
 };
 p.delete = function() {
@@ -704,6 +707,17 @@ p.delete = function() {
     delete this;
 };
 
+var hjr = function(a) {
+    return function(a) {
+        switch(a) {
+            case "R": return 1
+            case "Y": return 2
+            case "G": return 3
+            case "B": return 4
+            default: null
+        }
+    }(a);
+},
 randomInt = function(mn, mx) {
     if (!mx) mx = mn, mn = 0
     return Math.floor(Math.random() * (mx - mn) + mn);
@@ -789,9 +803,9 @@ s.begin = function(a) {
     let m = this.j({ready: a, username: this.gameParent.unsername}); 
     this.socket.send(m);
 };
-s.sendUpdate = function(a, b, c) {
-    console.log("send update", a, b, c);
-    let m = this.j({update: {playerid: this.gameid, card: a || null, deckSize: b, ...c}});
+s.sendUpdate = function(a, b, c, d) {
+    console.log("send update", a, b, c, d);
+    let m = this.j({update: {playerid: this.gameid, card: a || null, deckSize: b, ...c, newColor: d}});
     this.socket.send(m);
 };
 s.end = function() {
@@ -860,7 +874,7 @@ g.start = function(a) {
         }
         if (a.played == true)
             this.gamepack.gtp().cardCode = a.card,
-            this.gamepack.update(a.card),
+            this.gamepack.update(a.card, a.newColor),
             this.playCardEffects(a.card);
         
         this.updateOpponentDeck(a.deckSize);
@@ -896,6 +910,7 @@ g.reset = function() {
     var cnt = Fe(document, "dialog-container");
     cnt.classList.remove('-hide-dialog');
     this.gamepack && this.gamepack.delete();
+    Fe(document, "pie-container") && Fe(document, "pie-container").remove();
     this.cards && this.cards.forEach(e => {
         e.delete();
     })
@@ -1025,7 +1040,7 @@ g.playCard = function(b, c, p) {
     id !== -1 && (n = c.cards.splice(id, 1), m = c.deck.splice(id, 1))
     c.placeDeck();
     if (c.cards.length === 0) console.log("game, end"), c.stop();
-    !p && c.sendGameUpdate(b.cardCode, {played: true, fromPile: false, pileChanges: [], changedColor: false, isDrawCards: false});
+    !p && c.sendGameUpdate(b.cardCode, {played: true, fromPile: false, pileChanges: [], changedColor: (b.cardCode[0] == "W" && b.cardCode[1] == "Z"), isDrawCards: false});
 };
 g.pileEvent = function(a) {
     var n = this;
@@ -1034,7 +1049,7 @@ g.pileEvent = function(a) {
             d = n.full.shift(),
             l = false;
         b.push(d);
-        if (iscompatible(n.gamepack.gtp().cardCode, d)) {
+        if (iscompatible(n.gamepack.gtp().cardCode, d, n.gamepack.customColor)) {
             l = true;
             let j = n.crtCrad(d, true);
             window.setTimeout(() => {
@@ -1047,13 +1062,18 @@ g.pileEvent = function(a) {
                 n.placeDeck();
             }, 50);
         }
-        n.sendGameUpdate((l ? d : null), {played: l, fromPile: true, pileChanges: b, changedColor: false, isDrawCards: false});
+        n.sendGameUpdate((l ? d : null), {played: l, fromPile: true, pileChanges: b, changedColor: l && (d[0] == "W"  && d[1] == "Z"), isDrawCards: false});
     });
 };
-g.sendGameUpdate = function(a, b) {
+g.sendGameUpdate = async function(a, b) {
     this.canPlay = false;
+    let newColor = null;
+    if (a && (a[1] == "Z" && (a[0] == "W" || a[0] == "X"))) newColor = await this.chooseNewColor();
     new InfoMessage(this.overlay, "Waiting for next player...");
-    this.gameSocket.sendUpdate(a, this.deck.length, b);
+    if (newColor) this.gamepack.update(this.gamepack.gtp().cardCode, newColor)
+    window.setTimeout(() => {
+        this.gameSocket.sendUpdate(a, this.deck.length, b, newColor);
+    }, newColor ? 700 : 0)
 };
 g.createOpponentDeck = function() {
     this.oppn = this.oppn || []
@@ -1122,7 +1142,19 @@ g.placeOpponentDeck = function() {
 g.playCardEffects = function(a) {
     // (a[1] == "V") && this.addCardsToDeck(2);
     // (a[0] == "Z") && this.addCardsToDeck(4);
-    (a[1] == "V") ? this.addCardsToDeck(2) : (a[0] == "Z" && a[1] == "X") ? this.addCardsToDeck(4) : console.log("no effect");
+    (a[1] == "V") ? this.addCardsToDeck(2) : (a[1] == "Z" && a[0] == "X") ? this.addCardsToDeck(4) : console.log("no effect");
+};
+g.chooseNewColor = async function() {
+    try {
+        return await new Promise((resolve, reject) => {
+            console.log("new promise");
+            new PiePopup(function(a) {
+                resolve(a);
+            });
+        });
+    } catch (error) {
+        console.log(error);
+    }
 };
 g.addCardsToDeck = function(a) {
     let b = [];
@@ -1140,8 +1172,8 @@ g.updateCurrentPlayer = function(a, b, c) {
     Fa(c.overlay, "display-inner-p").innerText = (!b ? a.username+" is playing" : "It's your turn")
 };
 
-var iscompatible = function(a, b) {
-    return a[0] == b[0] || a[1] == b[1] || (a[0] == "Z" || b[0] == "Z")
+var iscompatible = function(a, b, c) {
+    return a[0] == b[0] || a[1] == b[1] || (a[1] == "Z" && c == b[0]) || b[1] == "Z"
 },
 codeToCoord = function(a) {
     function e(h) {
@@ -1153,14 +1185,15 @@ codeToCoord = function(a) {
             case "D": return 10
             case "P": return 11
             case "V": return 12
-            case "W": return 1
-            case "X": return 2
-            case "Z": return 4
+            case "W": return 4
+            case "X": return 5
+            case "Z": return 0
             default: return null
         }
     }
     let b = e(a.slice(0, 1)),
-        c = e(a.slice(1)) || parseInt(a.slice(1));
+        d = e(a.slice(1)),
+        c = d !== null ? d : parseInt(a.slice(1));
     return {x: c, y: b}
 },
 kfg = function(a, b) {
@@ -1183,18 +1216,77 @@ deckToggle = function(a) {
     }
 }
 
+var PiePopup = function(a) {
+    this.callBack = a;
+    let m = Me("div", "color-pie ad-status-panel"),
+        n = this.n = Md(Me("div", "pie-container ad-pn-c"), m);
+    this.colors = ["#ff5555", "#ffaa00", "#55aa55", "#5555ff"],
+    this.canSelect = false;
+    this.generate(m);
+    Md(document.body, n);
+};
+var p = PiePopup.prototype;
+p.generate = function(a) {
+    let ur = "http://www.w3.org/2000/svg",
+        n = document.createElementNS(ur, "svg"),
+        r = document.createElementNS(ur, "text"),
+        k = ["R", "Y", "G", "G"],
+        t = this,
+        h = [];
+    Ms(n, ["class", "xmlns", "viewBox"], ["pie", ur, "0 0 180 180"]);
+    Ms(r, ["y", "dx", "dominant-baseline", "text-anchor"], ["-30", "50%", "middle", "middle"]);
+    r.textContent = "Choose your new color";
+    Md(n, r);
+    for (var i = 0; i < 4; i++) {
+        let m = document.createElementNS(ur, "path"),
+            o = (i == 0 || i == 2) ? "90" : i == 1 ? "180" : "0",
+            p = (i == 1 || i == 3) ? "90" : i == 2 ? "180" : "0",
+            q = (i == 1 || i == 3) ? "90" : i == 0 ? "180" : "0",
+            c = t.colors[i],
+            j = k[i],
+            d = "M" + o + "," + p + " A90,90 0 0 1 " + q + "," + o + " L90,90 A0,0 0 0 0 90,90 Z"
+        Ms(m, ["id", "fill", "d"], [i, c, d]);
+        new Events(["click"], m, function() {
+            if (!t.canSelect) return
+            t.canSelect = false;
+            t.callBack(j);
+            t.delete();
+        });
+        h.push(m);
+        Md(n, m);
+    }
+    Mc(t.n, 'adding');
+    Md(a, n);
+    setTimeout(() => {
+        h.forEach((e) => {
+            e.style.transform = "scale(1)";
+        });
+        setTimeout(() => {
+            Mr(t.n, 'adding');
+            t.canSelect = true;
+        }, 100);
+    }, 1000);
+};
+p.delete = function() {
+    Mc(this.n, 'remove');
+    setTimeout(() => {
+        this.n.remove();
+        delete this;
+    }, 1000);
+};
+
 var AlertPopup = function(t, a, b, c, d) {
-    let l = Me("div", "ad-error-pn-c");
+    let l = Me("div", "ad-pn-c");
     Md(document.body, l);
     if (!b) {
-        l.innerHTML = '<div class="ad-error-panel"><div class="ad-err"><p>'+t+'</p></div><div id="ad-err-close-btn" class="ad-err-close">Fermer</div></div>';
+        l.innerHTML = '<div class="ad-panel"><div class="ad-err"><p>'+t+'</p></div><div id="ad-err-close-btn" class="ad-err-close">Fermer</div></div>';
     } else {
         if (c) {
-            l.innerHTML = '<div class="ad-error-panel"><div class="ad-err"><p>'+t+'</p></div><div class="ad-btn"><div id="ad-err-reset-btn" class="ad-err-close ad-demi ad-demi-sup">'+a+'</div><div id="ad-err-close-btn" class="ad-err-close ad-demi">'+c+'</div></div></div>';
+            l.innerHTML = '<div class="ad-panel"><div class="ad-err"><p>'+t+'</p></div><div class="ad-btn"><div id="ad-err-reset-btn" class="ad-err-close ad-demi ad-demi-sup">'+a+'</div><div id="ad-err-close-btn" class="ad-err-close ad-demi">'+c+'</div></div></div>';
             Fe(document, 'ad-err-reset-btn').addEventListener("click", b);
             Fe(document, 'ad-err-reset-btn').addEventListener("click", function() {l.remove()});
         } else {
-            l.innerHTML = '<div class="ad-error-panel"><div class="ad-err"><p>'+t+'</p></div><div id="ad-err-close-btn" class="ad-err-close">'+a+'</div></div>';
+            l.innerHTML = '<div class="ad-panel"><div class="ad-err"><p>'+t+'</p></div><div id="ad-err-close-btn" class="ad-err-close">'+a+'</div></div>';
             Fe(document, 'ad-err-close-btn').addEventListener("click", b);
         }
     }
@@ -1206,9 +1298,9 @@ var AlertPopup = function(t, a, b, c, d) {
 }
 
 var UsernamePopup = function(t, a) {
-    let l = Me("div", "ad-error-pn-c");
+    let l = Me("div", "ad-pn-c");
     Md(document.body, l);
-    l.innerHTML = '<div class="ad-error-panel grow-anim"><div class="ad-err"><p style="min-height: auto;">'+t+'</p><div class="fr-text-field"><input autofocus required maxlength="15" type="text" id="on-user-input" class="SIU-tf"><label for="name" class="label-name"><span class="content-name">Username</span></label></div></div><div id="ad-err-close-btn" class="ad-err-close">Save</div></div>';
+    l.innerHTML = '<div class="ad-panel grow-anim"><div class="ad-err"><p style="min-height: auto;">'+t+'</p><div class="fr-text-field"><input autofocus required maxlength="15" type="text" id="on-user-input" class="SIU-tf"><label for="name" class="label-name"><span class="content-name">Username</span></label></div></div><div id="ad-err-close-btn" class="ad-err-close">Save</div></div>';
     var pp = () => {
         let str = Fe(document, 'on-user-input').value;
         if (!/\s/.test(str)) {
@@ -1219,9 +1311,10 @@ var UsernamePopup = function(t, a) {
         }
     };
     Fe(document, 'ad-err-close-btn').addEventListener("click", pp);
-    window.onkeyup = (key) => {
-        key.keyCode === 13 && pp()
-    }
+    window.addEventListener("keyup", function(key) {
+        console.log(key);
+        key.keyCode === 13 && pp();
+    }, {once: true})
     return l
 };
 
@@ -1237,15 +1330,6 @@ var InfoMessage = function(a, b) {
 var i = InfoMessage.prototype;
 i.delete = function() {
     this.message.remove();
-    delete this
-};
-
-var PiePopup = function() {
-    this.n = Me("div", "pie-container", Me("div", "color-pie"));
-
-};
-var p = PiePopup.prototype;
-p.delete = function() {
     delete this
 };
  
@@ -1281,8 +1365,8 @@ var Hh = function() {
         }, 100);
     }
 
-    window.onkeyup = (key) => {
+    window.addEventListener("keyup", function(key) {
         key.keyCode === 13 && cv()
-    }
+    }, {once: true})
     Fe(document, "start-easy-btn").onclick = cv;
 }());

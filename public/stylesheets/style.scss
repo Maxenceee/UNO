@@ -622,7 +622,7 @@ section {
 	z-index: 100;
 	position: fixed;
 	bottom: 20px;
-	right: 25px;
+	right: 50px;
 	width: 50px;
 	height: 50px;
 	opacity: 0;
@@ -641,7 +641,7 @@ section {
 	}
 }
 
-.ad-error-pn-c {
+.ad-pn-c {
     position: fixed;
     top: 0;
     left: 0;
@@ -657,7 +657,7 @@ section {
     z-index: 50004;
 }
 
-.ad-error-panel, .ad-status-panel {
+.ad-panel, .ad-status-panel {
     position: relative;
     width: 300px;
     height: max-content;
@@ -670,7 +670,7 @@ section {
 	animation: show-pan 0.3s ease-in-out forwards;
 }
 
-.ad-error-panel .ad-err {
+.ad-panel .ad-err {
     height: 100%;
     width: 100%;
     display: flex;
@@ -679,7 +679,7 @@ section {
     align-items: center;
 }
 
-.ad-error-panel .ad-btn {
+.ad-panel .ad-btn {
     height: 35px;
     width: 100%;
     display: flex;
@@ -687,7 +687,7 @@ section {
     flex-direction: row;
 }
 
-.ad-error-panel p {
+.ad-panel p {
     display: inline-block;
     vertical-align: middle;
     height: 100%;
@@ -905,20 +905,6 @@ section {
 	}
 }
 
-.x-box {
-	width: 100px;
-	height: 100px;
-	border-radius: 50%;
-	background-color: rgb(89, 255, 0);
-	background: repeating-conic-gradient(
-		from 0deg,
-		#ff264A 0deg 90deg,
-		#26dbff 90deg 180deg,
-		#fffb26 180deg 270deg,
-		#265cff 270deg 360deg
-	);
-}
-
 .tooltip {
     display: inline-block;
 
@@ -954,4 +940,78 @@ section {
 		visibility: visible;
 		opacity: 1;
 	}
+}
+
+.pie-container {
+    padding: 50px;
+
+    &.remove {
+		animation: fade-out 0.2s ease-in-out forwards;
+		animation-delay: 0.6s;
+		// .color-pie {
+		// 	animation: ungrow-part 0.2s ease-in-out forwards;
+		// 	animation-delay: 0.6s;
+		// }
+        .color-pie .pie path {
+			animation: ungrow-part 0.2s ease-in-out forwards;
+        }
+    }
+
+    &.adding {
+        .color-pie .pie path {
+            animation: grow-part 0.5s ease-in-out forwards;
+        }
+    }
+
+    .color-pie {
+        position: relative;
+		width: 400px;
+		height: 400px;
+		padding: 30px;
+    }
+
+    .color-pie .pie {
+		width: 100%;
+		height: 100%;
+		padding: 70px 20px 20px;
+
+        path {
+            transform: scale(0);
+            transform-origin: 50% 50%;
+            transition: transform 0.25s ease-out;
+            pointer-events: all;   
+
+            &:hover {
+                transform: scale(1.1) !important;
+            }
+        }
+
+		text {
+			text-align: center;
+		}
+    
+        @for $i from 0 through 3 {
+            path:nth-child(#{$i + 1}) {
+                animation-delay: $i * 0.1s;
+            }
+        }
+    }
+}
+
+@keyframes grow-part {
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes ungrow-part {
+    to {
+        transform: scale(0);
+    }
+}
+
+@keyframes fade-out {
+    to {
+        opacity: 0;
+    }
 }
