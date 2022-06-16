@@ -49,6 +49,9 @@ wss.on('connection', async function(ws) {
                 pool.beginGame();
             }
         }
+        if (msg.GAME_FINISHED) {
+            pool.finish(msg);
+        }
         if (msg.USER_DISCONNECTION) {
             console.log(ws.id, "disconnected");
             pool && pool.disconnected(ws.id);
@@ -180,6 +183,10 @@ p.removePool = function() {
     foundId !== -1 && GAME_POOL.splice(foundId, 1);
     delete this
 };
+p.finish = function(a) {
+    this.sendAll(a);
+    this.removePool();
+};
 p.disconnected = function(a) {
     var foundId = this.players.findIndex(function (obj) {
         return obj.id == a;
@@ -273,7 +280,7 @@ var createPlayerDeck = function(a) {
     }
     fullDeck.shuffle();
     fullDeck.shuffle();
-    return {decks: tts() || pall, full: fullDeck}
+    return {decks:  pall, full: fullDeck}
 },
 takeCard = function(fullDeck) {
     let c = fullDeck.shift(),
