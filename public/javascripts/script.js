@@ -1003,7 +1003,7 @@ g.placeDeck = function() {
     let n = window.innerWidth,
         x = this.circleDeck,
         o = this.deck.length,
-        p = (n-(S + 10) * o) / 2,
+        p = (n - (S + 10) * o) / 2,
         a = o >= 10 ? 6 : 4,
         y = 50,
         q = x ? y : p < n / a ? (p = n / a, (n - n / a * 2)) / o : S + 10,
@@ -1021,7 +1021,7 @@ g.placeDeck = function() {
     for(var j = 0; j < o; j++) {
         let t = (m + q * j).toFixed(3),
             l = f / (g / 2),
-            u = window.innerHeight-250 + (x ? -(j >= g / 2 ? (s > 0 ? l * (g - j) : l * (o - j - 1)) : l * j) : 0),
+            u = window.innerHeight - 250 + (x ? -(j >= g / 2 ? (s > 0 ? l * (g - j) : l * (o - j - 1)) : l * j) : 0),
             v = d[j],
             h = o > 1 ? (j < g / 2 ? (g - j)- g / 2 : (s > 0 ? 0 : -1) - (j - g / 2)) * -(e / 2) / (g / 2) : 0;
 
@@ -1032,7 +1032,7 @@ g.placeDeck = function() {
         d[0].canv().style.zIndex = d[3];
     }
     var w = window.setInterval(() => {
-        if (r == o) return clearInterval(w);
+        if (r === o) return clearInterval(w);
         let d = c[r];
 
         d[0].moveTo(new O(d[1], d[2]));
