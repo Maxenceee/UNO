@@ -5,15 +5,10 @@ Array.prototype.shuffle = function() {
     let currentIndex = this.length,
         randomIndex;
   
-    // While there remain elements to shuffle.
     while (currentIndex != 0) {
-  
-      // Pick a remaining element.
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-  
-      // And swap it with the current element.
-      [this[currentIndex], this[randomIndex]] = [this[randomIndex], this[currentIndex]];
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [this[currentIndex], this[randomIndex]] = [this[randomIndex], this[currentIndex]];
     }
 }
 
@@ -79,7 +74,6 @@ function clientConnection(a) {
     CLIENTS.push(a);
     console.log("number of client", CLIENTS.length);
     if (WAITINGPLAYERS.length == GAME_POOL_SIZE) {
-        // initGame(WAITINGPLAYERS);
         let pool = new Pool(WAITINGPLAYERS);
         GAME_POOL.push(pool);
         pool.initGame();
@@ -280,7 +274,7 @@ var createPlayerDeck = function(a) {
     }
     fullDeck.shuffle();
     fullDeck.shuffle();
-    return {decks:  pall, full: fullDeck}
+    return {decks: pall, full: fullDeck}
 },
 takeCard = function(fullDeck) {
     let c = fullDeck.shift(),
