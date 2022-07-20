@@ -50,6 +50,12 @@ body {
   background-repeat: no-repeat;
   background-clip: content-box;
   background-size: cover;
+  height: 100vh;
+  width: 100vw;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
 
 ::-webkit-scrollbar {
@@ -58,8 +64,8 @@ body {
 
 section {
   position: relative;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
 }
 
 section #game-root {
@@ -72,11 +78,18 @@ section #game-root {
 
 section #game-root .card, section #game-root .pile, section #game-root .gamepack, section #game-root .opponent {
   position: absolute;
+  -webkit-backface-visibility: hidden !important;
+          backface-visibility: hidden !important;
 }
 
 section #game-root .card .card-canvas, section #game-root .pile .card-canvas, section #game-root .gamepack .card-canvas, section #game-root .opponent .card-canvas {
   width: 100%;
   height: 100%;
+}
+
+section #game-root .card.grow-transition, section #game-root .pile.grow-transition, section #game-root .gamepack.grow-transition, section #game-root .opponent.grow-transition {
+  -webkit-transition: 500ms ease !important;
+  transition: 500ms ease !important;
 }
 
 section #game-root .pile {
@@ -516,7 +529,7 @@ section #game-root .opponent {
   border-radius: 8px;
   text-transform: none;
   letter-spacing: .25px;
-  min-width: 60px;
+  min-width: 120px;
 }
 
 .mat-raised-button {

@@ -31,8 +31,8 @@ wss.on('connection', async function(ws) {
         let msg = p(message),
             pool = await getPoolById(ws.poolId);
 
-        if (msg.update) {
-            console.log("received update", msg.update);
+        if (msg.UPDATE) {
+            console.log("received update", msg.UPDATE);
             pool.update(msg);
         }
         if (msg.ready) {
@@ -49,7 +49,7 @@ wss.on('connection', async function(ws) {
         }
         if (msg.USER_DISCONNECTION) {
             console.log(ws.id, "disconnected");
-            pool && pool.disconnected(ws.id);
+            // pool && pool.disconnected(ws.id);
             removeClient(ws.id, CLIENTS);
             removeClient(ws.id, WAITINGPLAYERS);
             ws.close();
@@ -102,9 +102,9 @@ p.beginGame = function() {
     console.log("begin game for pool :", this.poolId);
     let tk = takeCard(this.fullDeck);
     this.sendId();
-    this.sendAll({begin: true, player: 1, turn: 0, startCard: tk.c, full: tk.f, canPlay: false});
+    this.sendAll({BEGIN: {player: 1, turn: 0, startCard: tk.c, full: tk.f, canPlay: false}});
     this.players[this.currentPlaying].send(j({canPlay: true}));
-    this.sendAll({currentPlayer: {username: this.players[this.currentPlaying].username, id: this.players[this.currentPlaying].id}});
+    this.sendAll({CURRENT_PLAYER: {username: this.players[this.currentPlaying].username, id: this.players[this.currentPlaying].id}});
 };
 p.setPropety = function(a, b) {
     for (var i=0; i < this.players.length; i++) {
@@ -112,11 +112,11 @@ p.setPropety = function(a, b) {
     }
 };
 p.update = function(a) {
-    let eff = cardAsEffects(a.update.card);
+    let eff = cardAsEffects(a.UPDATE.card);
     console.log("played effect", eff);
-    this.sendAll({update: {...a.update, canPlay: false}});
+    this.sendAll({UPDATE: {...a.UPDATE, canPlay: false}});
 
-    a.update.isDrawCards && this.sendAll({info: this.players[this.currentPlaying].username+" draws "+a.update.pileChanges.length+" cards!"})
+    a.UPDATE.isDrawCards && this.sendAll({info: this.players[this.currentPlaying].username+" draws "+a.UPDATE.pileChanges.length+" cards!"})
 
     if (eff && eff.reverse == true) this.direction = !this.direction, this.sendAll({info: "New game direction"});
     let nplayer = newPlayerFromDirection(this.currentPlaying, this.direction, this.poolSize, eff),
@@ -124,21 +124,21 @@ p.update = function(a) {
 
     console.log("same player", isSame);
     this.currentPlaying = nplayer;
-    this.players[this.currentPlaying].send(j({canPlay: true, isSame: isSame}));
     console.log("player turn", this.currentPlaying);
-    this.sendAll({currentPlayer: {username: this.players[this.currentPlaying].username, id:  this.players[this.currentPlaying].id}});
+    this.sendAll({CURRENT_PLAYER: {username: this.players[this.currentPlaying].username, id:  this.players[this.currentPlaying].id}});
+    this.players[this.currentPlaying].send(j({canPlay: true, isSame: isSame}));
 };
 p.playersAllReady = function() {
     return this.playerReady == this.poolSize
 };
 p.sendId = function() {
     for (var i = 0; i < this.players.length; i++) {
-        this.players[i].send(j({setId: {id: this.players[i].id, poolPlayersid: this.playersIdm}}));
+        this.players[i].send(j({SET_GAME_POO_ID: {id: this.players[i].id, poolPlayersId: this.playersIdm}}));
     }
 };
 p.sendDeck = function(a) {
     for (var i = 0; i < this.players.length; i++) {
-        this.players[i].send(j({isConnected: true, deck: a[i]}));
+        this.players[i].send(j({IS_CONNECTED: true, deck: a[i]}));
     }
 };
 p.sendAllExcept = function(a, m) {

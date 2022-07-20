@@ -55,6 +55,11 @@ body {
 	background-repeat: no-repeat;
 	background-clip: content-box;
 	background-size: cover;
+
+	height: 100vh;
+	width: 100vw;
+
+	user-select: none;
 }
 
 ::-webkit-scrollbar {
@@ -63,8 +68,8 @@ body {
 
 section {
 	position: relative;
-	height: 100vh;
-	width: 100vw;
+	height: 100%;
+	width: 100%;
 
 	#game-root {
 		position: absolute;
@@ -75,10 +80,15 @@ section {
 
 		.card, .pile, .gamepack, .opponent {
 			position: absolute;
+			backface-visibility: hidden !important;
 
 			.card-canvas {
 				width: 100%;
 				height: 100%;
+			}
+
+			&.grow-transition {
+				transition: 500ms ease !important;
 			}
 		}
 
@@ -434,7 +444,7 @@ section {
 	border-radius: 8px;
 	text-transform: none;
 	letter-spacing: .25px;
-	min-width: 60px;
+	min-width: 120px;
 }
 
 .mat-raised-button {
