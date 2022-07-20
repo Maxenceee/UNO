@@ -1003,7 +1003,7 @@ g.closeGame = function() {
 g.resizeEvents = function() {
     let t = this;
     window.onresize = function() {
-        t.placeDeck(), t.placeOpponentDeck(), replacePileAndPack(t)
+        t.placeDeck(), t.placeOpponentDeck(), replacePileAndPackOnResize(t)
     }
 };
 g.drawDeck = function(a, b) {
@@ -1301,7 +1301,7 @@ deckToggle = function(a) {
         setTimeout(() => a.placeDeck(), 500);
     }
 },
-replacePileAndPack = function(a) {
+replacePileAndPackOnResize = function(a) {
     a.pileCoords = new O(window.innerWidth - 200, window.innerHeight/2-T/1.5);
     a.pile.gtc().moveTo(a.pileCoords);
     a.packCoords = new O(window.innerWidth/2-S/2, window.innerHeight/2-T/1.5);
