@@ -345,7 +345,6 @@ var me = function() {
 l(me, ie);
 var le = [{
         filename: "images/UNO_cards.svg",
-        // filename: "images/card-sprite.2.png",
         size: [3360, 893]
     }],
     ne = [0, 0, 0, 240, 360],
