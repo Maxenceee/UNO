@@ -656,11 +656,12 @@ c.dragMove = function(a) {
     this.moveTo(new O(d.clientX-this.deltaX, d.clientY-this.deltaY), 0);
 };
 c.dragMoveEnd = function(a) {
-    if (!this.gameParent.canPlay) return
     let d = (a.clientX && a) || (a.changedTouches && a.changedTouches.length ? a.changedTouches[0] : null),
-        e = this;
-
+    e = this;
+    
     e.dragging = false;
+    if (!this.gameParent.canPlay) return
+    
     e.placeZ(e.tzIdx);
     e.card.style.transition = "left 500ms ease, top 500ms ease, transform 500ms ease";
 
@@ -828,7 +829,7 @@ var Socket = function() {
     }
 
     this.socket.onclose = () => {
-        console.log("connection closed");
+        console.log("receive closed");
         ld && ld.remove();
         this.emit('close');
     }
@@ -842,7 +843,7 @@ s.p = function(a) {
     return JSON.parse(a);
 };
 s.begin = function(a) {
-    let m = this.j({ready: a, username: this.gameParent.unsername}); 
+    let m = this.j({ready: a, username: this.gameParent.username}); 
     this.socket.send(m);
 };
 s.sendUpdate = function(a, b, c, d) {
@@ -857,13 +858,15 @@ s.end = function() {
     this.delete();
 };
 s.delete = function() {
+    this.loader && this.loader.remove();
+    this.socket.close();
     delete this
 }
 
 var Game = function() {}
 var g = Game.prototype;
 g.start = function(a) {
-    this.unsername = a.length ? a : null
+    this.username = a.length ? a : null
     this.connectionCreated = false;
     this.canPlay = false;
     this.circleDeck = true;
@@ -871,7 +874,28 @@ g.start = function(a) {
     this.overlay = null;
     this.closeGame();
 
-    var gameSocket = this.gameSocket = new Socket;
+    this.socketBuilder(new Socket);
+    this.connectionTimeout();
+
+    this.resizeEvents();
+    deckToggle(this);
+};
+g.connectionTimeout = function() {
+    window.setTimeout(() => {
+        if (!this.connectionCreated) {
+            this.gameSocket.delete();
+            this.alert = new AlertPopup("Can't find any opponent", "Leave", function() {
+                console.log("stop on timeout");
+                this.stop();
+            }.bind(this), "Try again", function() {
+                this.socketBuilder(new Socket);
+                this.connectionTimeout();
+            }.bind(this));
+        }
+    }, 5000);
+};
+g.socketBuilder = function(s) {
+    var gameSocket = this.gameSocket = s;
     console.log(gameSocket, this);
     kfg(this, gameSocket);
 
@@ -903,8 +927,8 @@ g.start = function(a) {
     }.bind(this));
 
     gameSocket.on('close', function() {
-        console.log('received close');
-        this.stop();
+        console.log('connection close');
+        if (this.connectionCreated) this.stop();
     }.bind(this));
 
     gameSocket.on('update', function(a) {
@@ -932,16 +956,13 @@ g.start = function(a) {
 
     gameSocket.on('gamefinished', function() {
         console.log('gamefinished');
-        this.stop();
+        if (this.connectionCreated) this.stop();
     }.bind(this));
 
     gameSocket.on('userdisconnetion', function() {
         console.log('userdisconnetion');
-        this.stop();
+        if (this.connectionCreated) this.stop();
     }.bind(this));
-
-    this.resizeEvents();
-    deckToggle(this);
 };
 g.stop = function() {
     this.connectionCreated = false;
@@ -955,7 +976,6 @@ g.stop = function() {
         ld.remove();
         this.reset();
     }, 1000);
-    
 };
 g.end = function() {
     console.log("game, end");
@@ -966,14 +986,21 @@ g.reset = function() {
     this.alert && this.alert.remove();
     var cnt = Fe(document, "dialog-container");
     cnt.classList.remove('-hide-dialog');
-    Fe(document, "start-easy-btn").onclick = () => {
+
+    let t = this;
+
+    let cv = () => {
         Mc(cnt,'-hide-dialog');
         setTimeout(() => {
+            console.log("restart on reset");
             new UsernamePopup("Choose your username", function(a) {
-                this.start(a);
-            }.bind(this));
+                t.start(a);
+            });
         }, 100);
     }
+
+    jh(Fe(document, "start-easy-btn"), cv);
+
     this.gamepack && this.gamepack.delete();
     Fe(document, "pie-container") && Fe(document, "pie-container").remove();
     this.cards && this.cards.forEach(e => {
@@ -995,6 +1022,7 @@ g.closeGame = function() {
     v.onclick = () => {
         let mess = "You are about to leave the game. There is no way back.";
         this.alert = new AlertPopup(mess, "Leave", function() {
+            console.log("stop on leave");
             t.stop();
         }, "Stay here");
     }
@@ -1305,6 +1333,16 @@ replacePileAndPackOnResize = function(a) {
     a.pile.gtc().moveTo(a.pileCoords);
     a.packCoords = new O(window.innerWidth/2-S/2, window.innerHeight/2-T/1.5);
     a.gamepack.gtp().moveTo(a.packCoords);
+},
+jh = function(a, b) {
+    let o = false;
+    a.onclick = b;
+    window.addEventListener("keyup", function(key) {
+        if (key.keyCode === 13 && !o) {
+            o = true;
+            b();
+        }
+    });
 }
 
 var PiePopup = function(a) {
@@ -1389,12 +1427,14 @@ var AlertPopup = function(t, a, b, c, d) {
 }
 
 var UsernamePopup = function(t, a) {
-    let l = Me("div", "ad-pn-c");
+    let l = Me("div", "ad-pn-c"),
+        o = false;
     Md(document.body, l);
     l.innerHTML = '<div class="ad-panel grow-anim"><div class="ad-err"><p style="min-height: auto;">'+t+'</p><div class="fr-text-field"><input autocomplete="off" autocapitalize="off" autofocus required maxlength="15" type="text" id="on-user-input" class="SIU-tf"><label for="name" class="label-name"><span class="content-name">Username</span></label></div></div><div id="ad-err-close-btn" class="ad-err-close">Save</div></div>';
     var pp = () => {
         let str = Fe(document, 'on-user-input').value;
         if (!/\s/.test(str)) {
+            o = true;
             a(str);
             document.body.removeChild(l);
         } else {
@@ -1403,8 +1443,10 @@ var UsernamePopup = function(t, a) {
     };
     Fe(document, 'ad-err-close-btn').addEventListener("click", pp);
     window.addEventListener("keyup", function(key) {
-        key.keyCode === 13 && pp();
-    }, {once: true})
+        if (key.keyCode === 13 && !o) {
+            pp();    
+        }
+    });
     return l
 };
 
@@ -1441,14 +1483,12 @@ var Hh = function() {
         started = new Game;
         Mc(cnt,'-hide-dialog');
         setTimeout(() => {
+            console.log("start");
             new UsernamePopup("Choose your username", function(a) {
                 started.start(a);
             });
         }, 100);
     }
 
-    window.addEventListener("keyup", function(key) {
-        key.keyCode === 13 && cv();
-    }, {once: true})
-    Fe(document, "start-easy-btn").onclick = cv;
+    jh(Fe(document, "start-easy-btn"), cv);
 }());

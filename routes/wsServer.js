@@ -31,6 +31,8 @@ wss.on('connection', async function(ws) {
         let msg = p(message),
             pool = await getPoolById(ws.poolId);
 
+        if (!pool) return
+        
         if (msg.UPDATE) {
             console.log("received update", msg.UPDATE);
             pool.update(msg);
