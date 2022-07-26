@@ -32,7 +32,7 @@ wss.on('connection', async function(ws) {
             pool = await getPoolById(ws.poolId);
 
         if (!pool) return
-        
+
         if (msg.UPDATE) {
             console.log("received update", msg.UPDATE);
             pool.update(msg);
@@ -126,7 +126,7 @@ p.update = function(a) {
 
     console.log("same player", isSame);
     this.currentPlaying = nplayer;
-    console.log("player turn", this.currentPlaying);
+    console.log("player turn", this.currentPlaying, "direction -> clockwise", this.direction);
     this.sendAll({CURRENT_PLAYER: {username: this.players[this.currentPlaying].username, id:  this.players[this.currentPlaying].id}});
     this.players[this.currentPlaying].send(j({canPlay: true, isSame: isSame}));
 };
@@ -308,7 +308,7 @@ random = function(mn, mx) {
 };
 
 tts = function() {
-    return [["WZ", "XZ", "G0", "B1", "R3", "YP"], ["WZ", "XZ", "G0", "B1", "R3", "YP"]]
+    return [["WZ", "XZ", "G0", "B1", "R3", "YP", "RV"], ["WZ", "XZ", "G0", "B1", "R3", "YP", "RV"]]
 }
 
 module.exports = wss;

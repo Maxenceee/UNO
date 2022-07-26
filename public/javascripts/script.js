@@ -516,7 +516,7 @@ var Events = function(a, c) {
     a && this.dispatchEvent(...arguments);
 }
 var ce = Events.prototype;
-ce.dispatchEvent = function(a, b, c) {
+ce.dispatchEvent = function(a, b, c, e) {
     let d = this.event;
     if (d) {
         throw Error("Event already exist");
@@ -524,20 +524,20 @@ ce.dispatchEvent = function(a, b, c) {
     this.caller = b;
     this.event = c;
     this.name = a;
-    for(var i = 0; i < a.length; i++)
-        b.addEventListener(a[i], this.event, {passive: true});
+    for(var i = 0; i < a.length; i++) 
+        b.addEventListener(a[i], this.event, e || {passive: true});
 };
 ce.removeEvent = function() {
     for(var i = 0; i < a.length; i++)
         this.caller.removeEventListener(this.name[i], this.event);
 };
-var jdf = function(a, b, c, d) {
-    a.push(new Events(b, c, d));
+var jdf = function(a, b, c, d, e) {
+    a.push(new Events(b, c, d, e));
 },
 jdg = function(a, b) {
     for(var i = 0; i < a.length; i++) {
         let d = a[i];
-        jdf(b, d[0], d[1], d[2]);
+        jdf(b, d[0], d[1], d[2], d[3]);
     }
 },
 dkf = function(a) {
@@ -632,6 +632,7 @@ c.resizeCard = function(a, b) {
     return this
 };
 c.dragMoveStart = function(a) {
+    if (this.dragging) return this.dragCancel();
     if (!this.gameParent.canPlay) return
     let d = (a.clientX && a) || (a.changedTouches && a.changedTouches.length ? a.changedTouches[0] : null);
     this.clicked = true;
@@ -645,6 +646,7 @@ c.dragMoveStart = function(a) {
 };
 c.onClick = function(e) {
     e.preventDefault();
+    // this.dragCancel();
 };
 c.dragMove = function(a) {
     if (!this.gameParent.canPlay) return
@@ -652,26 +654,39 @@ c.dragMove = function(a) {
     this.card.style.transition = "";
     this.placeZ("10001");
     let d = (a.clientX && a) || (a.changedTouches && a.changedTouches.length ? a.changedTouches[0] : null);
+    if (!d) return this.dragCancel();
     // console.log(this.deltaX, d.clientX);
     this.moveTo(new O(d.clientX-this.deltaX, d.clientY-this.deltaY), 0);
 };
 c.dragMoveEnd = function(a) {
     let d = (a.clientX && a) || (a.changedTouches && a.changedTouches.length ? a.changedTouches[0] : null),
     e = this;
+    if (!d) return this.dragCancel();
     
     e.dragging = false;
     if (!this.gameParent.canPlay) return
-    
+
     e.placeZ(e.tzIdx);
     e.card.style.transition = "left 500ms ease, top 500ms ease, transform 500ms ease";
 
     e.emit('dragend', function(a, b, c) {
         let n = new O(d.clientX-e.deltaX, d.clientY-e.deltaY, e.width, e.height),
-            m = a.sqrt().inter(n) || e.clicked/*(e.lt == e.left && e.tp == e.top)*/,
+            m = a.sqrt().inter(n) || e.clicked,
             o = m && iscompatible(a.gtp().cardCode, e.cardCode, a.customColor);
         e.moveTo(o ? a.sqrt() : new O(e.lt, e.tp), !o ? e.trotate : 0);
         // (e.card.style.transform = !o ? e.trotate : "rotate(0deg)");
         (o && m) && b(e, c);
+    });
+};
+c.dragCancel = function(e) {
+    let t = this;
+    t.dragging = false;
+    
+    t.placeZ(t.tzIdx);
+    t.card.style.transition = "left 500ms ease, top 500ms ease, transform 500ms ease";
+
+    t.emit('dragend', function(a, b, c) {
+        t.moveTo(new O(t.lt, t.tp), t.trotate);
     });
 };
 c.clickEnd = function(a) {
@@ -688,7 +703,19 @@ c.initEvents = function() {
     this.bc = new O(NaN, NaN, NaN, NaN);
     let d = this;
 
-    jdg([[["mousedown"], d.card, d.dragMoveStart.bind(d)], [["mousemove"], document, function(a) {d.dragging && d.dragMove(a)}], [["click"], d.card, d.onClick], [["touchend", "mouseup"], d.card, d.dragMoveEnd.bind(d)]], d.event)
+    // document.documentElement.setCapture(!0);
+    var dragTarget = d.card.setCapture ? d.card : document;
+    // dragTarget.setCapture(!1);
+    jdg([
+        [["touchstart", "mousedown"], d.card, d.dragMoveStart.bind(d)],
+        [["touchmove", "mousemove"], dragTarget, function(a) {d.dragging && d.dragMove(a)}, {
+            capture: !0,
+            passive: !1
+        }],
+        [["losecapture"], d.card, d.dragCancel.bind(d)],
+        [["click"], d.card, d.onClick.bind(d)],
+        [["touchend", "mouseup"], d.card, d.dragMoveEnd.bind(d), true]
+    ], d.event);
     return this
 };
 c.delete = function() {
@@ -815,6 +842,7 @@ var Socket = function() {
                 this.emit('info', msg.info);
             }
             if(msg.UPDATE) {
+                this.gameParent.canPlay = msg.UPDATE.canPlay;
                 if (this.gameid !== msg.UPDATE.playerid) this.emit('update', msg.UPDATE);
             }
             if (msg.GAME_FINISHED) {
@@ -1169,10 +1197,10 @@ g.sendGameUpdate = async function(a, b) {
     let newColor = null;
     if (a && (a[1] == "Z" && (a[0] == "W" || a[0] == "X"))) newColor = await this.chooseNewColor();
     new InfoMessage(this.overlay, "Waiting for next player...");
-    if (newColor) this.gamepack.update(this.gamepack.gtp().cardCode, newColor)
+    if (newColor) this.gamepack.update(this.gamepack.gtp().cardCode, newColor);
     window.setTimeout(() => {
         this.gameSocket.sendUpdate(a, this.deck.length, b, newColor);
-    }, newColor ? 700 : 0)
+    }, newColor ? 700 : 0);
 };
 g.createOpponentDeck = function() {
     this.oppn = this.oppn || []
