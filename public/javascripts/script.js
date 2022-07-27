@@ -955,7 +955,7 @@ g.socketBuilder = function(s) {
     }.bind(this));
 
     gameSocket.on('close', function() {
-        console.log('connection close');
+        console.log('connection closed');
         if (this.connectionCreated) this.stop();
     }.bind(this));
 
@@ -1133,7 +1133,7 @@ g.placeDeck = function() {
             l = f / (g / 2),
             u = z - 250 + (x ? -(j >= g / 2 ? (s > 0 ? l * (g - j) : l * (o - j - 1)) : l * j) : 0),
             v = d[j],
-            h = o > 1 ? (j < g / 2 ? (g - j)- g / 2 : (s > 0 ? 0 : -1) - (j - g / 2)) * -(e / 2) / (g / 2) : 0;
+            h = o > 1 ? (j < g / 2 ? (g - j) - g / 2 : (s > 0 ? 0 : -1) - (j - g / 2)) * -(e / 2) / (g / 2) : 0;
 
         c.push([v, t, u, j, h]);
     }
