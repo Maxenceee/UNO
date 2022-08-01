@@ -17,6 +17,10 @@
 
 
 */
+/*!
+*   @license © Copyright 2022, All rights reserved.
+*   @author: Maxence Gama, maxence.gama@gmail.com, @maxencegama
+*/
 
 var g,
     aa = function(a) {
