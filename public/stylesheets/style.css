@@ -78,13 +78,24 @@ section #game-root {
 
 section #game-root .card, section #game-root .pile, section #game-root .gamepack, section #game-root .opponent {
   position: absolute;
-  -webkit-backface-visibility: hidden !important;
-          backface-visibility: hidden !important;
+  -webkit-transform-style: preserve-3d;
+          transform-style: preserve-3d;
 }
 
 section #game-root .card .card-canvas, section #game-root .pile .card-canvas, section #game-root .gamepack .card-canvas, section #game-root .opponent .card-canvas {
   width: 100%;
   height: 100%;
+  -webkit-backface-visibility: hidden !important;
+          backface-visibility: hidden !important;
+}
+
+section #game-root .card .card-canvas.backface, section #game-root .pile .card-canvas.backface, section #game-root .gamepack .card-canvas.backface, section #game-root .opponent .card-canvas.backface {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  -webkit-transform: rotateY(180deg);
+          transform: rotateY(180deg);
 }
 
 section #game-root .card.grow-transition, section #game-root .pile.grow-transition, section #game-root .gamepack.grow-transition, section #game-root .opponent.grow-transition {

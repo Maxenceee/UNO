@@ -627,13 +627,32 @@ c.placeZ = function(a) {
     this.card.style.zIndex = a
     return this
 };
-c.resizeCard = function(a, b) {
+c.resize = function(a, b) {
     this.width = a;
     this.height = b;
     this.card.classList.add('grow-transition');
     jf(this.card, this.width, this.height);
     // this.card.classList.remove('grow-transition');
     return this
+};
+c.flip = function(a, b, c, d) {
+    let n = this.I("CANVAS", "card-canvas backface"),
+        l = codeToCoord(a),
+        m = [0, 240*(l.x + (hjr(b) || 0)), 360*l.y, 240, 360],
+        p = new Qf(n);
+    n.width = uf().width;
+    n.height = uf().height;
+    this.card.appendChild(n);
+    p.ta(m, 0, 0);
+
+    window.setTimeout(() => {
+        this.zc("gamepack").style.opacity = 0;
+        this.card.style.transform += "rotateY(180deg)";
+        window.setTimeout(() => {
+            this.zc("gamepack").style.opacity = 1;
+            d && d();
+        }, 500);
+    }, c);
 };
 c.dragMoveStart = function(a) {
     if (this.dragging) return this.dragCancel();
@@ -758,7 +777,7 @@ p.delete = function() {
 
 var Pack = function(a, b) {
     this.pack = new Card(a, b);
-    this.pack.placeZ(-1);
+    this.pack.placeZ(0);
 };
 var p = Pack.prototype;
 p.gtp = function() {
@@ -975,10 +994,9 @@ g.socketBuilder = function(s) {
         }
         if (a.played == true)
             this.gamepack.gtp().cardCode = a.card,
-            window.setTimeout(function() {this.gamepack.update(a.card, a.newColor)}.bind(this), 500),
             this.playCardEffects(a.card);
         
-        this.updateOpponentDeck(a.deckSize);
+        this.updateOpponentDeckAndGamepack(a);
     }.bind(this));
 
     gameSocket.on('updatecurrentplayer', function(a, b) {
@@ -1217,10 +1235,24 @@ g.createOpponentDeck = function() {
     }
     this.placeOpponentDeck();
 };
-g.updateOpponentDeck = function(a) {
-    if (a == this.oppn.length) return
-    if (a > this.oppn.length) {
-        for(var i = 0; i < a; i++) {
+g.updateOpponentDeckAndGamepack = function(a) {
+    if (a.fromPile && a.played) {
+        // let oc = new Pile(this.pileCoords, qe, this.deckContainer, "opponent", {width: 80, height: 120});
+        let oc = new Card(this.pileCoords, "card rinverted");
+        oc.drawcard(this.deckContainer, qe);
+        let u = () => {
+            this.gamepack.update(a.card, a.newColor);
+            oc.delete();
+        }
+        window.setTimeout(() => {
+            oc.placeZ(1)
+                .moveTo(this.packCoords)
+                .flip(a.card, a.newColor, 550, u);
+        }, 10)
+    }
+    if (a.deckSize == this.oppn.length) return
+    if (a.deckSize > this.oppn.length) {
+        for(var i = 0; i < a.deckSize; i++) {
             if (!this.oppn[i]) {
                 let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: 80, height: 120});
                 oc.gtc()
@@ -1229,20 +1261,26 @@ g.updateOpponentDeck = function(a) {
                 this.oppn.push(oc);
             }
         }
-    } else if (a < this.oppn.length) {
-        for(var i = 0; i <= this.oppn.length-a; i++) {
-            let del = this.oppn[a];
-            this.oppn.splice(a, 1);
+    } else if (a.deckSize < this.oppn.length) {
+        for(var i = 0; i <= this.oppn.length-a.deckSize; i++) {
+            let del = this.oppn[a.deckSize];
+            this.oppn.splice(a.deckSize, 1);
+            let u = () => {
+                this.gamepack.update(a.card, a.newColor);
+                del.delete();
+            }
             del.gtc()
-                .resizeCard(S, T)
-                .placeZ(0)
-                .moveTo(this.packCoords, 180);
-            window.setTimeout(() => {
-                del.gtc().canv().style.transform += "rotateY(180deg)";
-                window.setTimeout(() => {
-                    del.delete();
-                }, 500);
-            }, 550);
+                .resize(S, T)
+                .placeZ(1)
+                .moveTo(this.packCoords, 0)
+                .flip(a.card, a.newColor, 550, u);
+
+            // window.setTimeout(() => {
+            //     del.gtc().canv().style.transform += "rotateY(180deg)";
+            //     window.setTimeout(() => {
+            //         del.delete();
+            //     }, 500);
+            // }, 550);
         }
     }
     this.placeOpponentDeck();

@@ -80,12 +80,27 @@ section {
 
 		.card, .pile, .gamepack, .opponent {
 			position: absolute;
-			backface-visibility: hidden !important;
+			transform-style: preserve-3d;
 
 			.card-canvas {
 				width: 100%;
 				height: 100%;
+				backface-visibility: hidden !important;
+				
+				// z-index: 1;
+
+				&.backface {
+					position: absolute;
+					top: 0;
+					left: 0;
+					z-index: 0;
+					transform: rotateY(180deg);
+				}
 			}
+
+			// &:not(.rinverted) .card-canvas.backface {
+			// 	transform: rotateY(180deg) rotateZ(180deg) !important;
+			// }
 
 			&.grow-transition {
 				transition: 500ms ease !important;
