@@ -1237,7 +1237,6 @@ g.createOpponentDeck = function() {
 };
 g.updateOpponentDeckAndGamepack = function(a) {
     if (a.fromPile && a.played) {
-        // let oc = new Pile(this.pileCoords, qe, this.deckContainer, "opponent", {width: 80, height: 120});
         let oc = new Card(this.pileCoords, "card rinverted");
         oc.drawcard(this.deckContainer, qe);
         let u = () => {
