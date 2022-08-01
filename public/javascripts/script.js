@@ -1274,13 +1274,6 @@ g.updateOpponentDeckAndGamepack = function(a) {
                 .placeZ(1)
                 .moveTo(this.packCoords, 0)
                 .flip(a.card, a.newColor, 550, u);
-
-            // window.setTimeout(() => {
-            //     del.gtc().canv().style.transform += "rotateY(180deg)";
-            //     window.setTimeout(() => {
-            //         del.delete();
-            //     }, 500);
-            // }, 550);
         }
     }
     this.placeOpponentDeck();
