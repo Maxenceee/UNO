@@ -103,10 +103,6 @@ section #game-root .card.grow-transition, section #game-root .pile.grow-transiti
   transition: 500ms ease !important;
 }
 
-section #game-root .pile {
-  z-index: 10;
-}
-
 section #game-root .opponent {
   -webkit-transform-origin: center center;
           transform-origin: center center;

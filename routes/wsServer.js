@@ -47,7 +47,7 @@ wss.on('connection', async function(ws) {
             }
         }
         if (msg.GAME_FINISHED) {
-            pool.finish(msg);
+            pool.finish(msg, ws.username);
         }
         if (msg.USER_DISCONNECTION) {
             console.log(ws.id, "disconnected");
@@ -179,8 +179,8 @@ p.removePool = function() {
     foundId !== -1 && GAME_POOL.splice(foundId, 1);
     delete this
 };
-p.finish = function(a) {
-    this.sendAll(a);
+p.finish = function(a, b) {
+    this.sendAll({...a, player: b});
     this.removePool();
 };
 p.disconnected = function(a) {

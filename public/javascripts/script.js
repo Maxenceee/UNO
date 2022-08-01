@@ -367,7 +367,8 @@ var Cf = function(a, b, e) {
     return d
 }
 var S = Math.round(uf().width * (Bf() ? .55 : .33)),
-    T = Math.round(uf().height * (Bf() ? .55 : .33)); 
+    T = Math.round(uf().height * (Bf() ? .55 : .33)),
+    L = 500;
 
 var Qf = function(a) {
     this.wa = a;
@@ -588,7 +589,7 @@ c.drawcard = function(a, b, c) {
     jf(this.card, this.width, this.height);
     a.appendChild(this.card);
     this.d.ta(patern, 0, 0);
-    this.card.style.transition = "left 500ms ease, top 500ms ease, transform 500ms ease";
+    this.card.style.transition = "left "+L+"ms ease, top "+L+"ms ease, transform "+L+"ms ease";
     return this
 };
 c.createCardPatern = function(a, b) {
@@ -651,7 +652,7 @@ c.flip = function(a, b, c, d) {
         window.setTimeout(() => {
             this.zc("gamepack").style.opacity = 1;
             d && d();
-        }, 500);
+        }, L);
     }, c);
 };
 c.dragMoveStart = function(a) {
@@ -690,7 +691,7 @@ c.dragMoveEnd = function(a) {
     if (!this.gameParent.canPlay) return
 
     e.placeZ(e.tzIdx);
-    e.card.style.transition = "left 500ms ease, top 500ms ease, transform 500ms ease";
+    e.card.style.transition = "left "+L+"ms ease, top "+L+"ms ease, transform "+L+"ms ease";
 
     e.emit('dragend', function(a, b, c) {
         let n = new O(d.clientX-e.deltaX, d.clientY-e.deltaY, e.width, e.height),
@@ -706,7 +707,7 @@ c.dragCancel = function(e) {
     t.dragging = false;
     
     t.placeZ(t.tzIdx);
-    t.card.style.transition = "left 500ms ease, top 500ms ease, transform 500ms ease";
+    t.card.style.transition = "left "+L+"ms ease, top "+L+"ms ease, transform "+L+"ms ease";
 
     t.emit('dragend', function(a, b, c) {
         t.moveTo(new O(t.lt, t.tp), t.trotate);
@@ -752,7 +753,7 @@ defineCode = function(a, b) {
 var Pile = function(a, b, c, d, e) {
     this.pile = new Card(a, d, e);
     this.pile.drawcard(c, b);
-    this.pile.placeZ("10001");
+    this.pile.placeZ(10001);
     return this
 };
 mergeProto(Pile, CallBack);
@@ -832,7 +833,7 @@ var Socket = function() {
     this.deck = null;
 
     var ld = new Loader
-    this.loader = ld.create(Fe(document, "solitaire-mode-dialog-close"));
+    this.loader = ld.create(Fe(document, "dialog-close"));
 
     this.socket.onopen = () => {
         console.log("connection opened");
@@ -869,7 +870,7 @@ var Socket = function() {
                 if (this.gameid !== msg.UPDATE.playerid) this.emit('update', msg.UPDATE);
             }
             if (msg.GAME_FINISHED) {
-                this.emit('gamefinished');
+                this.emit('gamefinished', msg);
             }
             if (msg.USER_DISCONNECTED) {
                 this.emit('userdisconnetion');
@@ -902,11 +903,14 @@ s.sendUpdate = function(a, b, c, d) {
     this.socket.send(m);
 };
 s.finish = function(a) {
-    this.socket.send(this.j({GAME_FINISHED: true, closeconnection: true, player: a}));
+    this.socket.send(this.j({GAME_FINISHED: true, closeconnection: true, id: this.gameid, winning: a}));
 };
 s.end = function() {
     this.socket.send(this.j({USER_DISCONNECTION: true, endconnection: true}));
     this.delete();
+};
+s.send = function(a) {
+    this.socket.send(this.j(a));
 };
 s.delete = function() {
     this.loader && this.loader.remove();
@@ -955,7 +959,7 @@ g.socketBuilder = function(s) {
         setTimeout(() => {
             this.drawDeck(a, b);
             this.createOpponentDeck();
-        }, 500);
+        }, L);
     }.bind(this));
 
     gameSocket.on('gamebegin', function(a, b, c, d, e) {
@@ -1004,33 +1008,49 @@ g.socketBuilder = function(s) {
         this.updateCurrentPlayer(a, b, this);
     }.bind(this));
 
-    gameSocket.on('gamefinished', function() {
+    gameSocket.on('gamefinished', function(a) {
         console.log('gamefinished');
-        if (this.connectionCreated) this.stop();
+        let n = this;
+        let y = function() {
+            let u = a.winning ? (a.id == n.gameSocket.gameid ? "You win the game." : (a.player+" win the game."))+" Well played!" : "Game is over, you ran out of cards!";
+            new AlertPopup(u, "Leave", function() {
+                this.reset();
+            }.bind(n));
+        }
+        if (this.connectionCreated) this.stop(y);
     }.bind(this));
 
     gameSocket.on('userdisconnetion', function() {
         console.log('userdisconnetion');
-        if (this.connectionCreated) this.stop();
+        let n = this;
+        let y = function() {
+            new AlertPopup("Game ended due opponent disconnection.", "Leave", function() {
+                this.reset();
+            }.bind(n));
+        }
+        if (this.connectionCreated) this.stop(y);
     }.bind(this));
 };
-g.stop = function() {
+g.stop = function(a) {
+    a && a();
     this.connectionCreated = false;
     this.canPlay = false;
     this.gameSocket.end();
-    var ld = new Loader;
-    ld.create(Fe(document, "solitaire-mode-dialog-close"));
-    Fe(document, "close-btn").classList.remove("-show");
-    Fe(document, "deck-toggle").classList.remove("-show");
-    window.setTimeout(() => {
-        ld.remove();
-        this.reset();
-    }, 1000);
+    if (!a) {
+        var ld = new Loader;
+        ld.create(Fe(document, "dialog-close"));
+        Fe(document, "close-btn").classList.remove("-show");
+        Fe(document, "deck-toggle").classList.remove("-show");
+        window.setTimeout(() => {
+            ld.remove();
+            this.reset();
+        }, 1000);
+    }
 };
 g.end = function() {
     console.log("game, end");
     this.canPlay = false;
-    this.gameSocket.finish();
+    this.gameSocket.finish(true);
 };
 g.reset = function() {
     this.alert && this.alert.remove();
@@ -1051,18 +1071,20 @@ g.reset = function() {
 
     jh(Fe(document, "start-easy-btn"), cv);
 
-    this.gamepack && this.gamepack.delete();
-    Fe(document, "pie-container") && Fe(document, "pie-container").remove();
-    this.cards && this.cards.forEach(e => {
-        e.delete();
-    });
-    this.cards = [];
-    this.oppn && this.oppn.forEach(e => {
-        e.delete();
-    })
-    this.oppn = [];
-    this.pile && this.pile.delete();
-    Fa(document, "display") && Fa(document, "display").remove();
+    // this.gamepack && this.gamepack.delete();
+    // Fe(document, "pie-container") && Fe(document, "pie-container").remove();
+    document.querySelectorAll(".card, .pile, .gamepack, .opponent, .display, .display, .ad-pn-c").forEach(e => {
+        e.remove();
+    }); 
+    // this.cards && this.cards.forEach(e => {
+    //     e.delete();
+    // });
+    // this.oppn && this.oppn.forEach(e => {
+    //     e.delete();
+    // })
+    this.oppn = this.cards = [];
+    // this.pile && this.pile.delete();
+    // Fa(document, "display") && Fa(document, "display").remove();
 };
 g.closeGame = function() {
     let t = this,
@@ -1070,7 +1092,7 @@ g.closeGame = function() {
     v.classList.add("-show");
     Fe(document, "deck-toggle").classList.add("-show");
     v.onclick = () => {
-        let mess = "You are about to leave the game. There is no way back.";
+        let mess = "You are about to leave the game. Game will end, there is no way back.";
         this.alert = new AlertPopup(mess, "Leave", function() {
             console.log("stop on leave");
             t.stop();
@@ -1127,7 +1149,7 @@ g.createPack = function(a) {
     
     window.setTimeout(() => {
         b.gtp().moveTo(this.packCoords);
-    }, 500);
+    }, L);
 };
 g.updateDeck = function() {};
 g.placeDeck = function() {
@@ -1157,7 +1179,7 @@ g.placeDeck = function() {
             v = d[j],
             h = o > 1 ? (j < g / 2 ? (g - j) - g / 2 : (s > 0 ? 0 : -1) - (j - g / 2)) * -(e / 2) / (g / 2) : 0;
 
-        c.push([v, t, u, j, h]);
+        c.push([v, t, u, j+1, h]);
     }
     for(var i = o-1; i >= 0; i--) {
         let d = c[i];
@@ -1193,7 +1215,14 @@ g.playCard = function(b, c, p) {
 };
 g.pileEvent = function(a) {
     var n = this;
+    let y = function() {
+        n.gameSocket.finish(false);
+        new AlertPopup("Game is over, you ran out of cards!", "Leave", function() {
+            this.reset();
+        }.bind(n));
+    }
     a.on('create', function() {
+        if (!n.full.length) return n.stop(y);
         let b = [],
             d = n.full.shift(),
             l = false;
@@ -1297,7 +1326,7 @@ g.placeOpponentDeck = function() {
             v = d[j],
             h = o > 1 ? (j < g / 2 ? (g - j) - g / 2 : (s > 0 ? 0 : -1) - (j - g / 2)) * (e / 2) / (g / 2) : 0;
 
-        c.unshift([v, t, u, j, h]);
+        c.unshift([v, t, u, j+1, h]);
     }
     for(var i = o-1; i >= 0; i--) {
         let d = c[i];
@@ -1313,8 +1342,10 @@ g.placeOpponentDeck = function() {
     }, o > 10 ? 20 : 40);
 };
 g.playCardEffects = function(a) {
-    (a[1] == "V") && this.addCardsToDeck(2);
-    (a[1] == "Z" && a[0] == "X") && this.addCardsToDeck(4);
+    window.setTimeout(() => {
+        (a[1] == "V") && this.addCardsToDeck(2);
+        (a[1] == "Z" && a[0] == "X") && this.addCardsToDeck(4);
+    }, L+100);
     // to log effects
     // (a[1] == "V") ? this.addCardsToDeck(2) : (a[1] == "Z" && a[0] == "X") ? this.addCardsToDeck(4) : console.log("no effect");
 };
@@ -1387,7 +1418,7 @@ deckToggle = function(a) {
             e.moveTo(a.pileCoords);
             btcp(e, 0);
         }) ;
-        setTimeout(() => a.placeDeck(), 500);
+        setTimeout(() => a.placeDeck(), L);
     }
 },
 replacePileAndPackOnResize = function(a) {
@@ -1398,7 +1429,10 @@ replacePileAndPackOnResize = function(a) {
 },
 jh = function(a, b) {
     let o = false;
-    a.onclick = b;
+    a.onclick = () => {
+        if (o) return
+        o = true, b();
+    };
     window.addEventListener("keyup", function(key) {
         if (key.keyCode === 13 && !o) {
             o = true;
