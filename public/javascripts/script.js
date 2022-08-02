@@ -86,10 +86,12 @@ Le = function(a, b) {
     var c = String(b[0]),
         d = b[1],
         e = b[2] || null;
-    c = a.createElement(c);
+    c = (["svg", "path", "circle", "text"].includes(c.toLowerCase()) ? a.createElementNS("http://www.w3.org/2000/svg", c) : a.createElement(c));
+    // c = a.createElement(c);
     if (e && e.in) c.innerHTML = e.in;
+    if (e && e.style) c.style = e.style;
 
-    b && (d && typeof e !== "object" && !je(d) ? Ne(c, d, e) : (e && e.type ? c.setAttribute(e.type, d) : d && (c.className = d)));
+    b && (d && typeof e !== "object" && !je(d) ? Na(c, d, e) : (e && e.type ? c.setAttribute(e.type, d) : d && (c.className = d)));
     return c
 },
 Na = function(b, c, d) {
@@ -111,9 +113,10 @@ jl = function(a) {
 },
 Ms = function(a, b, c) {
     jl(b) ? a.setAttribute(b, c !== undefined ? c : "") : Na(a, b, c)
+    return a
 },
 Md = function(a, b) {
-    (b.length > 1) ? dj(a, b) : a.appendChild(b);
+    (b instanceof Node) ? a.appendChild(b) : dj(a, b)
     return a
 },
 Mg = function(a, b) {
@@ -321,7 +324,7 @@ hf = function(a, b, c) {
     a.style.left = gf(d, !1);
     a.style.top = gf(b, !1)
 },
-Le = function(a, b) {
+La = function(a, b) {
     var c = String(b[0]),
         d = b[1];
     c = a.createElement(c);
@@ -613,7 +616,7 @@ c.moveTo = function(a, b, c) {
     return this
 },
 c.I = function(a, b, c) {
-    return Le(document, arguments)
+    return La(document, arguments)
 };
 c.canv = function() {
     return this.card
@@ -697,6 +700,7 @@ c.dragMoveEnd = function(a) {
         let n = new O(d.clientX-e.deltaX, d.clientY-e.deltaY, e.width, e.height),
             m = a.sqrt().inter(n) || e.clicked,
             o = m && iscompatible(a.gtp().cardCode, e.cardCode, a.customColor);
+        o && e.placeZ(1001);
         e.moveTo(o ? a.sqrt() : new O(e.lt, e.tp), !o ? e.trotate : 0);
         // (e.card.style.transform = !o ? e.trotate : "rotate(0deg)");
         (o && m) && b(e, c);
@@ -817,14 +821,21 @@ randomInt = function(mn, mx) {
 
 var Loader = function() {
     let a = Me("DIV", "box-loader");
+        // b = Me("DIV", "loader"),
+        // c = Ms(Me("SVG", "circular"), ["xmlns", "viewBox"], ["http://www.w3.org/2000/svg", "25 25 50 50"]),
+        // d = Ms(Me("CIRCLE", "path"), ["cx", "cy", "r", "fill", "stroke-width", "stroke-miterlimit"], ["50", "50", "20", "none", "5", "10"])
     a.innerHTML = '<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"/></svg></div>';
+    // this.loader = Md(a, Md(b, Md(c, d)));
+    console.log(this.loader);
+    
     this.loader = a;
+    return this
 };
 Loader.prototype.create = function(a) {
-    Pe(a, this.loader);
-    return this.loader
+    Md(a, this.loader);
+    return this
 };
-Loader.prototype.remove = function() {
+Loader.prototype.delete = function() {
     this.loader.remove();   
 };
 
@@ -844,7 +855,7 @@ var Socket = function() {
             let msg = this.p(message.data);
             console.log(msg);
             if (msg.IS_CONNECTED) {
-                this.loader.remove();
+                this.loader.delete();
                 // console.log(msg);
                 let d = this.deck = msg.deck,
                     f = this.full = msg.full;
@@ -882,7 +893,7 @@ var Socket = function() {
 
     this.socket.onclose = () => {
         console.log("receive closed");
-        ld && ld.remove();
+        ld && ld.delete();
         this.emit('close');
     }
 };
@@ -913,7 +924,7 @@ s.send = function(a) {
     this.socket.send(this.j(a));
 };
 s.delete = function() {
-    this.loader && this.loader.remove();
+    this.loader && this.loader.delete();
     this.socket.close();
     delete this
 }
@@ -1042,7 +1053,7 @@ g.stop = function(a) {
         Fe(document, "close-btn").classList.remove("-show");
         Fe(document, "deck-toggle").classList.remove("-show");
         window.setTimeout(() => {
-            ld.remove();
+            ld.delete();
             this.reset();
         }, 1000);
     }
@@ -1453,17 +1464,17 @@ var PiePopup = function(a) {
 var p = PiePopup.prototype;
 p.generate = function(a) {
     let ur = "http://www.w3.org/2000/svg",
-        n = document.createElementNS(ur, "svg"),
-        r = document.createElementNS(ur, "text"),
+        // n = document.createElementNS(ur, "svg"),
+        // r = document.createElementNS(ur, "text"),
+        n = Ms(Me("svg"), ["class", "xmlns", "viewBox"], ["pie", ur, "0 0 180 180"]),
+        r = Ms(Me("text"), ["y", "dx", "dominant-baseline", "text-anchor"], ["-30", "50%", "middle", "middle"]),
         k = ["R", "Y", "G", "B"],
         t = this,
         h = [];
-    Ms(n, ["class", "xmlns", "viewBox"], ["pie", ur, "0 0 180 180"]);
-    Ms(r, ["y", "dx", "dominant-baseline", "text-anchor"], ["-30", "50%", "middle", "middle"]);
     r.textContent = "Choose your new color";
     Md(n, r);
     for (var i = 0; i < 4; i++) {
-        let m = document.createElementNS(ur, "path"),
+        let m = Me("path"),
             o = (i == 0 || i == 2) ? "90" : i == 1 ? "180" : "0",
             p = (i == 1 || i == 3) ? "90" : i == 2 ? "180" : "0",
             q = (i == 1 || i == 3) ? "90" : i == 0 ? "180" : "0",
@@ -1501,43 +1512,44 @@ p.delete = function() {
 };
 
 var AlertPopup = function(t, a, b, c, d) {
-    let l = Me("div", "ad-pn-c");
+    Fa(document, "ad-pn-c") && Fa(document, "ad-pn-c").remove();
+    let l = Me("div", "ad-pn-c"),
+        u,
+        r = [];
     Md(document.body, l);
-    if (!b) {
-        l.innerHTML = '<div class="ad-panel"><div class="ad-err"><p>'+t+'</p></div><div id="ad-err-close-btn" class="ad-err-close">Fermer</div></div>';
+    if (c) {
+        let n = Ms(Md(Me("div", "ad-err-close ad-demi ad-demi-sup left"), Me("p", "", {in: a})), "id", "ad-err-reset-btn"),
+            m = Ms(Md(Me("div", "ad-err-close ad-demi right"), Me("p", "", {in: c})), "id", "ad-err-close-btn");
+        u = Md(Me("div", "ad-btn"), [n, m])
+        n.addEventListener("click", b);
+        r.push(...[n, m]);
+        d && m.addEventListener("click", d);
     } else {
-        if (c) {
-            l.innerHTML = '<div class="ad-panel"><div class="ad-err"><p>'+t+'</p></div><div class="ad-btn"><div id="ad-err-reset-btn" class="ad-err-close ad-demi ad-demi-sup">'+a+'</div><div id="ad-err-close-btn" class="ad-err-close ad-demi">'+c+'</div></div></div>';
-            Fe(document, 'ad-err-reset-btn').addEventListener("click", b);
-            Fe(document, 'ad-err-reset-btn').addEventListener("click", function() {l.remove()});
-        } else {
-            l.innerHTML = '<div class="ad-panel"><div class="ad-err"><p>'+t+'</p></div><div id="ad-err-close-btn" class="ad-err-close">'+a+'</div></div>';
-            Fe(document, 'ad-err-close-btn').addEventListener("click", b);
-        }
+        u = Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: a || "Close"})), "id", "ad-err-close-btn");
+        b && u.addEventListener("click", b);
+        r.push(u);
     }
-    if (d) {
-        Fe(document, 'ad-err-close-btn').addEventListener("click", d);
-    }
-    Fe(document, 'ad-err-close-btn').addEventListener("click", function() {l.remove()});
+    Md(l, Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), Me("p", "", {in: t})), u]));
+    r.map(e => e.addEventListener("click", function() {l.remove()}));
     return l
 }
 
 var UsernamePopup = function(t, a) {
-    let l = Me("div", "ad-pn-c"),
-        o = false;
+    let o = false,
+        p = Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: "Save"})), "id", "ad-err-close-btn"),
+        m = Ms(Me("input", "SIU-tf"), ["autocomplete", "autocapitalize", "autofocus", "required", "maxlength", "type", "id"], ["off", "off", "", "", "15", "text", "on-user-input"]),
+        l = Md(Me("div", "ad-pn-c"), Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), [Me("p", "", {style: "min-height: auto;", in: t}), Md(Me("div", "fr-text-field"), [m, Md(Ms(Me("label", "label-name"), "for", "name"), Me("span", "content-name", {in: "Username"}))])]), p]));
     Md(document.body, l);
-    l.innerHTML = '<div class="ad-panel grow-anim"><div class="ad-err"><p style="min-height: auto;">'+t+'</p><div class="fr-text-field"><input autocomplete="off" autocapitalize="off" autofocus required maxlength="15" type="text" id="on-user-input" class="SIU-tf"><label for="name" class="label-name"><span class="content-name">Username</span></label></div></div><div id="ad-err-close-btn" class="ad-err-close">Save</div></div>';
     var pp = () => {
-        let str = Fe(document, 'on-user-input').value;
-        if (!/\s/.test(str)) {
-            o = true;
-            a(str);
-            document.body.removeChild(l);
-        } else {
-            Fe(document, 'on-user-input').classList.add('wrong-enter-r');
-        }
+        let str = m.value;
+        if (!/\s/.test(str))
+            o = true,
+            a(str),
+            l.remove();
+        else
+            m.classList.add('wrong-enter-r');
     };
-    Fe(document, 'ad-err-close-btn').addEventListener("click", pp);
+    p.addEventListener("click", pp);
     window.addEventListener("keyup", function(key) {
         if (key.keyCode === 13 && !o) {
             pp();    
