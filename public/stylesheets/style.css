@@ -818,27 +818,29 @@ section #game-root .opponent {
   background-color: rgba(0, 0, 0, 0.075);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
-  z-index: 50004;
+  z-index: 50005;
 }
 
-.ad-panel, .ad-status-panel {
+.ad-pn-c .ad-panel, .ad-pn-c .ad-status-panel {
   position: relative;
   width: 350px;
   height: -webkit-max-content;
   height: -moz-max-content;
   height: max-content;
-  border-radius: 25px;
+  border-radius: 15px;
   overflow: hidden;
   background-color: #FFF;
   -webkit-box-shadow: 0 5px 15px 5px rgba(0, 0, 0, 0.05);
           box-shadow: 0 5px 15px 5px rgba(0, 0, 0, 0.05);
   opacity: 0;
+  padding: 15px;
   -webkit-animation: show-pan 0.3s ease-in-out forwards;
           animation: show-pan 0.3s ease-in-out forwards;
 }
 
-.ad-panel .ad-err {
+.ad-pn-c .ad-panel .ad-err, .ad-pn-c .ad-status-panel .ad-err {
   height: 100%;
+  min-height: calc(130px - 40px);
   width: 100%;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -851,35 +853,73 @@ section #game-root .opponent {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   padding: 10px 20px;
 }
 
-.ad-panel .ad-err p {
+.ad-pn-c .ad-panel .ad-err p, .ad-pn-c .ad-status-panel .ad-err p {
   display: inline-block;
   vertical-align: middle;
-  height: 100%;
-  min-height: calc(130px - 40px);
   width: 100%;
-  padding-top: 10%;
-  padding: 10px;
   font-size: 1.3em;
   text-align: center;
+  color: #686868;
 }
 
-.ad-panel .ad-btn {
-  height: 40 px;
+.ad-pn-c .ad-panel .ad-btn, .ad-pn-c .ad-status-panel .ad-btn {
+  height: 40px;
   width: 100%;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  display: -webkit-flex;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
       -ms-flex-direction: row;
           flex-direction: row;
+  margin: 0 0 5px;
 }
 
-.ad-status-panel p {
+.ad-pn-c .ad-panel .ad-btn .ad-err-close, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close {
+  position: relative;
+  width: calc(100% - 10px);
+  margin: 0 5px;
+  height: 40px;
+  border-radius: 10px;
+  --ad-border-color: #f2f2f2;
+  --ad-primary-color: 0, 0, 0;
+  --ad-red-primary-color: 211, 47, 47;
+  background-color: transparent;
+  border: 1.5px solid var(--ad-border-color);
+}
+
+.ad-pn-c .ad-panel .ad-btn .ad-err-close p, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close p {
+  height: 100%;
+  line-height: 37px;
+  font-size: 16px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.ad-pn-c .ad-panel .ad-btn .ad-err-close.ad-demi, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close.ad-demi {
+  width: 50%;
+}
+
+.ad-pn-c .ad-panel .ad-btn .ad-err-close:hover, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close:hover {
+  border-color: rgba(var(--ad-primary-color), 0.4);
+}
+
+.ad-pn-c .ad-panel .ad-btn .ad-err-close.ad-demi-sup, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close.ad-demi-sup {
+  color: rgba(var(--ad-red-primary-color), 1);
+  background-color: var(--ad-border-color);
+}
+
+.ad-pn-c .ad-panel .ad-btn .ad-err-close.ad-demi-sup:hover, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close.ad-demi-sup:hover {
+  border-color: rgba(var(--ad-red-primary-color), 0.4);
+}
+
+.ad-pn-c .ad-status-panel p {
   width: 100%;
   padding-top: 10%;
   padding: 10px;
@@ -887,80 +927,9 @@ section #game-root .opponent {
   text-align: center;
 }
 
-.ad-status-pan-in {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  display: -webkit-flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  height: 50px;
-}
-
-.ad-status-pan-in p {
-  width: auto;
-  padding: 0 10px 0;
-}
-
-.ad-err-close {
-  position: relative;
-  width: 100%;
-  height: 40px;
-  --ad-border-color: rgba(0, 0, 0, 0.6);
-  border-top: solid 1px var(--ad-border-color);
-  /* border-bottom-left-radius: 25px;
-    border-bottom-right-radius: 25px; */
-}
-
-.ad-err-close.left {
-  border-right: solid 0.5px var(--ad-border-color);
-}
-
-.ad-err-close.right {
-  border-left: solid 0.5px var(--ad-border-color);
-}
-
-.ad-err-close p {
-  height: 100%;
-  line-height: 35px;
-  font-size: 18px;
-  text-align: center;
-  cursor: default;
-}
-
-.ad-err-close.ad-demi {
-  width: 50%;
-}
-
-.ad-err-close.ad-demi-sup {
-  color: #d32f2f;
-}
-
-.ad-err-close.ad-demi:nth-child(2) {
-  left: 0;
-  right: auto;
-  /* border-bottom-right-radius: 0px; */
-}
-
-.ad-err-close.ad-demi:nth-child(3) {
-  right: 0;
-  left: auto;
-  /* border-bottom-left-radius: 0px; */
-}
-
-.ad-err-close:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
 .fr-text-field {
   margin: 5px;
-  width: -webkit-max-content;
-  width: -moz-max-content;
-  width: max-content;
+  width: 80%;
   position: relative;
   height: 60px;
   overflow: hidden;
@@ -1004,17 +973,6 @@ section #game-root .opponent {
   transition: all 0.3s ease;
 }
 
-.content-name {
-  position: absolute;
-  bottom: 5px;
-  left: 0px;
-  -webkit-transition: all 0.3s ease;
-  transition: all 0.3s ease;
-  font-size: 18px;
-  color: #888888;
-  font-weight: 300;
-}
-
 .fr-text-field input:focus + .label-name .content-name,
 .fr-text-field input:valid + .label-name .content-name {
   -webkit-transform: translateY(-100%) scale(0.9);
@@ -1041,6 +999,17 @@ section #game-root .opponent {
   -webkit-transform: translateY(-100%) scale(0.9);
           transform: translateY(-100%) scale(0.9);
   color: #d55f5f !important;
+}
+
+.content-name {
+  position: absolute;
+  bottom: 5px;
+  left: 0px;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+  font-size: 18px;
+  color: #888888;
+  font-weight: 300;
 }
 
 .display {

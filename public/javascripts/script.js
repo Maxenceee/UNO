@@ -606,7 +606,7 @@ c.redrawcard = function(b, c) {
     this.d.ta(patern, 0, 0);
     return this
 }
-c.moveTo = function(a, b, c) {
+c.moveTo = function(a, b) {
     a && (this.left = a.left, this.top = a.top)
     // console.log("m->", this.left, this.top);
     this.card.style.left = this.left+"px";
@@ -791,6 +791,22 @@ p.gtp = function() {
 p.sqrt = function() {
     let b = this.pack;
     return new O(b.left, b.top, b.width, b.height)
+};
+p.flipPack = function(a) {
+    let n = Me("CANVAS", "card-canvas backface"),
+        m = qe,
+        p = new Qf(n);
+    n.width = uf().width;
+    n.height = uf().height;
+    this.pack.canv().appendChild(n);
+    p.ta(m, 0, 0);
+
+    window.setTimeout(() => {
+        this.pack.canv().style.transform += "rotateY(180deg)";
+        window.setTimeout(() => {
+            a && a();
+        }, L);
+    }, c);
 };
 p.update = function(a, b) {
     this.customColor = b || null;
@@ -1021,14 +1037,7 @@ g.socketBuilder = function(s) {
 
     gameSocket.on('gamefinished', function(a) {
         console.log('gamefinished');
-        let n = this;
-        let y = function() {
-            let u = a.winning ? (a.id == n.gameSocket.gameid ? "You win the game." : (a.player+" win the game."))+" Well played!" : "Game is over, you ran out of cards!";
-            new AlertPopup(u, "Leave", function() {
-                this.reset();
-            }.bind(n));
-        }
-        if (this.connectionCreated) this.stop(y);
+        this.onFinish(a);
     }.bind(this));
 
     gameSocket.on('userdisconnetion', function() {
@@ -1058,10 +1067,31 @@ g.stop = function(a) {
         }, 1000);
     }
 };
-g.end = function() {
+g.end = function(a) {
     console.log("game, end");
     this.canPlay = false;
-    this.gameSocket.finish(true);
+    this.gameSocket.finish(undefined !== a ? a : true);
+};
+g.onFinish = function(a) {
+    let t = this;
+        let y = function() {
+            let u = a.winning ? (a.id == t.gameSocket.gameid ? "You win the game." : (a.player+" win the game."))+" Well played!" : "Game is over, you ran out of cards!";
+            new AlertPopup(u, "Leave", function() {
+                t.reset();
+            });
+        }
+        u = () => {
+            t.gamepack.gtp().moveTo(t.pileCoords);
+            window.setTimeout(() => {
+                if (t.connectionCreated) t.stop(y);
+            }, L+100);
+        }
+    t.cards.forEach(e => e.moveTo(t.packCoords, 0));
+    t.oppn.forEach(e => e.gtc().moveTo(t.pileCoords, 0));
+    window.setTimeout(() => {
+        t.cards.forEach(e => e.delete());
+        t.gamepack.flipPack(u);
+    }, L+50);
 };
 g.reset = function() {
     this.alert && this.alert.remove();
@@ -1215,25 +1245,19 @@ g.playCard = function(b, c, p) {
     window.setTimeout(() => {
         c.gamepack.update(b.cardCode);
         b.delete();
+        if (c.cards.length === 0) c.end();
     }, 600);
     c.gamepack.gtp().cardCode = b.cardCode;
     id !== -1 && (n = c.cards.splice(id, 1), m = c.deck.splice(id, 1))
     window.setTimeout(() => {
         c.placeDeck();
     }, 50);
-    if (c.cards.length === 0) return c.end();
     !p && c.sendGameUpdate(b.cardCode, {played: true, fromPile: false, pileChanges: [], changedColor: (b.cardCode[0] == "W" && b.cardCode[1] == "Z"), isDrawCards: false});
 };
 g.pileEvent = function(a) {
     var n = this;
-    let y = function() {
-        n.gameSocket.finish(false);
-        new AlertPopup("Game is over, you ran out of cards!", "Leave", function() {
-            this.reset();
-        }.bind(n));
-    }
     a.on('create', function() {
-        if (!n.full.length) return n.stop(y);
+        if (!n.full.length) return n.end(false);
         let b = [],
             d = n.full.shift(),
             l = false;
@@ -1264,9 +1288,9 @@ g.sendGameUpdate = async function(a, b) {
         this.gameSocket.sendUpdate(a, this.deck.length, b, newColor);
     }, newColor ? 700 : 0);
 };
-g.createOpponentDeck = function() {
+g.createOpponentDeck = function(a) {
     this.oppn = this.oppn || []
-    for(var i = 0; i < 7; i++) {
+    for(var i = 0; i < (a || 7); i++) {
         let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: 80, height: 120});
         oc.gtc()
             .placeZ(0)
@@ -1426,9 +1450,9 @@ deckToggle = function(a) {
     Fe(document, "deck-toggle").onclick = function() {
         a.circleDeck = !a.circleDeck;
         a.cards.forEach(e => {
-            e.moveTo(a.pileCoords);
-            btcp(e, 0);
-        }) ;
+            e.moveTo(a.pileCoords, 0);
+            // btcp(e, 0);
+        });
         setTimeout(() => a.placeDeck(), L);
     }
 },
@@ -1517,6 +1541,7 @@ var AlertPopup = function(t, a, b, c, d) {
         u,
         r = [];
     Md(document.body, l);
+    t = t.replaceAll(/\n/g, "<br/>");
     if (c) {
         let n = Ms(Md(Me("div", "ad-err-close ad-demi ad-demi-sup left"), Me("p", "", {in: a})), "id", "ad-err-reset-btn"),
             m = Ms(Md(Me("div", "ad-err-close ad-demi right"), Me("p", "", {in: c})), "id", "ad-err-close-btn");
@@ -1525,7 +1550,7 @@ var AlertPopup = function(t, a, b, c, d) {
         r.push(...[n, m]);
         d && m.addEventListener("click", d);
     } else {
-        u = Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: a || "Close"})), "id", "ad-err-close-btn");
+        u = Md(Me("div", "ad-btn"), Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: a || "Close"})), "id", "ad-err-close-btn"));
         b && u.addEventListener("click", b);
         r.push(u);
     }
@@ -1538,7 +1563,7 @@ var UsernamePopup = function(t, a) {
     let o = false,
         p = Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: "Save"})), "id", "ad-err-close-btn"),
         m = Ms(Me("input", "SIU-tf"), ["autocomplete", "autocapitalize", "autofocus", "required", "maxlength", "type", "id"], ["off", "off", "", "", "15", "text", "on-user-input"]),
-        l = Md(Me("div", "ad-pn-c"), Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), [Me("p", "", {style: "min-height: auto;", in: t}), Md(Me("div", "fr-text-field"), [m, Md(Ms(Me("label", "label-name"), "for", "name"), Me("span", "content-name", {in: "Username"}))])]), p]));
+        l = Md(Me("div", "ad-pn-c"), Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), [Me("p", "", {style: "min-height: auto;", in: t}), Md(Me("div", "fr-text-field"), [m, Md(Ms(Me("label", "label-name"), "for", "name"), Me("span", "content-name", {in: "Username"}))])]), Md(Me("div", "ad-btn"), p)]));
     Md(document.body, l);
     var pp = () => {
         let str = m.value;
