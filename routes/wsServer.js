@@ -35,7 +35,7 @@ wss.on('connection', async function(ws) {
 
         if (msg.UPDATE) {
             console.log("received update", msg.UPDATE);
-            pool.update(msg);
+            if (!pool.gameEnded) pool.update(msg);
         }
         if (msg.ready) {
             ws.ready = true;
@@ -95,7 +95,7 @@ var Pool = function(a) {
 }
 var p = Pool.prototype;
 p.initGame = function() {
-    let c = createPlayerDeck(this.poolSize);
+    let c = createPlayerDeck(this.poolSize, 1);
     this.setPropety("poolId", this.poolId);
     this.fullDeck = c.full;
     this.sendDeck(c.decks);
@@ -180,6 +180,7 @@ p.removePool = function() {
     delete this
 };
 p.finish = function(a, b) {
+    this.gameEnded = true;
     this.sendAll({...a, player: b});
     this.removePool();
 };
@@ -244,7 +245,7 @@ async function removeClient(id, l) {
     }
 }
 
-var createPlayerDeck = function(a) {
+var createPlayerDeck = function(a, b) {
     var fullDeck = [],
         player = [],
         pall = [],
@@ -267,7 +268,7 @@ var createPlayerDeck = function(a) {
     }
     for(var k = 0; k < a; k++) {
         player = [];
-        for(var j = 0; j < 7; j++) {
+        for(var j = 0; j < (b || 7); j++) {
             let e = random(0, fullDeck.length);
             player.push(fullDeck[e])
             fullDeck.splice(e, 1);
@@ -276,6 +277,7 @@ var createPlayerDeck = function(a) {
     }
     fullDeck.shuffle();
     fullDeck.shuffle();
+    // fullDeck.splice(0);
     return {decks: pall, full: fullDeck}
 },
 takeCard = function(fullDeck) {

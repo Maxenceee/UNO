@@ -868,6 +868,10 @@ section {
 				font-size: 1em;
 				margin: 0;
 				color: #008744;
+
+				@media screen and (max-width: 800px) {
+					font-size: 0.8em;
+				}
 			}
 		}
 
@@ -877,19 +881,28 @@ section {
 			font-size: 1.2em;
 			font-weight: 300;
 			margin-right: 20px;
+
+			@media screen and (max-width: 800px) {
+				font-size: 1em;
+			}
 		}
 
 		.dot-typing {
 			--dot-color: #000;
+			--dot-size: 8px;
 			position: relative;
 			left: -9999px;
-			width: 8px;
-			height: 8px;
+			width: --dot-siz;
+			height: --dot-siz;
 			border-radius: 5px;
 			background-color: var(--dot-color);
 			color: var(--dot-color);
 			box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 			animation: dotTyping 1.5s infinite linear;
+
+			@media screen and (max-width: 800px) {
+				--dot-siz: 4px
+			}
 		}
 	}
 }

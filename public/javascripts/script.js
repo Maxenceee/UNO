@@ -536,7 +536,7 @@ ce.dispatchEvent = function(a, b, c, e) {
         b.addEventListener(a[i], this.event, e || {passive: true});
 };
 ce.removeEvent = function() {
-    for(var i = 0; i < a.length; i++)
+    for(var i = 0; i < this.name.length; i++)
         this.caller.removeEventListener(this.name[i], this.event);
 };
 var jdf = function(a, b, c, d, e) {
@@ -546,6 +546,13 @@ jdg = function(a, b) {
     for(var i = 0; i < a.length; i++) {
         let d = a[i];
         jdf(b, d[0], d[1], d[2], d[3]);
+    }
+},
+mdg = function(a) {
+    if (!a) return
+    for(var i = 0; i < a.length; i++) {
+        let d = a[i];
+        d.removeEvent();
     }
 },
 dkf = function(a) {
@@ -672,8 +679,8 @@ c.dragMoveStart = function(a) {
     // this.trotate = this.card.style.transform;
 };
 c.onClick = function(e) {
+    if (this.dragging) this.dragCancel();
     e.preventDefault();
-    // this.dragCancel();
 };
 c.dragMove = function(a) {
     if (!this.gameParent.canPlay) return
@@ -682,7 +689,8 @@ c.dragMove = function(a) {
     this.placeZ("10001");
     let d = (a.clientX && a) || (a.changedTouches && a.changedTouches.length ? a.changedTouches[0] : null);
     if (!d) return this.dragCancel();
-    // console.log(this.deltaX, d.clientX);
+    // console.log(this.deltaX, d.clientX, this.deltaY, d.clientY);
+    // console.log(new O(d.clientX-this.deltaX, d.clientY-this.deltaY));
     this.moveTo(new O(d.clientX-this.deltaX, d.clientY-this.deltaY), 0);
 };
 c.dragMoveEnd = function(a) {
@@ -741,13 +749,14 @@ c.initEvents = function() {
             passive: !1
         }],
         [["losecapture"], d.card, d.dragCancel.bind(d)],
-        [["click"], d.card, d.onClick.bind(d)],
+        [["click"], document, d.onClick.bind(d)],
         [["touchend", "mouseup"], d.card, d.dragMoveEnd.bind(d), true]
     ], d.event);
     return this
 };
 c.delete = function() {
     this.canv().remove();
+    mdg(this.event);
     delete this;
 }
 defineCode = function(a, b) {
@@ -951,6 +960,7 @@ g.start = function(a) {
     this.username = a.length ? a : null
     this.connectionCreated = false;
     this.canPlay = false;
+    this.gameStarted = true;
     this.circleDeck = true;
     this.deckContainer = Fe(document, "game-root");
     this.overlay = null;
@@ -985,7 +995,7 @@ g.socketBuilder = function(s) {
         this.connectionCreated = true;
         setTimeout(() => {
             this.drawDeck(a, b);
-            this.createOpponentDeck();
+            this.createOpponentDeck(a.length);
         }, L);
     }.bind(this));
 
@@ -1015,6 +1025,7 @@ g.socketBuilder = function(s) {
 
     gameSocket.on('update', function(a) {
         this.canPlay = a.canPlay;
+        if (!this.gameStarted) return
         if (a.fromPile == true) {
             for(var i = 0; i < a.pileChanges.length; i++) {
                 let id = this.full.findIndex(function (obj) {
@@ -1043,6 +1054,7 @@ g.socketBuilder = function(s) {
     gameSocket.on('userdisconnetion', function() {
         console.log('userdisconnetion');
         let n = this;
+        if (!n.gameStarted) return
         let y = function() {
             new AlertPopup("Game ended due opponent disconnection.", "Leave", function() {
                 this.reset();
@@ -1070,11 +1082,12 @@ g.stop = function(a) {
 g.end = function(a) {
     console.log("game, end");
     this.canPlay = false;
+    this.gameStarted = false;
     this.gameSocket.finish(undefined !== a ? a : true);
 };
 g.onFinish = function(a) {
-    let t = this;
-        let y = function() {
+    let t = this,
+        y = function() {
             let u = a.winning ? (a.id == t.gameSocket.gameid ? "You win the game." : (a.player+" win the game."))+" Well played!" : "Game is over, you ran out of cards!";
             new AlertPopup(u, "Leave", function() {
                 t.reset();
@@ -1086,12 +1099,19 @@ g.onFinish = function(a) {
                 if (t.connectionCreated) t.stop(y);
             }, L+100);
         }
-    t.cards.forEach(e => e.moveTo(t.packCoords, 0));
-    t.oppn.forEach(e => e.gtc().moveTo(t.pileCoords, 0));
     window.setTimeout(() => {
-        t.cards.forEach(e => e.delete());
-        t.gamepack.flipPack(u);
-    }, L+50);
+        this.gameStarted = false;
+        t.gamepack.gtp()
+            .placeZ(10001);
+
+        t.cards.forEach(e => e.moveTo(t.packCoords, 0));
+        t.oppn.forEach(e => e.gtc().moveTo(t.pileCoords, 0));
+        
+        window.setTimeout(() => {
+            t.cards.forEach(e => e.delete());
+            t.gamepack.flipPack(u);
+        }, L+100);
+    }, this.gameStarted ? L : 0);
 };
 g.reset = function() {
     this.alert && this.alert.remove();
@@ -1199,19 +1219,22 @@ g.placeDeck = function() {
         o = this.deck.length,
         p = (n - (S + 10) * o) / 2,
         a = o >= 10 ? 6 : 4,
-        y = 50,
+        lm = ((n - 200) / o),
+        y = (50) * o >= n - 200 ? lm : 50,
         q = x ? y : p < n / a ? (p = n / a, (n - n / a * 2)) / o : S + 10,
         m = x ? (n - (o * y + S - y )) / 2 : p,
         r = 0,
         s = o % 2,
-        g = o - s,
+        g = (o - s) || 1,
         f = o > 4 ? 30 : 15,
-        e = o > 2 ? o > 4 ? 80 : 60 : 45,
+        e = (S - 50) * o >= n - 100 ? 45 : o > 2 ? o > 4 ? 80 : 60 : 45,
         c = [],
         z = window.innerHeight,
-        d = this.cards.sort(function(a, b) {
+        b = o > 20 ? 10 : 20,
+        k = o > 10 ? b / o * 10 : 40,
+        d = this.cards.length > 1 ? this.cards.sort(function(a, b) {
             return (a.cardCode[1] >= b.cardCode[1])
-        });
+        }) : this.cards;
 
     for(var j = 0; j < o; j++) {
         let t = (m + q * j).toFixed(3),
@@ -1219,8 +1242,8 @@ g.placeDeck = function() {
             u = z - 250 + (x ? -(j >= g / 2 ? (s > 0 ? l * (g - j) : l * (o - j - 1)) : l * j) : 0),
             v = d[j],
             h = o > 1 ? (j < g / 2 ? (g - j) - g / 2 : (s > 0 ? 0 : -1) - (j - g / 2)) * -(e / 2) / (g / 2) : 0;
-
-        c.push([v, t, u, j+1, h]);
+        
+            c.push([v, t, u, j+1, h]);
     }
     for(var i = o-1; i >= 0; i--) {
         let d = c[i];
@@ -1234,7 +1257,7 @@ g.placeDeck = function() {
         d[0].trotate = x ? d[4] : 0;
         // btcp(d[0], x ? d[4] : 0);
         r++;
-    }, o > 10 ? 20 : 40);
+    }, k);
 };
 g.playCard = function(b, c, p) {
     let n,
@@ -1281,7 +1304,7 @@ g.pileEvent = function(a) {
 g.sendGameUpdate = async function(a, b) {
     this.canPlay = false;
     let newColor = null;
-    if (a && (a[1] == "Z" && (a[0] == "W" || a[0] == "X"))) newColor = await this.chooseNewColor();
+    if (this.cards.length && a && (a[1] == "Z" && (a[0] == "W" || a[0] == "X"))) newColor = await this.chooseNewColor();
     new InfoMessage(this.overlay, "Waiting for next player...");
     if (newColor) this.gamepack.update(this.gamepack.gtp().cardCode, newColor);
     window.setTimeout(() => {
@@ -1344,18 +1367,23 @@ g.updateOpponentDeckAndGamepack = function(a) {
 g.placeOpponentDeck = function() {
     let n = window.innerWidth,
         o = this.oppn.length,
-        p = (n - (S / 4) * o) / 2,
-        q = ((n - p * 2) / o),
+        p = n < 800 ? n / 3 : n / 2,
+        lm = (p / o),
+        y = (50) * o >= p ? lm : 50,
+        q = y,
+        m = (n - (o * y + S - y )) / 2,
         r = 0,
         s = o % 2,
-        g = o - s,
+        g = (o - s) || 1,
         f = 50,
         e = o > 2 ? 80 : 45,
         c = [],
+        b = o > 20 ? 10 : 20,
+        k = o > 10 ? b / o * 10 : 40,
         d = this.oppn;
 
     for(var j = 0; j < o; j++) {
-        let t = (p + q * j).toFixed(3),
+        let t = (m + q * j).toFixed(3),
             l = f / (g / 2),
             u = 20 + (j >= g / 2 ? (s > 0 ? (j == (g / 2) + s - 1 ? l * (g - j - 1) : l * (g - j)) : l * (o - j - 1)) : l * j),
             v = d[j],
@@ -1365,7 +1393,7 @@ g.placeOpponentDeck = function() {
     }
     for(var i = o-1; i >= 0; i--) {
         let d = c[i];
-        d[0].gtc().canv().style.zIndex = d[3];
+        d[0].gtc().placeZ(d[3]);
     }
     var w = window.setInterval(() => {
         if (r == o) return clearInterval(w);
@@ -1374,7 +1402,7 @@ g.placeOpponentDeck = function() {
         d[0].gtc().moveTo(new O(d[1], d[2]), d[4]+180);
         // rtcp(d[0], d[4]+180);
         r++;
-    }, o > 10 ? 20 : 40);
+    }, k);
 };
 g.playCardEffects = function(a) {
     window.setTimeout(() => {
