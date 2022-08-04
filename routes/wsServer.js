@@ -95,7 +95,7 @@ var Pool = function(a) {
 }
 var p = Pool.prototype;
 p.initGame = function() {
-    let c = createPlayerDeck(this.poolSize, 1);
+    let c = createPlayerDeck(this.poolSize);
     this.setPropety("poolId", this.poolId);
     this.fullDeck = c.full;
     this.sendDeck(c.decks);

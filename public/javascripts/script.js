@@ -1106,9 +1106,10 @@ g.onFinish = function(a) {
 
         t.cards.forEach(e => e.moveTo(t.packCoords, 0));
         t.oppn.forEach(e => e.gtc().moveTo(t.pileCoords, 0));
-        
+
         window.setTimeout(() => {
             t.cards.forEach(e => e.delete());
+            t.oppn.forEach(e => e.delete());
             t.gamepack.flipPack(u);
         }, L+100);
     }, this.gameStarted ? L : 0);
