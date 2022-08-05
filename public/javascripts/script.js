@@ -520,7 +520,7 @@ CallBack.prototype.emit = function(t) {
 
 var Events = function(a, c) {
     this.event = null;
-    this.caller = null;
+    this.parent = null;
     a && this.dispatchEvent(...arguments);
 }
 var ce = Events.prototype;
@@ -529,7 +529,7 @@ ce.dispatchEvent = function(a, b, c, e) {
     if (d) {
         throw Error("Event already exist");
     }
-    this.caller = b;
+    this.parent = b;
     this.event = c;
     this.name = a;
     for(var i = 0; i < a.length; i++) 
@@ -537,7 +537,7 @@ ce.dispatchEvent = function(a, b, c, e) {
 };
 ce.removeEvent = function() {
     for(var i = 0; i < this.name.length; i++)
-        this.caller.removeEventListener(this.name[i], this.event);
+        this.parent.removeEventListener(this.name[i], this.event);
 };
 var jdf = function(a, b, c, d, e) {
     a.push(new Events(b, c, d, e));
@@ -579,8 +579,8 @@ makeId = function(l) {
 }
 
 var Card = function(a, b, c) {
-    this.left = null || a.left;
-    this.top = null || a.top;
+    this.left = a.left || null;
+    this.top = a.top || null;
     this.card = this.I("DIV", (a && r(a)) || b || "card", this.I("CANVAS", "card-canvas"));
     (a && dkf(a)) && this.moveTo();
     this.width = c ? c.width : S;
@@ -1026,7 +1026,7 @@ g.socketBuilder = function(s) {
     gameSocket.on('update', function(a) {
         this.canPlay = a.canPlay;
         if (!this.gameStarted) return
-        if (a.fromPile == true) {
+        if (a.fromPile) {
             for(var i = 0; i < a.pileChanges.length; i++) {
                 let id = this.full.findIndex(function (obj) {
                     return obj == a.pileChanges[i];
@@ -1034,7 +1034,7 @@ g.socketBuilder = function(s) {
                 this.full.splice(id, 1);
             }
         }
-        if (a.played == true)
+        if (a.played)
             this.gamepack.gtp().cardCode = a.card,
             this.playCardEffects(a.card);
         
@@ -1056,11 +1056,11 @@ g.socketBuilder = function(s) {
         let n = this;
         if (!n.gameStarted) return
         let y = function() {
-            new AlertPopup("Game ended due opponent disconnection.", "Leave", function() {
+            new AlertPopup("Game ended due to opponent disconnection.", "Leave", function() {
                 this.reset();
             }.bind(n));
         }
-        if (this.connectionCreated) this.stop(y);
+        if (n.connectionCreated) n.stop(y);
     }.bind(this));
 };
 g.stop = function(a) {
@@ -1315,7 +1315,7 @@ g.sendGameUpdate = async function(a, b) {
 g.createOpponentDeck = function(a) {
     this.oppn = this.oppn || []
     for(var i = 0; i < (a || 7); i++) {
-        let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: 80, height: 120});
+        let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: Bf() ? S/1.65 : 60, height: Bf() ? T/1.65 : 90});
         oc.gtc()
             .placeZ(0)
             .moveTo(this.pileCoords);
@@ -1341,7 +1341,7 @@ g.updateOpponentDeckAndGamepack = function(a) {
     if (a.deckSize > this.oppn.length) {
         for(var i = 0; i < a.deckSize; i++) {
             if (!this.oppn[i]) {
-                let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: 80, height: 120});
+                let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: Bf() ? S/1.65 : 60, height: Bf() ? T/1.65 : 90});
                 oc.gtc()
                     .placeZ(0)
                     .moveTo(this.pileCoords);
@@ -1368,7 +1368,7 @@ g.updateOpponentDeckAndGamepack = function(a) {
 g.placeOpponentDeck = function() {
     let n = window.innerWidth,
         o = this.oppn.length,
-        p = n < 800 ? n / 3 : n / 2,
+        p = Bf() ? n / 3 : 200,
         lm = (p / o),
         y = (50) * o >= p ? lm : 50,
         q = y,
@@ -1382,6 +1382,7 @@ g.placeOpponentDeck = function() {
         b = o > 20 ? 10 : 20,
         k = o > 10 ? b / o * 10 : 40,
         d = this.oppn;
+    console.log(Bf(), p);
 
     for(var j = 0; j < o; j++) {
         let t = (m + q * j).toFixed(3),
@@ -1409,7 +1410,7 @@ g.playCardEffects = function(a) {
     window.setTimeout(() => {
         (a[1] == "V") && this.addCardsToDeck(2);
         (a[1] == "Z" && a[0] == "X") && this.addCardsToDeck(4);
-    }, L+100);
+    }, L+150);
     // to log effects
     // (a[1] == "V") ? this.addCardsToDeck(2) : (a[1] == "Z" && a[0] == "X") ? this.addCardsToDeck(4) : console.log("no effect");
 };
