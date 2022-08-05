@@ -1071,8 +1071,6 @@ g.stop = function(a) {
     if (!a) {
         var ld = new Loader;
         ld.create(Fe(document, "dialog-close"));
-        Fe(document, "close-btn").classList.remove("-show");
-        Fe(document, "deck-toggle").classList.remove("-show");
         window.setTimeout(() => {
             ld.delete();
             this.reset();
@@ -1132,6 +1130,8 @@ g.reset = function() {
     }
 
     jh(Fe(document, "start-easy-btn"), cv);
+    Fe(document, "close-btn").classList.remove("-show");
+    Fe(document, "deck-toggle").classList.remove("-show");
 
     // this.gamepack && this.gamepack.delete();
     // Fe(document, "pie-container") && Fe(document, "pie-container").remove();
