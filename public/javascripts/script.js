@@ -1591,11 +1591,25 @@ var AlertPopup = function(t, a, b, c, d) {
 var UsernamePopup = function(t, a) {
     let o = false,
         p = Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: "Save"})), "id", "ad-err-close-btn"),
-        m = Ms(Me("input", "SIU-tf"), ["autocomplete", "autocapitalize", "autofocus", "required", "maxlength", "type", "id"], ["off", "off", "", "", "15", "text", "on-user-input"]),
-        l = Md(Me("div", "ad-pn-c"), Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), [Me("p", "", {style: "min-height: auto;", in: t}), Md(Me("div", "fr-text-field"), [m, Md(Ms(Me("label", "label-name"), "for", "name"), Me("span", "content-name", {in: "Username"}))])]), Md(Me("div", "ad-btn"), p)]));
+        // m = Ms(Me("input", "SIU-tf"), ["autocomplete", "autocapitalize", "autofocus", "required", "maxlength", "type", "id"], ["off", "off", "", "", "15", "text", "on-user-input"]),
+        m = Me("label", "f0n8F"),
+        n = Ms(Me("input", "_2hvTZ pexuQ zyHYP"), ["autocomplete", "autocorrect", "autocapitalize", "autofocus", "required", "maxlength", "type", "aria-required", "name", "id","value"], ["off", "off", "off", "", "", "15", "text", "true", "username", "on-user-input", ""]),
+        j = Md(Me("div", "ttpo"), Md(m, [Me("span", "_9nyy2", {in: "Username"}), n])),
+        l = Md(Me("div", "ad-pn-c"), Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), [Me("p", "", {style: "min-height: auto;", in: t}), j]), Md(Me("div", "ad-btn"), p)])); //[m, Md(Ms(Me("label", "label-name"), "for", "name"), Me("span", "content-name", {in: "Username"}))]
+
+    let y = function(a) {
+        console.log(a, n.value);
+        if (n.value.length)
+            m.classList.add("FATdn");
+        else
+            m.classList.remove("FATdn");
+    }; 
+    m.onkeyup = y;
+    m.onkeypress = y;
+    // m.onchange = y;
     Md(document.body, l);
     var pp = () => {
-        let str = m.value;
+        let str = n.value;
         if (!/\s/.test(str))
             o = true,
             a(str),
