@@ -851,7 +851,6 @@ var Loader = function() {
         // d = Ms(Me("CIRCLE", "path"), ["cx", "cy", "r", "fill", "stroke-width", "stroke-miterlimit"], ["50", "50", "20", "none", "5", "10"])
     a.innerHTML = '<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"/></svg></div>';
     // this.loader = Md(a, Md(b, Md(c, d)));
-    console.log(this.loader);
     
     this.loader = a;
     return this
@@ -890,7 +889,7 @@ var Socket = function() {
                 this.gameid = msg.SET_GAME_POO_ID.id;
             }
             if (msg.BEGIN) {
-                this.emit('gamebegin', msg.BEGIN.startCard, msg.BEGIN.full, msg.BEGIN.player, msg.BEGIN.turn, msg.BEGIN.canPlay);
+                this.emit('gamebegin', msg.BEGIN.startCard, msg.BEGIN.full, msg.BEGIN.canPlay, msg.BEGIN.players);
             }
             if (msg.CURRENT_PLAYER) {
                 this.emit('updatecurrentplayer', msg.CURRENT_PLAYER, this.gameid == msg.CURRENT_PLAYER.id);
@@ -976,7 +975,7 @@ g.connectionTimeout = function() {
     window.setTimeout(() => {
         if (!this.connectionCreated) {
             this.gameSocket.delete();
-            this.alert = new AlertPopup("Can't find any opponent", "Leave", function() {
+            this.alert = new AlertPopup("Cannot find any opponent", "Leave", function() {
                 console.log("stop on timeout");
                 this.stop();
             }.bind(this), "Try again", function() {
@@ -999,14 +998,21 @@ g.socketBuilder = function(s) {
         }, L);
     }.bind(this));
 
-    gameSocket.on('gamebegin', function(a, b, c, d, e) {
-        this.overlay = this.overlay || Md(Me("div", "display"), Md(Me("div", "display-inner"), [Me("h1", "display-inner-p"), Me("div", "dot-typing")]))
-        Md(document.body, this.overlay);
-        new InfoMessage(this.overlay, "Game is starting!")
-        this.full = b;
-        this.player = c;
-        this.canPlay = e;
-        this.createPack(a);
+    gameSocket.on('gamebegin', function(a, b, c, d) {
+        let t = this,
+            u = d.findIndex(function (obj) {
+            return obj.id == t.gameSocket.gameid;
+        });
+        console.log(hko(d));
+        d.splice(u, 1);
+        t.overlay = t.overlay || Md(Me("div", "display"), Md(Me("div", "display-inner"), [Me("h1", "display-inner-p"), Me("div", "dot-typing")]))
+        Md(document.body, t.overlay);
+        t.full = b;
+        t.canPlay = c;
+        new AlertPopup("You play against "+hko(d), false, function() {
+            new InfoMessage(t.overlay, "Game is starting!")
+            t.createPack(a);
+        }, 2000);
     }.bind(this));
 
     gameSocket.on('canplay', function(a) {
@@ -1080,7 +1086,6 @@ g.stop = function(a) {
 g.end = function(a) {
     console.log("game, end");
     this.canPlay = false;
-    this.gameStarted = false;
     this.gameSocket.finish(undefined !== a ? a : true);
 };
 g.onFinish = function(a) {
@@ -1382,7 +1387,6 @@ g.placeOpponentDeck = function() {
         b = o > 20 ? 10 : 20,
         k = o > 10 ? b / o * 10 : 40,
         d = this.oppn;
-    console.log(Bf(), p);
 
     for(var j = 0; j < o; j++) {
         let t = (m + q * j).toFixed(3),
@@ -1449,16 +1453,16 @@ var iscompatible = function(a, b, c) {
 codeToCoord = function(a) {
     function e(h) {
         switch (h.toUpperCase()) {
+            case "Z":
             case "R": return 0
             case "Y": return 1
             case "G": return 2
             case "B": return 3
+            case "W": return 4
+            case "X": return 5
             case "D": return 10
             case "P": return 11
             case "V": return 12
-            case "W": return 4
-            case "X": return 5
-            case "Z": return 0
             default: return null
         }
     }
@@ -1504,6 +1508,15 @@ jh = function(a, b) {
             b();
         }
     });
+},
+hko = function(a) {
+    let u = "",
+        l = a.length
+    for (var i = 0; i < l; i++) {
+        console.log(i, l);
+        u += (i > 0 ? ", " : i == l-1 ? " and " : "") + a[i].username
+    }
+    return u
 }
 
 var PiePopup = function(a) {
@@ -1569,10 +1582,11 @@ var AlertPopup = function(t, a, b, c, d) {
     Fa(document, "ad-pn-c") && Fa(document, "ad-pn-c").remove();
     let l = Me("div", "ad-pn-c"),
         u,
+        v,
         r = [];
     Md(document.body, l);
     t = t.replaceAll(/\n/g, "<br/>");
-    if (c) {
+    if (c && a != false) {
         let n = Ms(Md(Me("div", "ad-err-close ad-demi ad-demi-sup left"), Me("p", "", {in: a})), "id", "ad-err-reset-btn"),
             m = Ms(Md(Me("div", "ad-err-close ad-demi right"), Me("p", "", {in: c})), "id", "ad-err-close-btn");
         u = Md(Me("div", "ad-btn"), [n, m])
@@ -1580,12 +1594,20 @@ var AlertPopup = function(t, a, b, c, d) {
         r.push(...[n, m]);
         d && m.addEventListener("click", d);
     } else {
-        u = Md(Me("div", "ad-btn"), Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: a || "Close"})), "id", "ad-err-close-btn"));
-        b && u.addEventListener("click", b);
-        r.push(u);
+        if (a == false) v = Me("div")
+
+        u = Md(Me("div", "ad-btn"), v || Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: a || "Close"})), "id", "ad-err-close-btn"));
+        if (a && a != false) {
+            b && u.addEventListener("click", b);
+            r.push(u);
+        }
     }
     Md(l, Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), Me("p", "", {in: t})), u]));
     r.map(e => e.addEventListener("click", function() {l.remove()}));
+    if (a == false) 
+        window.setTimeout(() => {
+            l.remove(), b();
+        }, c);
     return l
 }
 
@@ -1599,7 +1621,6 @@ var UsernamePopup = function(t, a) {
         l = Md(Me("div", "ad-pn-c"), Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), [Me("p", "", {style: "min-height: auto;", in: t}), j]), Md(Me("div", "ad-btn"), p)])); //[m, Md(Ms(Me("label", "label-name"), "for", "name"), Me("span", "content-name", {in: "Username"}))]
 
     let y = function(a) {
-        console.log(a, n.value);
         if (n.value.length)
             m.classList.add("FATdn");
         else

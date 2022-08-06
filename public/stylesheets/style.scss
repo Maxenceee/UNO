@@ -895,8 +895,8 @@ section {
 			--dot-size: 8px;
 			position: relative;
 			left: -9999px;
-			width: --dot-siz;
-			height: --dot-siz;
+			width: var(--dot-size);
+			height: var(--dot-size);
 			border-radius: 5px;
 			background-color: var(--dot-color);
 			color: var(--dot-color);
@@ -904,7 +904,7 @@ section {
 			animation: dotTyping 1.5s infinite linear;
 
 			@media screen and (max-width: 800px) {
-				--dot-siz: 4px
+				--dot-size: 4px
 			}
 		}
 	}

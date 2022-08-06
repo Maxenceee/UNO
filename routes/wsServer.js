@@ -85,6 +85,7 @@ function clientConnection(a) {
 
 var Pool = function(a) {
     this.players = a,
+    this.playersUsername = [],
     this.poolSize = a.length,
     this.direction = true,
     this.currentPlaying = 0,
@@ -104,7 +105,8 @@ p.beginGame = function() {
     console.log("begin game for pool :", this.poolId);
     let tk = takeCard(this.fullDeck);
     this.sendId();
-    this.sendAll({BEGIN: {player: 1, turn: 0, startCard: tk.c, full: tk.f, canPlay: false}});
+    console.log(this.playersUsername);
+    this.sendAll({BEGIN: {startCard: tk.c, full: tk.f, canPlay: false, players: this.playersUsername}});
     this.players[this.currentPlaying].send(j({canPlay: true}));
     this.sendAll({CURRENT_PLAYER: {username: this.players[this.currentPlaying].username, id: this.players[this.currentPlaying].id}});
 };
@@ -171,6 +173,7 @@ p.defUsername = function(a, b) {
         });
         foundId !== -1 && (b.username = "Player "+foundId)
     }
+    this.playersUsername.push({username: b.username, id: b.id})
 };
 p.removePool = function() {
     var foundId = GAME_POOL.findIndex(function (obj) {
