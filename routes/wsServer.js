@@ -105,7 +105,6 @@ p.beginGame = function() {
     console.log("begin game for pool :", this.poolId);
     let tk = takeCard(this.fullDeck);
     this.sendId();
-    console.log(this.playersUsername);
     this.sendAll({BEGIN: {startCard: tk.c, full: tk.f, canPlay: false, players: this.playersUsername}});
     this.players[this.currentPlaying].send(j({canPlay: true}));
     this.sendAll({CURRENT_PLAYER: {username: this.players[this.currentPlaying].username, id: this.players[this.currentPlaying].id}});
@@ -122,7 +121,7 @@ p.update = function(a) {
 
     a.UPDATE.isDrawCards && this.sendAll({info: this.players[this.currentPlaying].username+" draws "+a.UPDATE.pileChanges.length+" cards!"})
 
-    if (eff && eff.reverse == true) this.direction = !this.direction, this.sendAll({info: "New game direction"});
+    if (eff && eff.reverse == true) this.direction = !this.direction, this.sendAll({info: "New game direction."});
     let nplayer = newPlayerFromDirection(this.currentPlaying, this.direction, this.poolSize, eff),
         isSame = newPlayerFromDirection(nplayer, !this.direction, this.poolSize, eff) == nplayer;
 

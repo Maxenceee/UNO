@@ -70,6 +70,11 @@ p, h1, h2, h3 {
   	display: none;
 }
 
+:root {
+	--primary-dark: #2055EE;
+	--primary-darkest: #133FC0;
+}
+
 section {
 	position: relative;
 	height: 100%;
@@ -802,41 +807,35 @@ section {
 		color: var(--color-txt);
 	}
 
-	label::after {
-		content: "";
-		position: absolute;
-		left: 0px;
-		bottom: -1px;
-		width: 100%;
-		height: 100%;
-		border-bottom: 3px solid #5fa8d5;
-		transform: translateX(-100%);
-		transition: all 0.3s ease;
-	}
+	// label::after {
+	// 	content: "";
+	// 	position: absolute;
+	// 	left: 0px;
+	// 	bottom: -1px;
+	// 	width: 100%;
+	// 	height: 100%;
+	// 	border-bottom: 3px solid #5fa8d5;
+	// 	transform: translateX(-100%);
+	// 	transition: all 0.3s ease;
+	// }
 
 
-	input:focus + .label-name .content-name,
-	input:valid + .label-name .content-name {
-		transform: translateY(-100%) scale(0.9);
-		color: #5fa8d5;
-	}
+	// input:focus + .label-name .content-name,
+	// input:valid + .label-name .content-name {
+	// 	transform: translateY(-100%) scale(0.9);
+	// 	color: #5fa8d5;
+	// }
 
-	input:focus + .label-name::after,
-	input:valid + .label-name::after {
-		transform: translateX(0%);
-	}
+	// input:focus + .label-name::after,
+	// input:valid + .label-name::after {
+	// 	transform: translateX(0%);
+	// }
 
-	.wrong-enter-r ~ label::after {
-		border-bottom: 3px solid #d55f5f !important;
-	}
-	.wrong-enter-r ~ label {
-		color: #d55f5f !important;
-	}
-	input.wrong-enter-r:focus + .label-name .content-name,
-	input.wrong-enter-r:valid + .label-name .content-name {
-		transform: translateY(-100%) scale(0.9);
-		color: #d55f5f !important;
-	}
+	// input.wrong-enter-r:focus + .label-name .content-name,
+	// input.wrong-enter-r:valid + .label-name .content-name {
+	// 	transform: translateY(-100%) scale(0.9);
+	// 	color: #d55f5f !important;
+	// }
 }
 
 .content-name {
@@ -1066,8 +1065,7 @@ section {
 
 	input {
 		color: #262626;
-		color: rgba(var(--i1d,38,38,38),1);
-		font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+		// font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 		font-size: 14px;
 		line-height: 18px;
 	}
@@ -1125,6 +1123,46 @@ section {
 		&.FATdn ._9nyy2 {
 			-webkit-transform: scale(.83333) translateY(-10px);
 			transform: scale(.83333) translateY(-10px);
+		}
+	}
+
+	&.wrong-enter-r {
+		border-color: #d55f5f;
+
+		:not(.f0n8F.FATdn) {
+			
+			span {
+				color: #d55f5f !important;
+			}
+		}
+	}
+}
+
+.progress-bar {
+	position: relative;
+	width: 100%;
+	height: max-content;
+	// padding: 30px;
+
+	.progress-body {
+		position: relative;
+		height: 40px;
+		// margin: 10px;
+		border: 2px solid var(--primary-darkest);
+		border-radius: 5px;
+		overflow: hidden;
+
+		.progress-text {
+			position: absolute;
+			top: 0;
+			transform: translateY(50%);
+			left: 10px;
+			color: var(--primary-darkest);
+		}
+
+		.progress-el {
+			height: 100%;
+			background: rgba(#275EFE, 0.15);
 		}
 	}
 }

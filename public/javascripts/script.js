@@ -916,7 +916,7 @@ var Socket = function() {
     }
 
     this.socket.onclose = () => {
-        console.log("receive closed");
+        console.log('connection closed');
         ld && ld.delete();
         this.emit('close');
     }
@@ -976,7 +976,6 @@ g.connectionTimeout = function() {
         if (!this.connectionCreated) {
             this.gameSocket.delete();
             this.alert = new AlertPopup("Cannot find any opponent", "Leave", function() {
-                console.log("stop on timeout");
                 this.stop();
             }.bind(this), "Try again", function() {
                 this.socketBuilder(new Socket);
@@ -1003,7 +1002,6 @@ g.socketBuilder = function(s) {
             u = d.findIndex(function (obj) {
             return obj.id == t.gameSocket.gameid;
         });
-        console.log(hko(d));
         d.splice(u, 1);
         t.overlay = t.overlay || Md(Me("div", "display"), Md(Me("div", "display-inner"), [Me("h1", "display-inner-p"), Me("div", "dot-typing")]))
         Md(document.body, t.overlay);
@@ -1025,7 +1023,6 @@ g.socketBuilder = function(s) {
     }.bind(this));
 
     gameSocket.on('close', function() {
-        console.log('connection closed');
         if (this.connectionCreated) this.stop();
     }.bind(this));
 
@@ -1084,7 +1081,6 @@ g.stop = function(a) {
     }
 };
 g.end = function(a) {
-    console.log("game, end");
     this.canPlay = false;
     this.gameSocket.finish(undefined !== a ? a : true);
 };
@@ -1099,8 +1095,12 @@ g.onFinish = function(a) {
         u = () => {
             t.gamepack.gtp().moveTo(t.pileCoords);
             window.setTimeout(() => {
-                if (t.connectionCreated) t.stop(y);
-            }, L+100);
+                t.gamepack.delete();
+                t.pile.gtc().moveTo(t.packCoords, -90);
+                window.setTimeout(() => {
+                    if (t.connectionCreated) t.stop(y);
+                }, L+100);
+            }, L+50);
         }
     window.setTimeout(() => {
         this.gameStarted = false;
@@ -1161,7 +1161,6 @@ g.closeGame = function() {
     v.onclick = () => {
         let mess = "You are about to leave the game. Game will end, there is no way back.";
         this.alert = new AlertPopup(mess, "Leave", function() {
-            console.log("stop on leave");
             t.stop();
         }, "Stay here");
     }
@@ -1249,7 +1248,7 @@ g.placeDeck = function() {
             v = d[j],
             h = o > 1 ? (j < g / 2 ? (g - j) - g / 2 : (s > 0 ? 0 : -1) - (j - g / 2)) * -(e / 2) / (g / 2) : 0;
         
-            c.push([v, t, u, j+1, h]);
+        c.push([v, t, u, j+1, h]);
     }
     for(var i = o-1; i >= 0; i--) {
         let d = c[i];
@@ -1513,8 +1512,7 @@ hko = function(a) {
     let u = "",
         l = a.length
     for (var i = 0; i < l; i++) {
-        console.log(i, l);
-        u += (i > 0 ? ", " : i == l-1 ? " and " : "") + a[i].username
+        u += ((i > 0 && i < l-1) ? ", " : i == l-1 ? " and " : "") + a[i].username
     }
     return u
 }
@@ -1583,6 +1581,8 @@ var AlertPopup = function(t, a, b, c, d) {
     let l = Me("div", "ad-pn-c"),
         u,
         v,
+        w,
+        k = 0,
         r = [];
     Md(document.body, l);
     t = t.replaceAll(/\n/g, "<br/>");
@@ -1594,7 +1594,7 @@ var AlertPopup = function(t, a, b, c, d) {
         r.push(...[n, m]);
         d && m.addEventListener("click", d);
     } else {
-        if (a == false) v = Me("div")
+        if (a == false) w = Me("div", "progress-el", {style: "width: 0%;"}), v = Md(Me("div", "progress-bar"), Md(Me("div", "progress-body"), w));
 
         u = Md(Me("div", "ad-btn"), v || Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: a || "Close"})), "id", "ad-err-close-btn"));
         if (a && a != false) {
@@ -1604,10 +1604,14 @@ var AlertPopup = function(t, a, b, c, d) {
     }
     Md(l, Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), Me("p", "", {in: t})), u]));
     r.map(e => e.addEventListener("click", function() {l.remove()}));
-    if (a == false) 
-        window.setTimeout(() => {
-            l.remove(), b();
-        }, c);
+    if (a == false) {
+        let tm = c/100,
+            x = window.setInterval(() => {
+                k++;
+                if (k >= 100) clearInterval(x), l.remove(), b();
+                w.style.width = 100-k+"%";
+            }, tm);
+    }
     return l
 }
 
@@ -1632,12 +1636,12 @@ var UsernamePopup = function(t, a) {
     Md(document.body, l);
     var pp = () => {
         let str = n.value;
-        if (!/\s/.test(str))
+        if (str.length && !/\s/.test(str))
             o = true,
             a(str),
             l.remove();
         else
-            m.classList.add('wrong-enter-r');
+            j.classList.add('wrong-enter-r');
     };
     p.addEventListener("click", pp);
     window.addEventListener("keyup", function(key) {

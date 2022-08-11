@@ -66,6 +66,11 @@ p, h1, h2, h3 {
   display: none;
 }
 
+:root {
+  --primary-dark: #2055EE;
+  --primary-darkest: #133FC0;
+}
+
 section {
   position: relative;
   height: 100%;
@@ -962,48 +967,6 @@ section #game-root .opponent {
   color: var(--color-txt);
 }
 
-.fr-text-field label::after {
-  content: "";
-  position: absolute;
-  left: 0px;
-  bottom: -1px;
-  width: 100%;
-  height: 100%;
-  border-bottom: 3px solid #5fa8d5;
-  -webkit-transform: translateX(-100%);
-          transform: translateX(-100%);
-  -webkit-transition: all 0.3s ease;
-  transition: all 0.3s ease;
-}
-
-.fr-text-field input:focus + .label-name .content-name,
-.fr-text-field input:valid + .label-name .content-name {
-  -webkit-transform: translateY(-100%) scale(0.9);
-          transform: translateY(-100%) scale(0.9);
-  color: #5fa8d5;
-}
-
-.fr-text-field input:focus + .label-name::after,
-.fr-text-field input:valid + .label-name::after {
-  -webkit-transform: translateX(0%);
-          transform: translateX(0%);
-}
-
-.fr-text-field .wrong-enter-r ~ label::after {
-  border-bottom: 3px solid #d55f5f !important;
-}
-
-.fr-text-field .wrong-enter-r ~ label {
-  color: #d55f5f !important;
-}
-
-.fr-text-field input.wrong-enter-r:focus + .label-name .content-name,
-.fr-text-field input.wrong-enter-r:valid + .label-name .content-name {
-  -webkit-transform: translateY(-100%) scale(0.9);
-          transform: translateY(-100%) scale(0.9);
-  color: #d55f5f !important;
-}
-
 .content-name {
   position: absolute;
   bottom: 5px;
@@ -1342,8 +1305,6 @@ section #game-root .opponent {
 
 .ttpo input {
   color: #262626;
-  color: rgba(var(--i1d, 38, 38, 38), 1);
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   font-size: 14px;
   line-height: 18px;
 }
@@ -1410,5 +1371,43 @@ section #game-root .opponent {
 .ttpo .f0n8F.FATdn ._9nyy2 {
   -webkit-transform: scale(0.83333) translateY(-10px);
   transform: scale(0.83333) translateY(-10px);
+}
+
+.ttpo.wrong-enter-r {
+  border-color: #d55f5f;
+}
+
+.ttpo.wrong-enter-r :not(.f0n8F.FATdn) span {
+  color: #d55f5f !important;
+}
+
+.progress-bar {
+  position: relative;
+  width: 100%;
+  height: -webkit-max-content;
+  height: -moz-max-content;
+  height: max-content;
+}
+
+.progress-bar .progress-body {
+  position: relative;
+  height: 40px;
+  border: 2px solid var(--primary-darkest);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-bar .progress-body .progress-text {
+  position: absolute;
+  top: 0;
+  -webkit-transform: translateY(50%);
+          transform: translateY(50%);
+  left: 10px;
+  color: var(--primary-darkest);
+}
+
+.progress-bar .progress-body .progress-el {
+  height: 100%;
+  background: rgba(39, 94, 254, 0.15);
 }
 /*# sourceMappingURL=style.css.map */
