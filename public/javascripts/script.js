@@ -911,6 +911,9 @@ var Socket = function() {
                 this.emit('userdisconnetion');
             }
         } catch (error) {
+            this.gameParent.alert = new AlertPopup("Houston we have a connection problem ! \n Check your internet connection and try again.", "Leave", function() {
+                this.gameParent.stop();
+            }.bind(this));
             console.log(error);
         }
     }
@@ -982,7 +985,7 @@ g.connectionTimeout = function() {
                 this.connectionTimeout();
             }.bind(this));
         }
-    }, 5000);
+    }, 10 * 1000);
 };
 g.socketBuilder = function(s) {
     var gameSocket = this.gameSocket = s;
@@ -1007,7 +1010,8 @@ g.socketBuilder = function(s) {
         Md(document.body, t.overlay);
         t.full = b;
         t.canPlay = c;
-        new AlertPopup("You play against "+hko(d), false, function() {
+        let msg = "You play against "+hko(d)
+        new AlertPopup(msg, false, function() {
             new InfoMessage(t.overlay, "Game is starting!")
             t.createPack(a);
         }, 2000);
@@ -1512,7 +1516,7 @@ hko = function(a) {
     let u = "",
         l = a.length
     for (var i = 0; i < l; i++) {
-        u += ((i > 0 && i < l-1) ? ", " : i == l-1 ? " and " : "") + a[i].username
+        u += ((i > 0 && i < l-1) ? ", " : i == l-1 && l > 1 ? " and " : "") + a[i].username
     }
     return u
 }
@@ -1585,7 +1589,8 @@ var AlertPopup = function(t, a, b, c, d) {
         k = 0,
         r = [];
     Md(document.body, l);
-    t = t.replaceAll(/\n/g, "<br/>");
+    console.log(t);
+    if (t.includes("\n")) t = t.replaceAll(/\n/g, "<br/>");
     if (c && a != false) {
         let n = Ms(Md(Me("div", "ad-err-close ad-demi ad-demi-sup left"), Me("p", "", {in: a})), "id", "ad-err-reset-btn"),
             m = Ms(Md(Me("div", "ad-err-close ad-demi right"), Me("p", "", {in: c})), "id", "ad-err-close-btn");
