@@ -2,7 +2,7 @@
 
 Multiplayer UNO in full vanilla javascript running on node.js server.
 
-You can use this project on localhost or on a node.js server to use it online
+You can use this project on localhost or on a node.js server to use it online.
 
 ## Usage
 
