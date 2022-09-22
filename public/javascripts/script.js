@@ -1020,6 +1020,10 @@ g.socketBuilder = function(s) {
 
     gameSocket.on('canplay', function(a) {
         this.canPlay = a.canPlay;
+		
+		if (this.starting)
+			this.waitingUpdate.push(a);
+
         a.isSame && new InfoMessage(this.overlay, "It's your turn again !")
     }.bind(this));
 
@@ -1172,7 +1176,7 @@ g.codeError = function(a) {
 };
 g.onUpdate = function(a) {
 	this.canPlay = a.canPlay;
-	if (!this.gameStarted) return
+	if (!this.gameStarted || !a.playerid) return
 
 	if (this.starting) return this.waitingUpdate.push(a);
 
@@ -1248,7 +1252,7 @@ g.createPack = function(a) {
 			this.waitingUpdate.forEach((e, i) => {
 				window.setTimeout(() => {
 					this.onUpdate(e);
-				}, L * (i + 1));
+				}, L * (i + 1) * 2);
 			});
 		}
     }, L);
@@ -1741,3 +1745,26 @@ var Hh = function() {
 
     jh(Fe(document, "start-easy-btn"), cv);
 }());
+
+
+
+
+/*
+ * 
+ ** Improvements **
+ * 
+ * Add an animation manager :
+ * 
+ * - create an animation stack to store all incoming animations
+ * - so we can put delay between animations or stop animation propagation or delay all incomes
+ * -> on each update receive add update to the stack and if everything is good an nothing has to be done first apply stack content
+ * -> if note wait for work to finish
+ * - stack could be usefull for end game animation to wait for player action to end before ending
+ * 
+ * Working on :
+ * 
+ * Better error gestion in case of code break or bug and lag
+ * -> add new codeError (currently 0 for connection, 1 for code any execution problem)
+ * 
+ * 
+ */

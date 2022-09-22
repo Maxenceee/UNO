@@ -279,7 +279,14 @@ var createPlayerDeck = function(a, b) {
     }
     fullDeck.shuffle();
     fullDeck.shuffle();
+    /*
+    *   Tests purpose
+    */
     // fullDeck.splice(10);
+    // pall = tts();
+    /*
+    *
+    */
     return {decks: pall, full: fullDeck}
 },
 takeCard = function(fullDeck) {
@@ -312,7 +319,7 @@ random = function(mn, mx) {
 };
 
 tts = function() {
-    return [["WZ", "XZ", "G0", "B1", "R3", "YP", "RV"], ["WZ", "XZ", "G0", "B1", "R3", "YP", "RV"]]
+    return [["WZ", "XZ", "G0", "GD", "BD", "YD", "RD"], ["WZ", "XZ", "G1", "GD", "BD", "YD", "RD"]]
 }
 
 module.exports = wss;
