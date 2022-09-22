@@ -911,9 +911,7 @@ var Socket = function() {
                 this.emit('userdisconnetion');
             }
         } catch (error) {
-            this.gameParent.alert = new AlertPopup("Houston we have a connection problem ! \n Check your internet connection and try again.", "Leave", function() {
-                this.gameParent.stop();
-            }.bind(this));
+            this.gameParent.codeError(1);
             console.log(error);
         }
     }
@@ -966,6 +964,7 @@ g.start = function(a) {
     this.circleDeck = true;
     this.deckContainer = Fe(document, "game-root");
     this.overlay = null;
+	this.waitingUpdate = [];
     this.closeGame();
 
     this.socketBuilder(new Socket);
@@ -1003,15 +1002,17 @@ g.socketBuilder = function(s) {
     gameSocket.on('gamebegin', function(a, b, c, d) {
         let t = this,
             u = d.findIndex(function (obj) {
-            return obj.id == t.gameSocket.gameid;
-        });
+            	return obj.id == t.gameSocket.gameid;
+			});
         d.splice(u, 1);
         t.overlay = t.overlay || Md(Me("div", "display"), Md(Me("div", "display-inner"), [Me("h1", "display-inner-p"), Me("div", "dot-typing")]))
         Md(document.body, t.overlay);
         t.full = b;
         t.canPlay = c;
-        let msg = "You play against "+hko(d)
+		t.starting = true;
+        let msg = "You play against "+hko(d);
         new AlertPopup(msg, false, function() {
+			t.starting = false;
             new InfoMessage(t.overlay, "Game is starting!")
             t.createPack(a);
         }, 2000);
@@ -1030,23 +1031,7 @@ g.socketBuilder = function(s) {
         if (this.connectionCreated) this.stop();
     }.bind(this));
 
-    gameSocket.on('update', function(a) {
-        this.canPlay = a.canPlay;
-        if (!this.gameStarted) return
-        if (a.fromPile) {
-            for(var i = 0; i < a.pileChanges.length; i++) {
-                let id = this.full.findIndex(function (obj) {
-                    return obj == a.pileChanges[i];
-                });
-                this.full.splice(id, 1);
-            }
-        }
-        if (a.played)
-            this.gamepack.gtp().cardCode = a.card,
-            this.playCardEffects(a.card);
-        
-        this.updateOpponentDeckAndGamepack(a);
-    }.bind(this));
+    gameSocket.on('update', this.onUpdate.bind(this));
 
     gameSocket.on('updatecurrentplayer', function(a, b) {
         !b &&  new InfoMessage(this.overlay, "It's  up to "+a.username+" to play.");
@@ -1103,8 +1088,8 @@ g.onFinish = function(a) {
                 t.pile.gtc().moveTo(t.packCoords, -90);
                 window.setTimeout(() => {
                     if (t.connectionCreated) t.stop(y);
-                }, L+100);
-            }, L+50);
+                }, L + 100);
+            }, L + 50);
         }
     window.setTimeout(() => {
         this.gameStarted = false;
@@ -1118,7 +1103,7 @@ g.onFinish = function(a) {
             t.cards.forEach(e => e.delete());
             t.oppn.forEach(e => e.delete());
             t.gamepack.flipPack(u);
-        }, L+100);
+        }, L + 100);
     }, this.gameStarted ? L : 0);
 };
 g.reset = function() {
@@ -1169,6 +1154,45 @@ g.closeGame = function() {
         }, "Stay here");
     }
 };
+g.codeError = function(a) {
+	let m;
+	switch (a) {
+		case 1:
+			m = "Houston we have a connection problem !\nCheck your internet connection and try again.";
+			break;
+		case 2:
+			m = "Houston we have a problem !\nGame ended because something went wrong.";
+			break;
+		default:
+			break;
+	}
+    this.alert = new AlertPopup(m, "Leave", function() {
+        this.stop();
+    }.bind(this));
+};
+g.onUpdate = function(a) {
+	this.canPlay = a.canPlay;
+	if (!this.gameStarted) return
+
+	if (this.starting) return this.waitingUpdate.push(a);
+
+	if (this.full.length == 0 || this.full.length < a.pileChanges.length)
+		return this.end(false);
+
+	if (a.fromPile) {
+		for(var i = 0; i < a.pileChanges.length; i++) {
+			let id = this.full.findIndex(function (obj) {
+				return obj == a.pileChanges[i];
+			});
+			this.full.splice(id, 1);
+		}
+	}
+	if (a.played)
+		this.gamepack.gtp().cardCode = a.card,
+		this.playCardEffects(a.card);
+
+	this.updateOpponentDeckAndGamepack(a);
+};
 g.resizeEvents = function() {
     let t = this;
     window.onresize = function() {
@@ -1179,7 +1203,7 @@ g.drawDeck = function(a, b) {
     this.deck = a;
     this.full = b;
     this.cards = [];
-    this.pileCoords = new O(window.innerWidth - 200, window.innerHeight/2-T/1.5)
+    this.pileCoords = new O(window.innerWidth - 200, window.innerHeight/ 2 - T / 1.5)
     let pile = this.pile = new Pile(new O(0, 0), qe, this.deckContainer, "pile");
     pile.gtc().moveTo(this.pileCoords);
     pile.listen();
@@ -1210,7 +1234,7 @@ g.crtCrad = function(a, b) {
     return ncard
 };
 g.createPack = function(a) {
-    this.packCoords = new O(window.innerWidth/2-S/2, window.innerHeight/2-T/1.5);
+    this.packCoords = new O(window.innerWidth/ 2 - S / 2, window.innerHeight / 2 - T / 1.5);
     this.gamepack = new Pack(this.pileCoords, "gamepack");
     var b = this.gamepack;
     b.gtp().createCardPatern(codeToCoord(a));
@@ -1219,6 +1243,14 @@ g.createPack = function(a) {
     
     window.setTimeout(() => {
         b.gtp().moveTo(this.packCoords);
+
+		if (this.waitingUpdate.length) {
+			this.waitingUpdate.forEach((e, i) => {
+				window.setTimeout(() => {
+					this.onUpdate(e);
+				}, L * (i + 1));
+			});
+		}
     }, L);
 };
 g.updateDeck = function() {};
@@ -1264,7 +1296,6 @@ g.placeDeck = function() {
 
         d[0].moveTo(new O(d[1], d[2]), x ? d[4] : 0);
         d[0].trotate = x ? d[4] : 0;
-        // btcp(d[0], x ? d[4] : 0);
         r++;
     }, k);
 };
@@ -1313,7 +1344,12 @@ g.pileEvent = function(a) {
 g.sendGameUpdate = async function(a, b) {
     this.canPlay = false;
     let newColor = null;
-    if (this.cards.length && a && (a[1] == "Z" && (a[0] == "W" || a[0] == "X"))) newColor = await this.chooseNewColor();
+    if (this.cards.length && a && (a[1] == "Z" && (a[0] == "W" || a[0] == "X"))) {
+        newColor = await this.chooseNewColor();
+        if (!newColor) {
+        	return this.codeError(2);
+        }
+    }
     new InfoMessage(this.overlay, "Waiting for next player...");
     if (newColor) this.gamepack.update(this.gamepack.gtp().cardCode, newColor);
     window.setTimeout(() => {
@@ -1323,7 +1359,7 @@ g.sendGameUpdate = async function(a, b) {
 g.createOpponentDeck = function(a) {
     this.oppn = this.oppn || []
     for(var i = 0; i < (a || 7); i++) {
-        let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: Bf() ? S/1.65 : 60, height: Bf() ? T/1.65 : 90});
+        let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: Bf() ? S / 1.65 : 60, height: Bf() ? T / 1.65 : 90});
         oc.gtc()
             .placeZ(0)
             .moveTo(this.pileCoords);
@@ -1349,7 +1385,7 @@ g.updateOpponentDeckAndGamepack = function(a) {
     if (a.deckSize > this.oppn.length) {
         for(var i = 0; i < a.deckSize; i++) {
             if (!this.oppn[i]) {
-                let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: Bf() ? S/1.65 : 60, height: Bf() ? T/1.65 : 90});
+                let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: Bf() ? S / 1.65 : 60, height: Bf() ? T / 1.65 : 90});
                 oc.gtc()
                     .placeZ(0)
                     .moveTo(this.pileCoords);
@@ -1409,17 +1445,22 @@ g.placeOpponentDeck = function() {
         let d = c[o-r-1];
 
         d[0].gtc().moveTo(new O(d[1], d[2]), d[4]+180);
-        // rtcp(d[0], d[4]+180);
         r++;
     }, k);
 };
 g.playCardEffects = function(a) {
+    let u = 2,
+        l = 4,
+        n = this;
     window.setTimeout(() => {
-        (a[1] == "V") && this.addCardsToDeck(2);
-        (a[1] == "Z" && a[0] == "X") && this.addCardsToDeck(4);
-    }, L+150);
-    // to log effects
-    // (a[1] == "V") ? this.addCardsToDeck(2) : (a[1] == "Z" && a[0] == "X") ? this.addCardsToDeck(4) : console.log("no effect");
+        if (a[1] == "V" && this.full.length >= u) {
+            (a[1] == "V") && this.addCardsToDeck(u);
+        } else if ((a[1] == "Z" && a[0] == "X") && this.full.length >= l) {
+            (a[1] == "Z" && a[0] == "X") && this.addCardsToDeck(l);
+        } else if (a[1] == "V" || (a[1] == "Z" && a[0] == "X")) {
+            return n.end(false);
+        }
+    }, L + 150);
 };
 g.chooseNewColor = async function() {
     try {
@@ -1431,7 +1472,11 @@ g.chooseNewColor = async function() {
             }, 500);
         });
     } catch (error) {
-        console.log(error);
+        if (error)
+        {
+            console.log(error);
+			return null;
+        }
     }
 };
 g.addCardsToDeck = function(a) {
@@ -1488,15 +1533,14 @@ deckToggle = function(a) {
         a.circleDeck = !a.circleDeck;
         a.cards.forEach(e => {
             e.moveTo(a.pileCoords, 0);
-            // btcp(e, 0);
         });
         setTimeout(() => a.placeDeck(), L);
     }
 },
 replacePileAndPackOnResize = function(a) {
-    a.pileCoords = new O(window.innerWidth - 200, window.innerHeight/2-T/1.5);
+    a.pileCoords = new O(window.innerWidth - 200, window.innerHeight / 2 - T / 1.5);
     a.pile.gtc().moveTo(a.pileCoords);
-    a.packCoords = new O(window.innerWidth/2-S/2, window.innerHeight/2-T/1.5);
+    a.packCoords = new O(window.innerWidth / 2 - S / 2, window.innerHeight / 2 - T / 1.5);
     a.gamepack.gtp().moveTo(a.packCoords);
 },
 jh = function(a, b) {
@@ -1516,7 +1560,7 @@ hko = function(a) {
     let u = "",
         l = a.length
     for (var i = 0; i < l; i++) {
-        u += ((i > 0 && i < l-1) ? ", " : i == l-1 && l > 1 ? " and " : "") + a[i].username
+        u += ((i > 0 && i < l - 1) ? ", " : i == l - 1 && l > 1 ? " and " : "") + a[i].username
     }
     return u
 }
@@ -1589,7 +1633,6 @@ var AlertPopup = function(t, a, b, c, d) {
         k = 0,
         r = [];
     Md(document.body, l);
-    console.log(t);
     if (t.includes("\n")) t = t.replaceAll(/\n/g, "<br/>");
     if (c && a != false) {
         let n = Ms(Md(Me("div", "ad-err-close ad-demi ad-demi-sup left"), Me("p", "", {in: a})), "id", "ad-err-reset-btn"),
@@ -1614,7 +1657,7 @@ var AlertPopup = function(t, a, b, c, d) {
             x = window.setInterval(() => {
                 k++;
                 if (k >= 100) clearInterval(x), l.remove(), b();
-                w.style.width = 100-k+"%";
+                w.style.width = 100 - k + "%";
             }, tm);
     }
     return l
@@ -1637,7 +1680,6 @@ var UsernamePopup = function(t, a) {
     }; 
     m.onkeyup = y;
     m.onkeypress = y;
-    // m.onchange = y;
     Md(document.body, l);
     var pp = () => {
         let str = n.value;

@@ -110,7 +110,7 @@ p.beginGame = function() {
     this.sendAll({CURRENT_PLAYER: {username: this.players[this.currentPlaying].username, id: this.players[this.currentPlaying].id}});
 };
 p.setPropety = function(a, b) {
-    for (var i=0; i < this.players.length; i++) {
+    for (var i = 0; i < this.players.length; i++) {
         this.players[i][a] = b;
     }
 };
@@ -198,9 +198,9 @@ p.disconnected = function(a) {
 
 var newPlayerFromDirection = function(a, b, c, d) {
     let v = d && d.pass ? 2 : 1,
-        s = !b ? a-v : a+v;
-    s > c-1 && (s = s-c)
-    s < 0 && (s = c+s)
+        s = !b ? a - v : a + v;
+    s > c - 1 && (s = s - c)
+    s < 0 && (s = c + s)
     return s
 },
 cardAsEffects = function(a) {
@@ -279,7 +279,7 @@ var createPlayerDeck = function(a, b) {
     }
     fullDeck.shuffle();
     fullDeck.shuffle();
-    // fullDeck.splice(0);
+    // fullDeck.splice(10);
     return {decks: pall, full: fullDeck}
 },
 takeCard = function(fullDeck) {
