@@ -15,19 +15,19 @@
 			},
 			Pe = function(a, b) {
 				a.appendChild(b)
-			}
+			};
 			var Loader = function() {
 				let a = Me("DIV", "box-loader");
 				a.innerHTML = '<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"/></svg></div>';
 				this.loader = a
-			}
+			};
 			Loader.prototype.create = function(a) {
 				Pe(a, this.loader);
 				return this.loader
-			}
+			};
 			Loader.prototype.remove = function() {
 				this.loader.remove();   
-			}
+			};
 		</script>
 	</head>
 	<body class="loading">
