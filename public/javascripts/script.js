@@ -1254,6 +1254,7 @@ g.createPack = function(a) {
 					this.onUpdate(e);
 				}, L * (i + 1) * 2);
 			});
+			// this.canPlay = true;
 		}
     }, L);
 };
