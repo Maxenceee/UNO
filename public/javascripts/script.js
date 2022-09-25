@@ -863,13 +863,23 @@ Loader.prototype.delete = function() {
     this.loader.remove();   
 };
 
-var Socket = function() {
+var bindPort = function(a, b) {
+	if (!isNaN(parseInt(b))) {
+		return a+':'+b;
+	}
+	return b+'.'+a;
+}
+
+var Socket = function(g) {
 	try {
+		let sp = "8081",
+			sd = "uno-ws",
+			hr = "maxencegama.dev";
 		let WSProtocol = (location.protocol === 'https:') ? 'wss:' : 'ws:',
-			WSHost = (location.hostname === 'localhost') ? location.hostname+":8081" : 'uno-ws.maxencegama.dev';
+			WSHost = (location.hostname === 'localhost') ? bindPort(location.hostname, sp) : bindPort(hr, sd);
 		this.socket = new WebSocket(WSProtocol+"//"+WSHost);
 	} catch (error) {
-		if (error) return this.gameParent.codeError(2);
+		return g.codeError(2);
 	}
     this.deck = null;
 
@@ -973,20 +983,20 @@ g.start = function(a) {
 	this.waitingUpdate = [];
     this.closeGame();
 
-    this.socketBuilder(new Socket);
+    this.socketBuilder(new Socket(this));
     this.connectionTimeout();
 
     this.resizeEvents();
     deckToggle(this);
 };
 g.connectionTimeout = function() {
-    window.setTimeout(() => {
+    this.tm = setTimeout(() => {
         if (!this.connectionCreated) {
             this.gameSocket.delete();
             this.alert = new AlertPopup("Cannot find any opponent", "Leave", function() {
                 this.stop();
             }.bind(this), "Try again", function() {
-                this.socketBuilder(new Socket);
+                this.socketBuilder(new Socket(this));
                 this.connectionTimeout();
             }.bind(this));
         }
@@ -999,6 +1009,7 @@ g.socketBuilder = function(s) {
 
     gameSocket.on('connection', function(a, b) {
         this.connectionCreated = true;
+		clearTimeout(this.tm);
         setTimeout(() => {
             this.drawDeck(a, b);
             this.createOpponentDeck(a.length);
