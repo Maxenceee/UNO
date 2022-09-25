@@ -40,7 +40,7 @@ To serve node application :
 To serve WebSocket :
 
 ```sh
-<VirtualHost *:80 *:443>
+<VirtualHost *:80 *:443 >
 
 	...
 
