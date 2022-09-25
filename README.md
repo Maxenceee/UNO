@@ -30,7 +30,7 @@ To serve node application :
 ```sh
 <VirtualHost *:80 *:443>
 
-...
+  ...
 
     ProxyPass / http://localhost:[app-port]/
     ProxyPassReverse / http://localhost:[app-port]/
@@ -42,7 +42,7 @@ To serve WebSocket :
 ```sh
 <VirtualHost *:80 *:443>
 
-...
+  ...
 
     ProxyPass / ws://localhost:[socket-port]/
     ProxyPassReverse / ws://localhost:[socket-port]/
