@@ -29,7 +29,7 @@ Multiple games can be played in the same time, players are automatically matched
 
 ### Node.js Apache server Configuration
 
-An easy way to do is to enable ProxyPass on virtual host and configure server as follow.
+An easy way to do is to enable ProxyPass on virtual host and configure the server as follow.
 
 
 To serve node application :
