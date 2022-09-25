@@ -866,7 +866,7 @@ Loader.prototype.delete = function() {
 var Socket = function() {
 	try {
 		let WSProtocol = (location.protocol === 'https:') ? 'wss:' : 'ws:',
-			WSHost = (location.hostname === 'localhost') ? location.hostname+":8081" : 'uno-ws.'+location.hostname;
+			WSHost = (location.hostname === 'localhost') ? location.hostname+":8081" : 'uno-ws.maxencegama.dev';
 		this.socket = new WebSocket(WSProtocol+"//"+WSHost);
 	} catch (error) {
 		if (error) return this.gameParent.codeError(2);
