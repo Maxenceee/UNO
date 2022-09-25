@@ -864,7 +864,12 @@ Loader.prototype.delete = function() {
 };
 
 var Socket = function() {
-    this.socket = new WebSocket("ws://"+location.hostname+":8081");
+	try {
+		let WSProtocol = (location.protocol === 'https:') ? 'wss:' : 'ws:'
+		this.socket = new WebSocket(WSProtocol+"//"+location.hostname+":8081");
+	} catch (error) {
+		if (error) return this.gameParent.codeError(2);
+	}
     this.deck = null;
 
     var ld = new Loader
