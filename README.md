@@ -28,7 +28,7 @@ An easy way to do is to enable ProxyPass on virtual host and configure server as
 To serve node application :
 
 ```sh
-<VirtualHost *:80 *:443>
+<VirtualHost *:80 *:443 >
 
 	...
 
