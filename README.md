@@ -20,7 +20,6 @@ npm start
 
 App will be available on localhost at specified port in the bin/www file (> defaultPort)
 
-
 ## Multiplayer
 
 Multiplayer WebSocket server will automaticaly start on port 8081 nothing more is required.
@@ -30,7 +29,6 @@ Multiple games can be played in the same time, players are automatically matched
 ### Node.js Apache server Configuration
 
 An easy way to do is to enable ProxyPass on virtual host and configure the server as follow.
-
 
 To serve node application :
 
