@@ -887,7 +887,7 @@ var Socket = function(g) {
     this.loader = ld.create(Fe(document, "dialog-close"));
 
     this.socket.onopen = () => {
-        console.log("connection opened");
+        console.info("connection opened");
     };
 
     this.socket.onmessage = (message) => {
@@ -928,12 +928,12 @@ var Socket = function(g) {
             }
         } catch (error) {
             this.gameParent.codeError(1);
-            console.log(error);
+            console.error(error);
         }
     }
 
     this.socket.onclose = () => {
-        console.log('connection closed');
+        console.info('connection closed');
         ld && ld.delete();
         this.emit('close');
     }
@@ -941,8 +941,16 @@ var Socket = function(g) {
 	window.addEventListener('offline', (e) => {
 		console.info('offline');
 		this.offline = true;
+
+		let offl = () => {
+			console.info('back online');
+			clearTimeout(re);
+			this.offline = false;
+			this.gameParent.onReconnection();
+		}
 		
 		let re = setTimeout(() => {
+			window.removeEventListener('online', offl);
 			if (this.offline) {
 				this.gameParent.stop();
 			}
@@ -950,11 +958,7 @@ var Socket = function(g) {
 
 		this.gameParent.connectionLoss();
 		
-		window.addEventListener('online', () => {
-			console.info('back online');
-			clearTimeout(re);
-			this.gameParent.onReconnection();
-		});
+		window.addEventListener('online', offl);
 
 	});
 };
@@ -1079,12 +1083,12 @@ g.socketBuilder = function(s) {
     }.bind(this));
 
     gameSocket.on('gamefinished', function(a) {
-        console.log('gamefinished');
+        console.info('gamefinished');
         this.onFinish(a);
     }.bind(this));
 
     gameSocket.on('userdisconnetion', function() {
-        console.log('userdisconnetion');
+        console.info('userdisconnetion');
         let n = this;
         if (!n.gameStarted) return
         let y = function() {
@@ -1522,9 +1526,8 @@ g.chooseNewColor = async function() {
             }, 500);
         });
     } catch (error) {
-        if (error)
-        {
-            console.log(error);
+        if (error) {
+            console.error(error);
 			return null;
         }
     }

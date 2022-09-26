@@ -61,8 +61,10 @@ wss.on('connection', async function(ws) {
     ws.on('close', async function() {
         console.log(ws.id, "disconnected");
         console.log("number of client", CLIENTS.length);
+
         let pool = await getPoolById(ws.poolId);
         pool && pool.disconnected(ws.id);
+
         removeClient(ws.id, CLIENTS);
         removeClient(ws.id, WAITINGPLAYERS);
     });
@@ -77,6 +79,7 @@ function clientConnection(a) {
     console.log("number of client", CLIENTS.length);
     if (WAITINGPLAYERS.length == GAME_POOL_SIZE) {
         let pool = new Pool(WAITINGPLAYERS);
+        
         GAME_POOL.push(pool);
         pool.initGame();
         WAITINGPLAYERS = [];
