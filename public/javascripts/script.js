@@ -130,7 +130,7 @@ Mq = function(a, b) {
 },
 dj = function(a, b) {
     for(var i = 0; i < b.length; i++) 
-        a.appendChild(b[i]);
+        (a && b[i]) && a.appendChild(b[i]);
 },
 ba = function(a) {
     var b = "undefined" != typeof Symbol && Symbol.iterator && a[Symbol.iterator];
@@ -564,7 +564,13 @@ var setTransformProprety = function(a, b, c) {
     undefined !== c && (l += " scale("+c+") ")
     l += "rotate("+b+"deg)";
     a.style.transform = l;
-}   
+}
+var bindPort = function(a, b) {
+	if (!isNaN(parseInt(b))) {
+		return a+':'+b;
+	}
+	return b+'.'+a;
+}
 
 var genRandomId = function(a) {
     a.id = makeId(5)+"-"+makeId(5)+"-"+makeId(5);
@@ -863,14 +869,8 @@ Loader.prototype.delete = function() {
     this.loader.remove();   
 };
 
-var bindPort = function(a, b) {
-	if (!isNaN(parseInt(b))) {
-		return a+':'+b;
-	}
-	return b+'.'+a;
-}
-
 var Socket = function(g) {
+	kfg(g, this);
 	try {
 		let sp = "8081",
 			sd = "uno-ws",
@@ -879,7 +879,7 @@ var Socket = function(g) {
 			WSHost = (location.hostname === 'localhost') ? bindPort(location.hostname, sp) : bindPort(hr, sd);
 		this.socket = new WebSocket(WSProtocol+"//"+WSHost);
 	} catch (error) {
-		return g.codeError(2);
+		return this.gameParent.codeError(2);
 	}
     this.deck = null;
 
@@ -937,6 +937,26 @@ var Socket = function(g) {
         ld && ld.delete();
         this.emit('close');
     }
+
+	window.addEventListener('offline', (e) => {
+		console.info('offline');
+		this.offline = true;
+		
+		let re = setTimeout(() => {
+			if (this.offline) {
+				this.gameParent.stop();
+			}
+		}, 15 * 1000);
+
+		this.gameParent.connectionLoss();
+		
+		window.addEventListener('online', () => {
+			console.info('back online');
+			clearTimeout(re);
+			this.gameParent.onReconnection();
+		});
+
+	});
 };
 mergeProto(Socket, CallBack);
 var s = Socket.prototype;
@@ -1005,7 +1025,6 @@ g.connectionTimeout = function() {
 g.socketBuilder = function(s) {
     var gameSocket = this.gameSocket = s;
     console.log(gameSocket, this);
-    kfg(this, gameSocket);
 
     gameSocket.on('connection', function(a, b) {
         this.connectionCreated = true;
@@ -1081,6 +1100,7 @@ g.stop = function(a) {
     this.connectionCreated = false;
     this.canPlay = false;
     this.gameSocket.end();
+	this.alert && this.alert.remove();
     if (!a) {
         var ld = new Loader;
         ld.create(Fe(document, "dialog-close"));
@@ -1128,7 +1148,6 @@ g.onFinish = function(a) {
     }, this.gameStarted ? L : 0);
 };
 g.reset = function() {
-    this.alert && this.alert.remove();
     var cnt = Fe(document, "dialog-container");
     cnt.classList.remove('-hide-dialog');
 
@@ -1179,10 +1198,10 @@ g.codeError = function(a) {
 	let m;
 	switch (a) {
 		case 1:
-			m = "Houston we have a connection problem !\nCheck your internet connection and try again.";
+			m = "Houston we have a connection problem!\nCheck your internet connection and try again.";
 			break;
 		case 2:
-			m = "Houston we have a problem !\nGame ended because something went wrong.";
+			m = "Houston we have a problem!\nGame ended because something went wrong.";
 			break;
 		default:
 			break;
@@ -1190,6 +1209,15 @@ g.codeError = function(a) {
     this.alert = new AlertPopup(m, "Leave", function() {
         this.stop();
     }.bind(this));
+};
+g.connectionLoss = function() {
+	let m;
+	m = "Houston we have a connection problem!\nCheck your internet connection, we're trying to reconnect you.";
+    this.alert = new AlertPopup(m);
+};
+g.onReconnection = function() {
+	this.alert.remove();
+	new InfoMessage(this.overlay, "Happy to see you back here!");
 };
 g.onUpdate = function(a) {
 	this.canPlay = a.canPlay;
@@ -1664,13 +1692,17 @@ var AlertPopup = function(t, a, b, c, d) {
         r.push(...[n, m]);
         d && m.addEventListener("click", d);
     } else {
-        if (a == false) w = Me("div", "progress-el", {style: "width: 0%;"}), v = Md(Me("div", "progress-bar"), Md(Me("div", "progress-body"), w));
-
-        u = Md(Me("div", "ad-btn"), v || Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: a || "Close"})), "id", "ad-err-close-btn"));
-        if (a && a != false) {
-            b && u.addEventListener("click", b);
-            r.push(u);
-        }
+		if (undefined != a) {
+			if (a == false) w = Me("div", "progress-el", {style: "width: 0%;"}), v = Md(Me("div", "progress-bar"), Md(Me("div", "progress-body"), w));
+	
+			u = Md(Me("div", "ad-btn"), v || Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: a || "Close"})), "id", "ad-err-close-btn"));
+			if (a && a != false) {
+				b && u.addEventListener("click", b);
+				r.push(u);
+			}
+		} else {
+			u = Md(Me("div", "lds-ellipsis"), [Me("div"), Me("div"), Me("div"), Me("div")]);
+		}
     }
     Md(l, Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), Me("p", "", {in: t})), u]));
     r.map(e => e.addEventListener("click", function() {l.remove()}));
