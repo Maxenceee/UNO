@@ -2,11 +2,101 @@
 <html>
 	<head>
 		<title>UNO - Multiplayer game</title>
-		<link rel='stylesheet' href='/stylesheets/style.css' />
 		<link rel="icon" type="image/ico" href="/images/2133115.png" sizes="512x512">
 		<link rel="apple-touch-icon" href="/images/2133115.png" sizes="512x512">
 		<link rel="shortcut icon" type="image/png" href="/images/2133115.png"/>
 		<link rel="preload" as="image" href="/images/UNO_cards.svg">
+		<style>
+			.loading > *:not(.box-loader) {
+				display: none;
+			}
+		</style>
+		<style>
+			.box-loader {
+				position: absolute;
+				z-index: 50005;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				backdrop-filter: blur(5px);
+				-webkit-backdrop-filter: blur(5px);
+				display: flex;
+				display: -webkit-flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.loader {
+				position: relative;
+				margin: 0 auto;
+				width: 50px;
+			}
+
+			.loader::before {
+				content: '';
+				display: block;
+				padding-top: 100%;
+			}
+
+			.circular {
+				animation: rotate 2s linear infinite;
+				height: 100%;
+				transform-origin: center center;
+				width: 100%;
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				margin: auto;
+			}
+
+			.path {
+				stroke-dasharray: 1, 200;
+				stroke-dashoffset: 0;
+				animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+				stroke-linecap: round;
+			}
+
+			@keyframes rotate {
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+
+			@keyframes dash {
+				0% {
+					stroke-dasharray: 1, 200;
+					stroke-dashoffset: 0;
+				}
+				50% {
+					stroke-dasharray: 89, 200;
+					stroke-dashoffset: -35px;
+				}
+				100% {
+					stroke-dasharray: 89, 200;
+					stroke-dashoffset: -124px;
+				}
+			}
+
+			@keyframes color {
+				100%,
+				0% {
+					stroke: #d62d20;
+				}
+				40% {
+					stroke: #0057e7;
+				}
+				66% {
+					stroke: #008744;
+				}
+				80%,
+				90% {
+					stroke: #ffa700;
+				}
+			}
+		</style>
 		<script>
 			var Me = function(a, b) {
 				let e = document.createElement(a);
@@ -81,7 +171,7 @@
 		<object id="sheep" type="image/svg+xml" data="/images/sheep-animated.svg"></object>
 		<script type="text/javascript">
 			this.gbar_ = {
-				CONFIG: [[[["style.css"], ["script.js"]], ["/stylesheets/", "/javascripts/"]]],
+				CONFIG: [[[["style.min.css"], ["script.min.js"]], ["/stylesheets/", "/javascripts/"]]],
 			};
 			this.gbar_ = this.gbar_ || {};
 			(function(_) {

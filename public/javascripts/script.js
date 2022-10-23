@@ -1336,7 +1336,7 @@ g.placeDeck = function() {
             l = f / (g / 2),
             u = z - 250 + (x ? -(j >= g / 2 ? (s > 0 ? l * (g - j) : l * (o - j - 1)) : l * j) : 0),
             v = d[j],
-            h = o > 1 ? (j < g / 2 ? (g - j) - g / 2 : (s > 0 ? 0 : -1) - (j - g / 2)) * -(e / 2) / (g / 2) : 0;
+            h = x ? o > 1 ? (j < g / 2 ? (g - j) - g / 2 : (s > 0 ? 0 : -1) - (j - g / 2)) * -(e / 2) / (g / 2) : 0 : 0;
         
         c.push([v, t, u, j+1, h]);
     }
@@ -1348,7 +1348,7 @@ g.placeDeck = function() {
         if (r === o) return clearInterval(w);
         let d = c[r];
 
-        d[0].moveTo(new O(d[1], d[2]), x ? d[4] : 0);
+        d[0].moveTo(new O(d[1], d[2]), d[4]);
         d[0].trotate = x ? d[4] : 0;
         r++;
     }, k);
@@ -1365,7 +1365,7 @@ g.playCard = function(b, c, p) {
         if (c.cards.length === 0) c.end();
     }, 600);
     c.gamepack.gtp().cardCode = b.cardCode;
-    id !== -1 && (n = c.cards.splice(id, 1), m = c.deck.splice(id, 1))
+    -1 !== id && (n = c.cards.splice(id, 1), m = c.deck.splice(id, 1))
     window.setTimeout(() => {
         c.placeDeck();
     }, 50);
@@ -1488,7 +1488,7 @@ g.placeOpponentDeck = function() {
             v = d[j],
             h = o > 1 ? (j < g / 2 ? (g - j) - g / 2 : (s > 0 ? 0 : -1) - (j - g / 2)) * (e / 2) / (g / 2) : 0;
 
-        c.unshift([v, t, u, j+1, h]);
+        c.unshift([v, t, u, j+1, h+180]);
     }
     for(var i = o-1; i >= 0; i--) {
         let d = c[i];
@@ -1498,7 +1498,7 @@ g.placeOpponentDeck = function() {
         if (r == o) return clearInterval(w);
         let d = c[o-r-1];
 
-        d[0].gtc().moveTo(new O(d[1], d[2]), d[4]+180);
+        d[0].gtc().moveTo(new O(d[1], d[2]), d[4]);
         r++;
     }, k);
 };
@@ -1725,7 +1725,7 @@ var UsernamePopup = function(t, a) {
         p = Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: "Save"})), "id", "ad-err-close-btn"),
         // m = Ms(Me("input", "SIU-tf"), ["autocomplete", "autocapitalize", "autofocus", "required", "maxlength", "type", "id"], ["off", "off", "", "", "15", "text", "on-user-input"]),
         m = Me("label", "f0n8F"),
-        n = Ms(Me("input", "_2hvTZ pexuQ zyHYP"), ["autocomplete", "autocorrect", "autocapitalize", "autofocus", "required", "maxlength", "type", "aria-required", "name", "id","value"], ["off", "off", "off", "", "", "15", "text", "true", "username", "on-user-input", ""]),
+        n = Ms(Me("input", "_2hvTZ pexuQ zyHYP"), ["autocomplete", "autocorrect", "autocapitalize", "autofocus", "required", "maxlength", "type", "aria-required", "name", "id", "value"], ["off", "off", "off", "", "", "15", "text", "true", "username", "on-user-input", ""]),
         j = Md(Me("div", "ttpo"), Md(m, [Me("span", "_9nyy2", {in: "Username"}), n])),
         l = Md(Me("div", "ad-pn-c"), Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), [Me("p", "", {style: "min-height: auto;", in: t}), j]), Md(Me("div", "ad-btn"), p)])); //[m, Md(Ms(Me("label", "label-name"), "for", "name"), Me("span", "content-name", {in: "Username"}))]
 
@@ -1809,10 +1809,11 @@ var Hh = function() {
  * Add an animation manager :
  * 
  * - create an animation stack to store all incoming animations
- * - so we can put delay between animations or stop animation propagation or delay all incomes
- * -> on each update receive add update to the stack and if everything is good an nothing has to be done first apply stack content
- * -> if note wait for work to finish
+ * - so we can put delay between animations or stop animation propagation or even delay all incomes
+ * -> on each update receive, add update to the stack and if everything is good an nothing has to be done first, run stack content
+ * -> if not wait for work to finish
  * - stack could be usefull for end game animation to wait for player action to end before ending
+ * - can be acheived by adding transition end so we can detect when transitions terminates
  * 
  * Working on :
  * 
