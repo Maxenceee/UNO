@@ -4,6 +4,16 @@
 
 
 
+  _   _   _   _    ___  
+ | | | | | \ | |  / _ \ 
+ | | | | |  \| | | | | |
+ | |_| | | |\  | | |_| |
+  \___/  |_| \_|  \___/ 
+                        
+
+
+
+
 
  __  __                                                  ____                             
 |  \/  |   __ _  __  __   ___   _ __     ___    ___     / ___|   __ _   _ __ ___     __ _ 
@@ -1017,7 +1027,7 @@ g.connectionTimeout = function() {
     this.tm = setTimeout(() => {
         if (!this.connectionCreated) {
             this.gameSocket.delete();
-            this.alert = new AlertPopup("Cannot find any opponent", "Leave", function() {
+            this.alert = new AlertPopup("Cannot find any opponent.\n\nWe're sorry, it seems there is no one to play with you.", "Leave", function() {
                 this.stop();
             }.bind(this), "Try again", function() {
                 this.socketBuilder(new Socket(this));
@@ -1722,7 +1732,7 @@ var AlertPopup = function(t, a, b, c, d) {
 
 var UsernamePopup = function(t, a) {
     let o = false,
-        p = Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: "Save"})), "id", "ad-err-close-btn"),
+        p = Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: "Search for opponent"})), "id", "ad-err-close-btn"),
         // m = Ms(Me("input", "SIU-tf"), ["autocomplete", "autocapitalize", "autofocus", "required", "maxlength", "type", "id"], ["off", "off", "", "", "15", "text", "on-user-input"]),
         m = Me("label", "f0n8F"),
         n = Ms(Me("input", "_2hvTZ pexuQ zyHYP"), ["autocomplete", "autocorrect", "autocapitalize", "autofocus", "required", "maxlength", "type", "aria-required", "name", "id", "value"], ["off", "off", "off", "", "", "15", "text", "true", "username", "on-user-input", ""]),
