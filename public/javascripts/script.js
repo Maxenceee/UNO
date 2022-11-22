@@ -766,8 +766,8 @@ c.initEvents = function() {
             passive: !1
         }],
         [["losecapture"], d.card, d.dragCancel.bind(d)],
-        [["click"], document, d.onClick.bind(d), false],
-        [["touchend", "mouseup"], d.card, d.dragMoveEnd.bind(d), true]
+        [["click"], document, d.onClick.bind(d), {passive: false}],
+        [["touchend", "mouseup"], d.card, d.dragMoveEnd.bind(d)]
     ], d.event);
     return this
 };
@@ -952,8 +952,8 @@ var Socket = function(g) {
         this.emit('close');
     }
 
-	window.addEventListener('offline', (e) => {
-		console.info('Oops you are offline :\\');
+    this.offlineEvent = new Events(["offline"], window, function() {
+        console.info('Oops you are offline :\\');
 		this.offline = true;
 
 		let offl = () => {
@@ -973,8 +973,7 @@ var Socket = function(g) {
 		this.gameParent.connectionLoss();
 		
 		window.addEventListener('online', offl);
-
-	});
+    }.bind(this));
 };
 mergeProto(Socket, CallBack);
 var s = Socket.prototype;
@@ -1057,6 +1056,7 @@ s.serverDelayAlert = function(a) {
 s.delete = function() {
     this.loader && this.loader.delete();
     this.socket.close();
+    this.offlineEvent.removeEvent();
     delete this
 }
 
@@ -1862,9 +1862,6 @@ var Hh = function() {
 
     jh(Fe(document, "start-easy-btn"), cv);
 }());
-
-
-
 
 /*
  * 
