@@ -106,6 +106,7 @@ section #game-root .card .card-canvas, section #game-root .pile .card-canvas, se
   height: 100%;
   -webkit-backface-visibility: hidden !important;
           backface-visibility: hidden !important;
+  background: url("/images/UNO_back_card.svg");
 }
 
 section #game-root .card .card-canvas.backface, section #game-root .pile .card-canvas.backface, section #game-root .gamepack .card-canvas.backface, section #game-root .opponent .card-canvas.backface {
@@ -702,7 +703,7 @@ section #game-root .opponent {
   background-color: rgba(0, 0, 0, 0.075);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
-  z-index: 50005;
+  z-index: 5005;
 }
 
 .ad-pn-c .ad-panel, .ad-pn-c .ad-status-panel {
@@ -1405,5 +1406,55 @@ section #game-root .opponent {
     -webkit-transform: translate(24px, 0);
             transform: translate(24px, 0);
   }
+}
+
+.ws-server-p {
+  position: fixed;
+  bottom: 10px;
+  right: 20px;
+  background-color: #555;
+  padding: 5px 10px;
+  z-index: 8000;
+  border-radius: 8px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -ms-flex-line-pack: center;
+      align-content: center;
+  overflow: hidden;
+}
+
+.ws-server-p > div {
+  position: relative;
+  margin-right: 5px;
+}
+
+.ws-server-p > div svg {
+  position: relative;
+  height: 100%;
+}
+
+.ws-server-p > div svg path {
+  fill: #FFF;
+}
+
+.ws-server-p p {
+  line-height: 30px;
+  font-size: 12px;
+  line-break: anywhere;
+  color: #FFF;
+}
+
+.ws-server-p .progression {
+  margin: 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background-color: #FFF;
+  height: 3px;
 }
 /*# sourceMappingURL=style.css.map */

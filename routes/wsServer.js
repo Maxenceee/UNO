@@ -56,6 +56,10 @@ wss.on('connection', async function(ws) {
             removeClient(ws.id, WAITINGPLAYERS);
             ws.close();
         }
+        if (msg.PING) {
+            let ps = new Date().getTime();
+            ws.send(j({PING: ps}));
+        }
     });
 
     ws.on('close', async function() {
