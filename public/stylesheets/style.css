@@ -128,6 +128,65 @@ section #game-root .opponent {
           transform-origin: center center;
 }
 
+.ovr-uno-button-container {
+  position: absolute;
+  -webkit-transform-style: preserve-3d;
+          transform-style: preserve-3d;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -ms-flex-line-pack: center;
+      align-content: center;
+}
+
+.ovr-uno-button-container .ovr-uno-button {
+  position: relative;
+  z-index: 10;
+  margin: auto;
+  -webkit-transition: height 0.3s ease, width 0.3s ease;
+  transition: height 0.3s ease, width 0.3s ease;
+  background: linear-gradient(45deg, red 0%, #e8a90d 100%);
+  height: 80px;
+  width: 80px;
+  border-radius: 50%;
+  -webkit-box-shadow: inset -1px -2px 12px 3px #e4e9ec27, inset 1px 2px 5px 3px #3636364e, 1px 2px 3px 1px #3636364e;
+          box-shadow: inset -1px -2px 12px 3px #e4e9ec27, inset 1px 2px 5px 3px #3636364e, 1px 2px 3px 1px #3636364e;
+}
+
+.ovr-uno-button-container .ovr-uno-button .ovr-uno-button-logo {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-clip: content-box;
+  background-size: contain;
+  background-image: url("/images/UNO_LOGO.png");
+}
+
+.ovr-uno-button-container canvas {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+}
+
+.ovr-uno-button-container.reduced .ovr-uno-button {
+  height: 0px;
+  width: 0px;
+}
+
+.ovr-uno-button-container.clicked .ovr-uno-button {
+  -webkit-transition: opacity 0.1s ease-in-out, height 0.3s ease, width 0.3s ease;
+  transition: opacity 0.1s ease-in-out, height 0.3s ease, width 0.3s ease;
+  opacity: 0;
+  height: 200px;
+  width: 200px;
+}
+
 .-hide-dialog {
   display: none !important;
   visibility: hidden !important;

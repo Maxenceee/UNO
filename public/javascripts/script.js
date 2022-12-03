@@ -72,7 +72,8 @@ else {
             break a
         } catch (a) {}
         ea = !1
-    }da = ea ? function(a, b) {
+    }
+    da = ea ? function(a, b) {
         a.__proto__ = b;
         if (a.__proto__ !== b)
             throw new TypeError(a + " is not extensible");
@@ -528,7 +529,6 @@ CallBack.prototype.emit = function(t) {
     })
 }
 
-
 var Events = function(a, c) {
     this.event = null;
     this.parent = null;
@@ -896,6 +896,7 @@ var Socket = function(g) {
 
     var ld = new Loader
     this.loader = ld.create(Fe(document, "dialog-close"));
+	this.initPing();
 
     this.socket.onopen = () => {
         console.info("Connection opened");
@@ -990,6 +991,7 @@ s.begin = function(a) {
 s.sendUpdate = function(a, b, c, d) {
     let m = this.j({UPDATE: {playerid: this.gameid, card: a || null, deckSize: b, ...c, newColor: d}});
     this.socket.send(m);
+	this.pingServer();
 };
 s.finish = function(a) {
     this.socket.send(this.j({GAME_FINISHED: true, closeconnection: true, id: this.gameid, winning: a}));
@@ -1001,24 +1003,28 @@ s.end = function() {
 s.send = function(a) {
     this.socket.send(this.j(a));
 };
-s.pingServer = function() {
-    let ps = new Date().getTime(),
-        pe,
-        p,
-        ul;
-    this.socket.send(this.j({PING: ps}));
-    this.on('server-ping', () => {
-        pe = new Date().getTime();
-        p = pe - ps;
+s.initPing = function() {
+	let pe,
+		p,
+		ul;
+	this.on('server-ping', () => {
+        pe = Date.now();
+        p = pe - this.ps;
         ul = this.formatServerPing(p);
         console.info("Server ping status: %dms %s", p, ul == 0 ? "good :)" : ul == 1 ? "slow :\\" : "poor :(");
         this.serverDelayAlert(ul);
     });
 };
+s.pingServer = function() {
+	this.ps = Date.now();
+	if (this.lastPing && this.ps - this.lastPing < 1 * 60 * 1000) return
+	this.lastPing = this.ps;
+    this.socket.send(this.j({PING: this.ps}));
+};
 s.formatServerPing = function(a) {
-    if (a > 50 && a < 100)
+    if (a > 100 && a < 150)
         return (1);
-    else if (a > 100)
+    else if (a > 150)
         return (2);
     else
         return (0);
@@ -1116,6 +1122,7 @@ g.socketBuilder = function(s) {
         t.full = b;
         t.canPlay = c;
 		t.starting = true;
+        t.unobutton = new UNOButton(t.deckContainer);
         let msg = "You play against "+hko(d);
         new AlertPopup(msg, false, function() {
 			t.starting = false;
@@ -1131,6 +1138,10 @@ g.socketBuilder = function(s) {
 			this.waitingUpdate.push(a);
 
         a.isSame && new InfoMessage(this.overlay, "It's your turn again !")
+		if (this.deck.length <= 2)
+			this.unobutton.activate();
+		else
+			this.unobutton.deactivate();
     }.bind(this));
 
     gameSocket.on('info', function(a) {
@@ -1236,6 +1247,7 @@ g.reset = function() {
     jh(Fe(document, "start-easy-btn"), cv);
     Fe(document, "close-btn").classList.remove("-show");
     Fe(document, "deck-toggle").classList.remove("-show");
+	t.unobutton.remove();
 
     // this.gamepack && this.gamepack.delete();
     // Fe(document, "pie-container") && Fe(document, "pie-container").remove();
@@ -1465,14 +1477,15 @@ g.sendGameUpdate = async function(a, b) {
     let newColor = null;
     if (this.cards.length && a && (a[1] == "Z" && (a[0] == "W" || a[0] == "X"))) {
         newColor = await this.chooseNewColor();
-        if (!newColor) {
+        if (!newColor)
         	return this.codeError(2);
-        }
     }
     new InfoMessage(this.overlay, "Waiting for next player...");
     if (newColor) this.gamepack.update(this.gamepack.gtp().cardCode, newColor);
     window.setTimeout(() => {
         this.gameSocket.sendUpdate(a, this.deck.length, b, newColor);
+		if (this.deck > 1)
+			this.unobutton.deactivate();
     }, newColor ? 700 : 0);
 };
 g.createOpponentDeck = function(a) {
@@ -1735,11 +1748,156 @@ p.generate = function(a) {
     }, 1000);
 };
 p.delete = function() {
-    Mc(this.n, 'remove');
-    setTimeout(() => {
-        this.n.remove();
-        delete this;
-    }, 1000);
+	Mc(this.n, 'remove');
+	setTimeout(() => {
+		this.n.remove();
+		delete this;
+	}, 1000);
+};
+
+var UNOButton = function(a) {
+	this.b = Md(Me("div", "ovr-uno-button-container"), Md(Me("div", "ovr-uno-button"), Me("div", "ovr-uno-button-logo")));
+	this.width = T * 1.5;
+	this.height = T * 1.5;
+	this.root = a;
+	this.buttonCoords = new O(0, window.innerHeight / 3);
+	this.placeButton(this.buttonCoords);
+	this.b.classList.add("reduced");
+	Md(this.root, this.b);
+	this.disabled = true;
+	this.initPartucles();
+	return (this);
+};
+var u = UNOButton.prototype;
+u.activate = function() {
+	this.disabled = false;
+	this.b.classList.remove("reduced");
+	this.b.onclick = () => {
+		this.disabled = true;
+		this.b.classList.add("clicked");
+	}
+};
+u.deactivate = function() {
+	this.disabled = true;
+	this.b.classList.add("reduced");
+	this.b.onclick = null;
+};
+u.placeButton = function(a) {
+	a && (this.left = a.left, this.top = a.top)
+	this.b.style.width = this.width+"px";
+	this.b.style.height = this.height+"px";
+	this.b.style.left = this.left+"px";
+	this.b.style.top = this.top+"px";
+	return (this);
+};
+u.remove = function() {
+	this.b.remove();
+	delete this;
+};
+u.initPartucles = function() {
+	let t = this;
+	t.canvas = Me("canvas");
+	t.innerBtn = this.b.querySelector(".ovr-uno-button");
+	Md(t.b, t.canvas);
+	t.ctx = t.canvas.getContext("2d");
+	t.hoverFlag = false;
+	t.dots=[];
+	t.clickFlag = false;
+	let w = t.ctx.canvas.width = t.width,
+		h = t.ctx.canvas.height = t.height,
+		emitter,
+		particlesSettings = {
+			name: "Vortex",
+			maxDots: 100,
+			maxSpeed: 2,
+			minSpeed: -2,
+			emitRate: 20,
+			emitNum: 5,
+			radius: 3,
+			trail: 1,
+			maxTime: 3000,
+			minTime: 1500,
+			glow: 10,
+			hueMin: 0,
+			hueMax: 94,
+			satMin: 100,
+			satMax: 94,
+		};
+
+	let emitDots = function() {
+		if (t.dots.length < particlesSettings.maxDots) {
+			for(var i = 0; i < particlesSettings.emitNum; i++) {
+				var hue = Math.random() * (particlesSettings.hueMax - particlesSettings.hueMin) + particlesSettings.hueMin,
+					sat = Math.random() * (particlesSettings.satMax - particlesSettings.satMin) + particlesSettings.satMin,
+					sp = t.hoverFlag ? Math.random() * (particlesSettings.maxSpeed - particlesSettings.minSpeed) + particlesSettings.minSpeed : 20;
+				t.dots.push({
+					x: w / 2,
+					y: h / 2,
+					v: sp,
+					d: Math.random() * 360,
+					c: Math.random() * (5 - (-5)) + (-5),
+					h: hue,
+					s: sat,
+					st: Date.now(),
+					lt: Math.random() * (particlesSettings.maxTime - particlesSettings.minTime) + particlesSettings.minTime
+				});
+			}
+		}
+	},
+    draw = function() {
+		t.ctx.clearRect(0, 0, w, h);
+		if (t.disabled) return
+		t.dots.forEach((_, i) => {
+			var pct = (Date.now() - t.dots[i].st) / t.dots[i].lt;
+			t.ctx.save();
+			t.ctx.beginPath();
+			t.ctx.translate(w / 2, h / 2);
+			t.ctx.rotate(t.dots[i].d * Math.PI / 180);
+			t.ctx.fillStyle = "hsla(" + t.dots[i].h + ", " + t.dots[i].s + "%, 50%, " + (pct) + ")";
+			t.ctx.shadowColor = "hsla(" + t.dots[i].h + ", " + t.dots[i].s + "%, 50%, 1)";
+			t.ctx.shadowBlur = particlesSettings.glow;
+			t.ctx.arc(t.dots[i].x, t.dots[i].y, particlesSettings.radius, 0, Math.PI * 2);
+			t.ctx.fill();
+			t.ctx.closePath();
+			t.ctx.restore();
+
+			t.dots[i].x += t.dots[i].v;
+			t.dots[i].y += t.dots[i].v;
+			if(t.clickFlag)
+				t.dots[i].v = 3;
+
+			if(t.dots[i].x > w || t.dots[i].x < 0 || t.dots[i].y > h || t.dots[i].y < 0 || t.dots[i].st + t.dots[i].lt < Date.now())
+				t.dots.splice(i,1);
+		});
+		anim = requestAnimationFrame(draw);
+	}
+
+	t.innerBtn.onmouseover = function() {
+		if (t.disabled) return
+		t.hoverFlag = true;
+		t.timeout && clearTimeout(t.timeout);
+		emitter = setInterval(emitDots, particlesSettings.emitRate);
+		anim = requestAnimationFrame(draw);
+	}
+
+	t.innerBtn.onmouseout = function() {
+		t.hoverFlag = false;
+		clearInterval(emitter);
+		t.timeout = setTimeout(() => {
+			if (t.hoverFlag == true) return
+			cancelAnimationFrame(anim);
+			t.ctx.clearRect(0, 0, w, h);
+			t.dots = [];
+		}, 0);
+	}
+
+	t.innerBtn.onmousedown = function() {
+		t.clickFlag = true;
+	}
+
+	t.innerBtn.onmouseup = function() {
+		t.clickFlag = false;
+	}
 };
 
 var AlertPopup = function(t, a, b, c, d) {
@@ -1818,7 +1976,7 @@ var UsernamePopup = function(t, a) {
             pp();    
         }
     });
-    return l
+    return (l);
 };
 
 var InfoMessage = function(a, b) {

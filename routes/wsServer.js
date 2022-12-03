@@ -31,7 +31,7 @@ wss.on('connection', async function(ws) {
         let msg = p(message),
             pool = await getPoolById(ws.poolId);
 
-        if (!pool) return
+        if (!pool) return ;
 
         if (msg.UPDATE) {
             console.log("received update", msg.UPDATE);
@@ -139,7 +139,7 @@ p.update = function(a) {
     this.players[this.currentPlaying].send(j({canPlay: true, isSame: isSame}));
 };
 p.playersAllReady = function() {
-    return this.playerReady == this.poolSize
+    return (this.playerReady == this.poolSize);
 };
 p.sendId = function() {
     for (var i = 0; i < this.players.length; i++) {
@@ -153,9 +153,9 @@ p.sendDeck = function(a) {
 };
 p.sendAllExcept = function(a, m) {
     var foundId = GAME_POOL.findIndex(function (obj) {
-        return obj.poolId == a;
+        return (obj.poolId == a);
     });
-    if (foundId == -1) return
+    if (foundId == -1) return ;
     for (var i = 0; i < this.players.length; i++) {
         if (i !== foundId) this.players[i].send(j(m));
     }
@@ -175,7 +175,7 @@ p.defUsername = function(a, b) {
     if (a) b.username = a;
     else {
         var foundId = this.players.findIndex(function (obj) {
-            return obj.id == b.id;
+            return (obj.id == b.id);
         });
         foundId !== -1 && (b.username = "Player "+foundId)
     }
@@ -183,7 +183,7 @@ p.defUsername = function(a, b) {
 };
 p.removePool = function() {
     var foundId = GAME_POOL.findIndex(function (obj) {
-        return obj.poolId == this.poolId;
+        return (obj.poolId == this.poolId);
     });
     foundId !== -1 && GAME_POOL.splice(foundId, 1);
     delete this
@@ -195,7 +195,7 @@ p.finish = function(a, b) {
 };
 p.disconnected = function(a) {
     var foundId = this.players.findIndex(function (obj) {
-        return obj.id == a;
+        return (obj.id == a);
     });
     foundId !== -1 && this.players.splice(foundId, 1);
     this.sendAll({USER_DISCONNECTED: a});
@@ -208,17 +208,17 @@ var newPlayerFromDirection = function(a, b, c, d) {
         s = !b ? a - v : a + v;
     s > c - 1 && (s = s - c)
     s < 0 && (s = c + s)
-    return s
+    return (s);
 },
 cardAsEffects = function(a) {
-    return a && {pass: a[1] == "D", reverse: a[1] == "P"}
+    return (a && {pass: a[1] == "D", reverse: a[1] == "P"});
 }
 
 async function getPoolById(a) {
     try {
-        let response = await new Promise((resolve, reject) => {
+        return await new Promise((resolve, reject) => {
             var foundId = GAME_POOL.findIndex(function (obj) {
-                return obj.poolId == a;
+                return (obj.poolId == a);
             });
             if (foundId > -1) {
                 resolve(GAME_POOL[foundId]);
@@ -226,8 +226,6 @@ async function getPoolById(a) {
                 reject(null);
             }
         });
-
-        return response
     } catch (error) {
         console.info(error);
     }
@@ -235,9 +233,9 @@ async function getPoolById(a) {
 
 async function removeClient(id, l) {
     try {
-        let response = await new Promise((resolve, reject) => {
+        return await new Promise((resolve, reject) => {
             var foundId = l.findIndex(function (obj) {
-                return obj.id == id;
+                return (obj.id == id);
             });
         
             if (foundId > -1) {
@@ -247,8 +245,6 @@ async function removeClient(id, l) {
                 reject(false);
             }
         });
-
-        return response
     } catch (error) {
         console.info(error);
     }
@@ -290,11 +286,11 @@ var createPlayerDeck = function(a, b) {
     *   Tests purpose
     */
     // fullDeck.splice(10);
-    // pall = tts();
+    pall = tts();
     /*
     *
     */
-    return {decks: pall, full: fullDeck}
+    return ({decks: pall, full: fullDeck});
 },
 takeCard = function(fullDeck) {
     let c = fullDeck.shift(),
@@ -303,30 +299,30 @@ takeCard = function(fullDeck) {
         f.push(c);
         c = f.shift();
     }
-    return {c: c, f: f};
+    return ({c: c, f: f});
 },
 idf = function(a) {
     switch(a) {
         case "D":
         case "P":
-        case "V": return true
-        default: return false
+        case "V": return (true);
+        default: return (false);
     }
 }
 
 var p = function(a) {
-    return JSON.parse(a);
+    return (JSON.parse(a));
 },
 j = function(a) {
-    return JSON.stringify(a);
-}
-
+    return (JSON.stringify(a));
+},
 random = function(mn, mx) {
-    return Math.floor(Math.random() * (mx - mn) + mn);
+    return (Math.floor(Math.random() * (mx - mn) + mn));
 };
 
-tts = function() {
-    return [["WZ", "XZ", "G0", "GD", "BD", "YD", "RD"], ["WZ", "XZ", "G1", "GD", "BD", "YD", "RD"]]
+let tts = function() {
+    // return [["WZ", "XZ", "G0", "GD", "BD", "YD", "RD"], ["WZ", "XZ", "G1", "GD", "BD", "YD", "RD"]]
+    return [["WZ", "XZ", "G0"], ["WZ", "XZ", "G0"]]
 }
 
 module.exports = wss;
