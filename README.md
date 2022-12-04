@@ -1,18 +1,18 @@
 # UNO
 
-Multiplayer UNO in full vanilla javascript running on node.js server.
+Multiplayer UNO fully in Vanilla Javascript and running on Node.JS server.
 
 You can use this project on localhost or on a Node.js server to use it online.
 
 ## Usage
 
-Clone this project and open current directory into a terminal, then install dependencies by running :
+Clone this project and open current directory into a terminal, then install dependencies by running:
 
 ```sh
 npm install
 ```
 
-After installing the dependencies, start the project by running :
+After installing the dependencies, start the project by running:
 
 ```sh
 npm start
