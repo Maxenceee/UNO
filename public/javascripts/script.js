@@ -666,7 +666,7 @@ c.resize = function(a, b) {
 c.flip = function(a, b, c, d) {
     let n = this.I("CANVAS", "card-canvas backface"),
         l = codeToCoord(a),
-        m = [0, 240*(l.x + (hjr(b) || 0)), 360*l.y, 240, 360],
+        m = [0, 240 * (l.x + (hjr(b) || 0)), 360 * l.y, 240, 360],
         p = new Qf(n);
     n.width = uf().width;
     n.height = uf().height;
@@ -1077,13 +1077,14 @@ g.start = function(a) {
     this.deckContainer = Fe(document, "game-root");
     this.overlay = null;
 	this.waitingUpdate = [];
-    this.closeGame();
+    this.initCloseGame();
 
     this.socketBuilder(new Socket(this));
     this.connectionTimeout();
 
     this.resizeEvents();
     deckToggle(this);
+    gameInfo(this);
 };
 g.connectionTimeout = function() {
     this.tm = setTimeout(() => {
@@ -1128,6 +1129,8 @@ g.socketBuilder = function(s) {
 			t.starting = false;
             new InfoMessage(t.overlay, "Game is starting!")
             t.createPack(a);
+            Fe(document, "deck-toggle").classList.add("-show");
+            Fe(document, "game-info").classList.add("-show");
         }, 2000);
     }.bind(this));
 
@@ -1247,6 +1250,7 @@ g.reset = function() {
     jh(Fe(document, "start-easy-btn"), cv);
     Fe(document, "close-btn").classList.remove("-show");
     Fe(document, "deck-toggle").classList.remove("-show");
+    Fe(document, "game-info").classList.remove("-show");
 	t.unobutton.remove();
 
     // this.gamepack && this.gamepack.delete();
@@ -1264,11 +1268,10 @@ g.reset = function() {
     // this.pile && this.pile.delete();
     // Fa(document, "display") && Fa(document, "display").remove();
 };
-g.closeGame = function() {
+g.initCloseGame = function() {
     let t = this,
         v = Fe(document, "close-btn");
     v.classList.add("-show");
-    Fe(document, "deck-toggle").classList.add("-show");
     v.onclick = () => {
         let mess = "You are about to leave the game. Game will end, there is no way back.";
         this.alert = new AlertPopup(mess, "Leave", function() {
@@ -1417,7 +1420,7 @@ g.placeDeck = function() {
         
         c.push([v, t, u, j+1, h]);
     }
-    for(var i = o-1; i >= 0; i--) {
+    for(var i = o - 1; i >= 0; i--) {
         let d = c[i];
         d[0].placeZ(d[3]);
     }
@@ -1566,7 +1569,7 @@ g.placeOpponentDeck = function() {
             v = d[j],
             h = o > 1 ? (j < g / 2 ? (g - j) - g / 2 : (s > 0 ? 0 : -1) - (j - g / 2)) * (e / 2) / (g / 2) : 0;
 
-        c.unshift([v, t, u, j+1, h+180]);
+        c.unshift([v, t, u, j + 1, h + 180]);
     }
     for(var i = o-1; i >= 0; i--) {
         let d = c[i];
@@ -1666,6 +1669,11 @@ deckToggle = function(a) {
             e.moveTo(a.pileCoords, 0);
         });
         setTimeout(() => a.placeDeck(), L);
+    }
+},
+gameInfo = function(a) {
+    Fe(document, "game-info").onclick = function() {
+        console.info("Game Info\n");
     }
 },
 replacePileAndPackOnResize = function(a) {
@@ -1795,9 +1803,10 @@ u.remove = function() {
 	delete this;
 };
 u.initPartucles = function() {
-	let t = this;
+	let t = this,
+        i;
 	t.canvas = Me("canvas");
-	t.innerBtn = this.b.querySelector(".ovr-uno-button");
+	t.innerBtn = t.b.querySelector(".ovr-uno-button");
 	Md(t.b, t.canvas);
 	t.ctx = t.canvas.getContext("2d");
 	t.hoverFlag = false;
@@ -1826,7 +1835,8 @@ u.initPartucles = function() {
 
 	let emitDots = function() {
 		if (t.dots.length < particlesSettings.maxDots) {
-			for(var i = 0; i < particlesSettings.emitNum; i++) {
+            i = -1;
+			while (++i < particlesSettings.emitNum) {
 				var hue = Math.random() * (particlesSettings.hueMax - particlesSettings.hueMin) + particlesSettings.hueMin,
 					sat = Math.random() * (particlesSettings.satMax - particlesSettings.satMin) + particlesSettings.satMin,
 					sp = t.hoverFlag ? Math.random() * (particlesSettings.maxSpeed - particlesSettings.minSpeed) + particlesSettings.minSpeed : 20;

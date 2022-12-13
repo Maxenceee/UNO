@@ -10,18 +10,18 @@
  | | | | |  \| | | | | |
  | |_| | | |\  | | |_| |
   \___/  |_| \_|  \___/ 
-                        
 
 
 
 
 
-__  __                                                  ____                             
+
+ __  __                                                  ____                             
 |  \/  |   __ _  __  __   ___   _ __     ___    ___     / ___|   __ _   _ __ ___     __ _ 
 | |\/| |  / _` | \ \/ /  / _ \ | '_ \   / __|  / _ \   | |  _   / _` | | '_ ` _ \   / _` |
 | |  | | | (_| |  >  <  |  __/ | | | | | (__  |  __/   | |_| | | (_| | | | | | | | | (_| |
 |_|  |_|  \__,_| /_/\_\  \___| |_| |_|  \___|  \___|    \____|  \__,_| |_| |_| |_|  \__,_|
-    
+
 
 
 
@@ -35,7 +35,6 @@ __  __                                                  ____
 * {
   margin: 0;
   padding: 0;
-  -webkit-box-sizing: border-box;
   box-sizing: border-box;
   font-family: "Quicksand-Regular", sans-serif;
 }
@@ -86,7 +85,6 @@ section {
   height: 100%;
   width: 100%;
 }
-
 section #game-root {
   position: absolute;
   top: 0;
@@ -94,13 +92,10 @@ section #game-root {
   right: 0;
   bottom: 0;
 }
-
 section #game-root .card, section #game-root .pile, section #game-root .gamepack, section #game-root .opponent {
   position: absolute;
-  -webkit-transform-style: preserve-3d;
-          transform-style: preserve-3d;
+  transform-style: preserve-3d;
 }
-
 section #game-root .card .card-canvas, section #game-root .pile .card-canvas, section #game-root .gamepack .card-canvas, section #game-root .opponent .card-canvas {
   width: 100%;
   height: 100%;
@@ -108,54 +103,38 @@ section #game-root .card .card-canvas, section #game-root .pile .card-canvas, se
           backface-visibility: hidden !important;
   background: url("/images/UNO_back_card.svg");
 }
-
 section #game-root .card .card-canvas.backface, section #game-root .pile .card-canvas.backface, section #game-root .gamepack .card-canvas.backface, section #game-root .opponent .card-canvas.backface {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 0;
-  -webkit-transform: rotateY(180deg);
-          transform: rotateY(180deg);
+  transform: rotateY(180deg);
 }
-
 section #game-root .card.grow-transition, section #game-root .pile.grow-transition, section #game-root .gamepack.grow-transition, section #game-root .opponent.grow-transition {
-  -webkit-transition: 500ms ease !important;
   transition: 500ms ease !important;
 }
-
 section #game-root .opponent {
-  -webkit-transform-origin: center center;
-          transform-origin: center center;
+  transform-origin: center center;
 }
 
 .ovr-uno-button-container {
   position: absolute;
-  -webkit-transform-style: preserve-3d;
-          transform-style: preserve-3d;
-  display: -webkit-box;
-  display: -ms-flexbox;
+  transform-style: preserve-3d;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -ms-flex-line-pack: center;
-      align-content: center;
+  justify-content: center;
+  align-content: center;
 }
-
 .ovr-uno-button-container .ovr-uno-button {
   position: relative;
   z-index: 10;
   margin: auto;
-  -webkit-transition: height 0.3s ease, width 0.3s ease;
   transition: height 0.3s ease, width 0.3s ease;
-  background: linear-gradient(45deg, red 0%, #e8a90d 100%);
+  background: linear-gradient(45deg, rgb(255, 0, 0) 0%, rgb(232, 169, 13) 100%);
   height: 80px;
   width: 80px;
   border-radius: 50%;
-  -webkit-box-shadow: inset -1px -2px 12px 3px #e4e9ec27, inset 1px 2px 5px 3px #3636364e, 1px 2px 3px 1px #3636364e;
-          box-shadow: inset -1px -2px 12px 3px #e4e9ec27, inset 1px 2px 5px 3px #3636364e, 1px 2px 3px 1px #3636364e;
+  box-shadow: inset -1px -2px 12px 3px rgba(228, 233, 236, 0.1529411765), inset 1px 2px 5px 3px rgba(54, 54, 54, 0.3058823529), 1px 2px 3px 1px rgba(54, 54, 54, 0.3058823529);
 }
-
 .ovr-uno-button-container .ovr-uno-button .ovr-uno-button-logo {
   position: relative;
   width: 100%;
@@ -166,21 +145,17 @@ section #game-root .opponent {
   background-size: contain;
   background-image: url("/images/UNO_LOGO.png");
 }
-
 .ovr-uno-button-container canvas {
   position: absolute;
   width: 100%;
   height: 100%;
   z-index: 5;
 }
-
 .ovr-uno-button-container.reduced .ovr-uno-button {
   height: 0px;
   width: 0px;
 }
-
 .ovr-uno-button-container.clicked .ovr-uno-button {
-  -webkit-transition: opacity 0.1s ease-in-out, height 0.3s ease, width 0.3s ease;
   transition: opacity 0.1s ease-in-out, height 0.3s ease, width 0.3s ease;
   opacity: 0;
   height: 200px;
@@ -201,7 +176,6 @@ section #game-root .opponent {
   position: fixed;
   z-index: 1000;
 }
-
 .cdk-overlay-container:empty {
   display: none;
 }
@@ -209,37 +183,30 @@ section #game-root .opponent {
 @-webkit-keyframes show-pan {
   0% {
     opacity: 0;
-    -webkit-transform: scale(0.5);
-            transform: scale(0.5);
+    transform: scale(0.5);
   }
   100% {
     opacity: 1;
-    -webkit-transform: scale(1);
-            transform: scale(1);
+    transform: scale(1);
   }
 }
 
 @keyframes show-pan {
   0% {
     opacity: 0;
-    -webkit-transform: scale(0.5);
-            transform: scale(0.5);
+    transform: scale(0.5);
   }
   100% {
     opacity: 1;
-    -webkit-transform: scale(1);
-            transform: scale(1);
+    transform: scale(1);
   }
 }
-
 .cdk-global-overlay-wrapper {
   pointer-events: none;
   top: 0;
   left: 0;
   height: 100%;
   width: 100%;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   position: absolute;
   z-index: 10000;
@@ -256,11 +223,9 @@ section #game-root .opponent {
   z-index: 10000;
   pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
-  -webkit-transition: opacity 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
   transition: opacity 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
   opacity: 0;
 }
-
 .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
   opacity: 0.4 !important;
 }
@@ -272,22 +237,17 @@ section #game-root .opponent {
 .cdk-overlay-pane {
   position: absolute;
   pointer-events: auto;
-  -webkit-box-sizing: border-box;
   box-sizing: border-box;
   z-index: 1000;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   max-width: 100%;
   max-height: 100%;
 }
-
 .cdk-overlay-pane.cdk-overlay-pane {
   display: block;
   max-width: initial;
   max-height: initial;
 }
-
 .cdk-overlay-pane.cdk-overlay-pane {
   display: block;
   max-width: none;
@@ -298,7 +258,6 @@ section #game-root .opponent {
   --fire-color-dialog-background: #FFF;
   background-color: var(--fire-color-dialog-background) !important;
   border-radius: 16px !important;
-  -webkit-box-shadow: 0 2px 3px 0 rgba(60, 64, 67, 0.3), 0 6px 10px 4px rgba(60, 64, 67, 0.15) !important;
   box-shadow: 0 2px 3px 0 rgba(60, 64, 67, 0.3), 0 6px 10px 4px rgba(60, 64, 67, 0.15) !important;
   max-height: calc(100vh - 48px);
 }
@@ -311,8 +270,7 @@ section #game-root .opponent {
   display: block;
   padding: 24px;
   border-radius: 4px;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
   overflow: auto;
   outline: 0;
   width: 100%;
@@ -322,7 +280,6 @@ section #game-root .opponent {
 }
 
 .mat-dialog-container {
-  -webkit-box-shadow: 0 11px 15px -7px rgba(0, 0, 0, 0.2), 0 24px 38px 3px rgba(0, 0, 0, 0.14), 0 9px 46px 8px rgba(0, 0, 0, 0.12);
   box-shadow: 0 11px 15px -7px rgba(0, 0, 0, 0.2), 0 24px 38px 3px rgba(0, 0, 0, 0.14), 0 9px 46px 8px rgba(0, 0, 0, 0.12);
   background: #fff;
   color: rgba(0, 0, 0, 0.87);
@@ -342,13 +299,8 @@ section #game-root .opponent {
 
 .fire-dialog {
   --header-color: var(--theme-color-fg-primary);
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
+  flex-direction: column;
   max-height: calc(100vh - 48px);
   overflow: auto;
   position: relative;
@@ -360,9 +312,7 @@ section #game-root .opponent {
 
 .fire-dialog-header {
   display: block;
-  -webkit-box-flex: 0;
-      -ms-flex: 0 0 auto;
-          flex: 0 0 auto;
+  flex: 0 0 auto;
   padding: 24px 24px 0;
 }
 
@@ -372,17 +322,13 @@ section #game-root .opponent {
   line-height: 28px;
   font-weight: 500;
   color: var(--header-color);
-  -webkit-box-flex: 1;
-      -ms-flex: 1 1 auto;
-          flex: 1 1 auto;
+  flex: 1 1 auto;
   margin: 0 32px 16px;
 }
 
 .fire-dialog-body-section {
   color: rgba(0, 0, 0, 0.54);
-  -webkit-box-flex: 0;
-      -ms-flex: 0 0 auto;
-          flex: 0 0 auto;
+  flex: 0 0 auto;
   font-size: 14px;
   line-height: 20px;
   padding: 0 24px;
@@ -412,7 +358,6 @@ section #game-root .opponent {
   font-size: 14px;
   white-space: normal;
 }
-
 .fire-callout .fire-callout-body h3 {
   margin: 20px 0;
 }
@@ -434,24 +379,12 @@ section #game-root .opponent {
 }
 
 .fire-dialog-actions {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  display: -webkit-box;
-  display: -ms-flexbox;
+  align-items: center;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -webkit-box-flex: 0;
-      -ms-flex: 0 0 auto;
-          flex: 0 0 auto;
-  -ms-flex-wrap: wrap-reverse;
-      flex-wrap: wrap-reverse;
-  -webkit-box-pack: end;
-      -ms-flex-pack: end;
-          justify-content: flex-end;
+  flex-direction: row;
+  flex: 0 0 auto;
+  flex-wrap: wrap-reverse;
+  justify-content: flex-end;
   min-height: 36px;
   padding: 24px;
 }
@@ -466,11 +399,7 @@ section #game-root .opponent {
 }
 
 .mat-button.mat-button, .mat-flat-button.mat-flat-button, .mat-raised-button.mat-raised-button, .mat-stroked-button.mat-stroked-button, .mat-icon-button.mat-icon-button {
-  -webkit-transition: box-shadow .2s ease,background-color .2s ease;
-  -webkit-transition: background-color .2s ease,-webkit-box-shadow .2s ease;
-  transition: background-color .2s ease,-webkit-box-shadow .2s ease;
-  transition: box-shadow .2s ease,background-color .2s ease;
-  transition: box-shadow .2s ease,background-color .2s ease,-webkit-box-shadow .2s ease;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .mat-button.mat-button, .mat-flat-button.mat-flat-button, .mat-raised-button.mat-raised-button, .mat-stroked-button.mat-stroked-button {
@@ -479,13 +408,12 @@ section #game-root .opponent {
   border: 0;
   border-radius: 8px;
   text-transform: none;
-  letter-spacing: .25px;
+  letter-spacing: 0.25px;
   min-width: 120px;
 }
 
 .mat-raised-button {
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
   position: relative;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -506,21 +434,15 @@ section #game-root .opponent {
   padding: 0 16px;
   border-radius: 4px;
   overflow: visible;
-  -webkit-transform: translate3d(0, 0, 0);
-          transform: translate3d(0, 0, 0);
-  -webkit-transition: background 400ms cubic-bezier(0.25, 0.8, 0.25, 1), -webkit-box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
-  transition: background 400ms cubic-bezier(0.25, 0.8, 0.25, 1), -webkit-box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translate3d(0, 0, 0);
   transition: background 400ms cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
-  transition: background 400ms cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .mat-raised-button[disabled] {
   cursor: not-allowed;
 }
 
 .mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button {
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
   position: relative;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -559,30 +481,25 @@ section #game-root .opponent {
 
 .mat-raised-button.mat-raised-button.mat-primary:not([disabled]) {
   background-color: var(--theme-color-primary);
-  -webkit-box-shadow: none;
   box-shadow: none;
   color: var(--theme-color-on-primary);
 }
 
 .mat-raised-button.mat-raised-button.mat-warn:not([disabled]) {
   background-color: #d32f2f;
-  -webkit-box-shadow: none;
   box-shadow: none;
   color: #fff;
 }
 
 .mat-raised-button.mat-raised-button:not([disabled]) {
   background-color: var(--primary);
-  -webkit-box-shadow: none;
   box-shadow: none;
   color: #fff;
 }
-
 .mat-raised-button.mat-raised-button:not([disabled]).blue-stl {
   --primary: #275EFE;
   --primary-dark: #2055EE;
 }
-
 .mat-raised-button.mat-raised-button:not([disabled]).red-stl {
   --primary: #d32f2f;
   --primary-dark: #ba2929;
@@ -590,7 +507,6 @@ section #game-root .opponent {
 
 .mat-raised-button.mat-raised-button:not([disabled]):hover {
   background-color: var(--primary-dark);
-  -webkit-box-shadow: none;
   box-shadow: none;
 }
 
@@ -604,7 +520,6 @@ section #game-root .opponent {
 
 .mat-raised-button.mat-raised-button.mat-warn:not([disabled]):hover {
   background-color: #ba2929;
-  -webkit-box-shadow: none;
   box-shadow: none;
 }
 
@@ -619,28 +534,23 @@ section #game-root .opponent {
 }
 
 @-webkit-keyframes sheep-anim {
-  100%,
-  0% {
+  100%, 0% {
     opacity: 1;
     left: -100px;
   }
   24% {
-    -webkit-transform: scaleX(1);
-            transform: scaleX(1);
+    transform: scaleX(1);
     left: 70%;
   }
   25% {
-    -webkit-transform: scaleX(-1);
-            transform: scaleX(-1);
+    transform: scaleX(-1);
   }
   28% {
-    -webkit-transform: scaleX(-1);
-            transform: scaleX(-1);
+    transform: scaleX(-1);
     left: 65%;
   }
   29% {
-    -webkit-transform: scaleX(1);
-            transform: scaleX(1);
+    transform: scaleX(1);
   }
   40% {
     opacity: 1;
@@ -656,28 +566,23 @@ section #game-root .opponent {
 }
 
 @keyframes sheep-anim {
-  100%,
-  0% {
+  100%, 0% {
     opacity: 1;
     left: -100px;
   }
   24% {
-    -webkit-transform: scaleX(1);
-            transform: scaleX(1);
+    transform: scaleX(1);
     left: 70%;
   }
   25% {
-    -webkit-transform: scaleX(-1);
-            transform: scaleX(-1);
+    transform: scaleX(-1);
   }
   28% {
-    -webkit-transform: scaleX(-1);
-            transform: scaleX(-1);
+    transform: scaleX(-1);
     left: 65%;
   }
   29% {
-    -webkit-transform: scaleX(1);
-            transform: scaleX(1);
+    transform: scaleX(1);
   }
   40% {
     opacity: 1;
@@ -691,7 +596,6 @@ section #game-root .opponent {
     left: -100px;
   }
 }
-
 .lc-close {
   z-index: 100;
   position: fixed;
@@ -702,45 +606,60 @@ section #game-root .opponent {
   opacity: 0;
   visibility: hidden;
 }
-
 .lc-close.-show {
   opacity: 1;
   visibility: visible;
 }
-
 .lc-close .lc-in {
   position: relative;
   width: 100%;
   height: 100%;
 }
-
 .lc-close .lc-in svg {
-  -webkit-transform: rotateZ(45deg);
-          transform: rotateZ(45deg);
+  transform: rotateZ(45deg);
 }
 
-.deck-toggle {
+.game-option {
   z-index: 100;
   position: fixed;
   bottom: 20px;
-  right: 50px;
   width: 50px;
   height: 50px;
   opacity: 0;
   visibility: hidden;
 }
-
-.deck-toggle.-show {
+.game-option.option-left {
+  left: 50px;
+}
+.game-option.option-right {
+  right: 50px;
+}
+.game-option.-show {
   opacity: 1;
   visibility: visible;
 }
-
-.deck-toggle .lc-in {
+.game-option:not(.no-back) {
+  background-color: #FFFFFF;
+  border-radius: 50%;
+}
+.game-option.hovered {
+  opacity: 0.5;
+  transition: opacity 0.3s;
+}
+.game-option.hovered:hover {
+  opacity: 1;
+}
+.game-option .lc-in {
   position: relative;
   width: 100%;
   height: 100%;
   -o-object-fit: contain;
      object-fit: contain;
+}
+.game-option .lc-in > svg {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .ad-pn-c {
@@ -749,22 +668,15 @@ section #game-root .opponent {
   left: 0;
   width: 100vw;
   height: 100vh;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   display: -webkit-flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  justify-content: center;
+  align-items: center;
   background-color: rgba(0, 0, 0, 0.075);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   z-index: 5005;
 }
-
 .ad-pn-c .ad-panel, .ad-pn-c .ad-status-panel {
   position: relative;
   width: 350px;
@@ -774,48 +686,27 @@ section #game-root .opponent {
   border-radius: 15px;
   overflow: hidden;
   background-color: #FFF;
-  -webkit-box-shadow: 0 5px 15px 5px rgba(0, 0, 0, 0.05);
-          box-shadow: 0 5px 15px 5px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 5px 15px 5px rgba(0, 0, 0, 0.05);
   opacity: 0;
   padding: 15px;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   -webkit-animation: show-pan 0.3s ease-in-out forwards;
           animation: show-pan 0.3s ease-in-out forwards;
 }
-
 .ad-pn-c .ad-panel .ad-err, .ad-pn-c .ad-status-panel .ad-err {
   height: 100%;
-  min-height: calc(130px - 40px);
+  min-height: 90px;
   width: 100%;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   display: -webkit-flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 10px 20px;
 }
-
 .ad-pn-c .ad-panel .ad-err p, .ad-pn-c .ad-status-panel .ad-err p {
   display: inline-block;
   vertical-align: middle;
@@ -824,20 +715,13 @@ section #game-root .opponent {
   text-align: center;
   color: #686868;
 }
-
 .ad-pn-c .ad-panel .ad-btn, .ad-pn-c .ad-status-panel .ad-btn {
   height: 40px;
   width: 100%;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
+  flex-direction: row;
   margin: 0 0 5px;
 }
-
 .ad-pn-c .ad-panel .ad-btn .ad-err-close, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close {
   position: relative;
   width: calc(100% - 10px);
@@ -850,31 +734,25 @@ section #game-root .opponent {
   background-color: transparent;
   border: 1.5px solid var(--ad-border-color);
 }
-
 .ad-pn-c .ad-panel .ad-btn .ad-err-close p, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close p {
   height: 100%;
   line-height: 37px;
   font-size: 16px;
   text-align: center;
 }
-
 .ad-pn-c .ad-panel .ad-btn .ad-err-close.ad-demi, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close.ad-demi {
   width: 50%;
 }
-
 .ad-pn-c .ad-panel .ad-btn .ad-err-close:hover, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close:hover {
   border-color: rgba(var(--ad-primary-color), 0.4);
 }
-
 .ad-pn-c .ad-panel .ad-btn .ad-err-close.ad-demi-sup, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close.ad-demi-sup {
   color: rgba(var(--ad-red-primary-color), 1);
   background-color: var(--ad-border-color);
 }
-
 .ad-pn-c .ad-panel .ad-btn .ad-err-close.ad-demi-sup:hover, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close.ad-demi-sup:hover {
   border-color: rgba(var(--ad-red-primary-color), 0.4);
 }
-
 .ad-pn-c .ad-status-panel p {
   width: 100%;
   padding-top: 10%;
@@ -891,7 +769,6 @@ section #game-root .opponent {
   overflow: hidden;
   margin: 10px 10px 30px;
 }
-
 .fr-text-field input {
   width: 100%;
   height: 100%;
@@ -902,7 +779,6 @@ section #game-root .opponent {
   font-size: 16px;
   background: none;
 }
-
 .fr-text-field label {
   --color-txt: #151426;
   position: absolute;
@@ -919,10 +795,9 @@ section #game-root .opponent {
   position: absolute;
   bottom: 5px;
   left: 0px;
-  -webkit-transition: all 0.3s ease;
   transition: all 0.3s ease;
   font-size: 18px;
-  color: #888888;
+  color: rgb(136, 136, 136);
   font-weight: 300;
 }
 
@@ -934,48 +809,28 @@ section #game-root .opponent {
   height: -moz-max-content;
   height: max-content;
   width: 200px;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: start;
-      -ms-flex-pack: start;
-          justify-content: flex-start;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: reverse;
-      -ms-flex-direction: column-reverse;
-          flex-direction: column-reverse;
+  justify-content: flex-start;
+  flex-direction: column-reverse;
 }
-
 .display .display-inner {
   position: relative;
   width: 100%;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -webkit-box-pack: start;
-      -ms-flex-pack: start;
-          justify-content: flex-start;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
 }
-
 .display .display-inner.txt-only .display-inner-p {
   font-size: 1em;
   margin: 0;
   color: #008744;
 }
-
 @media screen and (max-width: 800px) {
   .display .display-inner.txt-only .display-inner-p {
     font-size: 0.8em;
   }
 }
-
 .display .display-inner .display-inner-p {
   text-align: center;
   line-height: 30px;
@@ -983,13 +838,11 @@ section #game-root .opponent {
   font-weight: 300;
   margin-right: 20px;
 }
-
 @media screen and (max-width: 800px) {
   .display .display-inner .display-inner-p {
     font-size: 1em;
   }
 }
-
 .display .display-inner .dot-typing {
   --dot-color: #000;
   --dot-size: 8px;
@@ -1000,85 +853,66 @@ section #game-root .opponent {
   border-radius: 5px;
   background-color: var(--dot-color);
   color: var(--dot-color);
-  -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-          box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+  box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   -webkit-animation: dotTyping 1.5s infinite linear;
           animation: dotTyping 1.5s infinite linear;
 }
-
 @media screen and (max-width: 800px) {
   .display .display-inner .dot-typing {
-    --dot-size: 4px
-			;
+    --dot-size: 4px ;
   }
 }
 
 @-webkit-keyframes dotTyping {
   0% {
-    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   16.667% {
-    -webkit-box-shadow: 9984px -10px 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-            box-shadow: 9984px -10px 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+    box-shadow: 9984px -10px 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   33.333% {
-    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   50% {
-    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px -10px 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px -10px 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px -10px 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   66.667% {
-    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   83.333% {
-    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px -10px 0 0 var(--dot-color);
-            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px -10px 0 0 var(--dot-color);
+    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px -10px 0 0 var(--dot-color);
   }
   100% {
-    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
 }
 
 @keyframes dotTyping {
   0% {
-    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   16.667% {
-    -webkit-box-shadow: 9984px -10px 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-            box-shadow: 9984px -10px 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+    box-shadow: 9984px -10px 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   33.333% {
-    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   50% {
-    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px -10px 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px -10px 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px -10px 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   66.667% {
-    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
   83.333% {
-    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px -10px 0 0 var(--dot-color);
-            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px -10px 0 0 var(--dot-color);
+    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px -10px 0 0 var(--dot-color);
   }
   100% {
-    -webkit-box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-            box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
 }
-
 .tooltip {
   display: inline-block;
 }
-
 .tooltip .tooltiptext {
   visibility: hidden;
   width: 150px;
@@ -1092,11 +926,9 @@ section #game-root .opponent {
   left: 50%;
   margin-left: -75px;
   opacity: 0;
-  -webkit-transition: opacity 0.3s 0.5s;
-  transition: opacity 0.3s 0.5s;
+  transition: opacity 0.5s;
   z-index: 100;
 }
-
 .tooltip .tooltiptext::after {
   content: "";
   position: absolute;
@@ -1107,7 +939,6 @@ section #game-root .opponent {
   border-style: solid;
   border-color: #555 transparent transparent transparent;
 }
-
 .tooltip:hover .tooltiptext {
   visibility: visible;
   opacity: 1;
@@ -1116,73 +947,55 @@ section #game-root .opponent {
 .pie-container {
   padding: 50px;
 }
-
 .pie-container.remove {
   -webkit-animation: fade-out 0.2s ease-in-out forwards;
           animation: fade-out 0.2s ease-in-out forwards;
   -webkit-animation-delay: 0.6s;
           animation-delay: 0.6s;
 }
-
 .pie-container.remove .color-pie .pie path {
   -webkit-animation: ungrow-part 0.2s ease-in-out forwards;
           animation: ungrow-part 0.2s ease-in-out forwards;
 }
-
 .pie-container.adding .color-pie .pie path {
   -webkit-animation: grow-part 0.5s ease-in-out forwards;
           animation: grow-part 0.5s ease-in-out forwards;
 }
-
 .pie-container .color-pie {
   position: relative;
   width: 400px;
   height: 400px;
   padding: 30px;
 }
-
 .pie-container .color-pie .pie {
   width: 100%;
   height: 100%;
   padding: 70px 20px 20px;
 }
-
 .pie-container .color-pie .pie path {
-  -webkit-transform: scale(0);
-          transform: scale(0);
-  -webkit-transform-origin: 50% 50%;
-          transform-origin: 50% 50%;
-  -webkit-transition: -webkit-transform 0.25s ease-out;
-  transition: -webkit-transform 0.25s ease-out;
+  transform: scale(0);
+  transform-origin: 50% 50%;
   transition: transform 0.25s ease-out;
-  transition: transform 0.25s ease-out, -webkit-transform 0.25s ease-out;
   pointer-events: all;
 }
-
 .pie-container .color-pie .pie path:hover {
-  -webkit-transform: scale(1.1) !important;
-          transform: scale(1.1) !important;
+  transform: scale(1.1) !important;
 }
-
 .pie-container .color-pie .pie text {
   text-align: center;
 }
-
 .pie-container .color-pie .pie path:nth-child(1) {
   -webkit-animation-delay: 0s;
           animation-delay: 0s;
 }
-
 .pie-container .color-pie .pie path:nth-child(2) {
   -webkit-animation-delay: 0.1s;
           animation-delay: 0.1s;
 }
-
 .pie-container .color-pie .pie path:nth-child(3) {
   -webkit-animation-delay: 0.2s;
           animation-delay: 0.2s;
 }
-
 .pie-container .color-pie .pie path:nth-child(4) {
   -webkit-animation-delay: 0.3s;
           animation-delay: 0.3s;
@@ -1190,87 +1003,64 @@ section #game-root .opponent {
 
 @-webkit-keyframes grow-part {
   to {
-    -webkit-transform: scale(1);
-            transform: scale(1);
+    transform: scale(1);
   }
 }
 
 @keyframes grow-part {
   to {
-    -webkit-transform: scale(1);
-            transform: scale(1);
+    transform: scale(1);
   }
 }
-
 @-webkit-keyframes ungrow-part {
   to {
-    -webkit-transform: scale(0);
-            transform: scale(0);
+    transform: scale(0);
   }
 }
-
 @keyframes ungrow-part {
   to {
-    -webkit-transform: scale(0);
-            transform: scale(0);
+    transform: scale(0);
   }
 }
-
 @-webkit-keyframes fade-out {
   to {
     opacity: 0;
   }
 }
-
 @keyframes fade-out {
   to {
     opacity: 0;
   }
 }
-
 .ttpo {
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-      align-items: center;
+  align-items: center;
   -webkit-appearance: none;
   background: #fafafa;
   border: 1px solid #dbdbdb;
   border-radius: 10px;
   color: #262626;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: row;
-      flex-direction: row;
+  flex-direction: row;
   font-size: 14px;
   position: relative;
   width: 80%;
   overflow: hidden;
   margin: 20px 10px 30px;
 }
-
 .ttpo input {
   color: #262626;
   font-size: 14px;
   line-height: 18px;
 }
-
 .ttpo .f0n8F {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-flex: 1;
-  -ms-flex: 1 0 0px;
-      flex: 1 0 0;
+  flex: 1 0 0;
   height: 36px;
   margin: 0;
   min-width: 0;
   padding: 0;
   position: relative;
 }
-
 .ttpo .f0n8F ._9nyy2 {
   color: #8e8e8e;
   font-size: 12px;
@@ -1282,49 +1072,35 @@ section #game-root .opponent {
   position: absolute;
   right: 0;
   text-overflow: ellipsis;
-  -webkit-transform-origin: left;
-          transform-origin: left;
-  -webkit-transition: -webkit-transform ease-out .1s;
-  transition: -webkit-transform ease-out .1s;
-  transition: transform ease-out .1s;
-  transition: transform ease-out .1s, -webkit-transform ease-out .1s;
+  transform-origin: left;
+  transition: transform ease-out 0.1s;
   white-space: nowrap;
 }
-
 .ttpo .f0n8F ._2hvTZ {
   border: 0;
-  -webkit-box-flex: 1;
-      -ms-flex: 1 0 auto;
-          flex: 1 0 auto;
+  flex: 1 0 auto;
   margin: 0;
   outline: 0;
   overflow: hidden;
   padding: 9px 0 7px 8px;
   text-overflow: ellipsis;
 }
-
 .ttpo .f0n8F .pexuQ {
   font-size: 16px;
 }
-
 .ttpo .f0n8F .zyHYP {
   -webkit-appearance: none;
 }
-
 .ttpo .f0n8F.FATdn .pexuQ {
   font-size: 12px;
   padding: 14px 0 2px 8px !important;
 }
-
 .ttpo .f0n8F.FATdn ._9nyy2 {
-  -webkit-transform: scale(0.83333) translateY(-10px);
   transform: scale(0.83333) translateY(-10px);
 }
-
 .ttpo.wrong-enter-r {
   border-color: #d55f5f;
 }
-
 .ttpo.wrong-enter-r :not(.f0n8F.FATdn) span {
   color: #d55f5f !important;
 }
@@ -1336,7 +1112,6 @@ section #game-root .opponent {
   height: -moz-max-content;
   height: max-content;
 }
-
 .progress-bar .progress-body {
   position: relative;
   height: 40px;
@@ -1344,16 +1119,13 @@ section #game-root .opponent {
   border-radius: 5px;
   overflow: hidden;
 }
-
 .progress-bar .progress-body .progress-text {
   position: absolute;
   top: 0;
-  -webkit-transform: translateY(50%);
-          transform: translateY(50%);
+  transform: translateY(50%);
   left: 10px;
   color: var(--primary-darkest);
 }
-
 .progress-bar .progress-body .progress-el {
   height: 100%;
   background: rgba(39, 94, 254, 0.15);
@@ -1365,7 +1137,6 @@ section #game-root .opponent {
   width: 80px;
   height: 80px;
 }
-
 .lds-ellipsis div {
   position: absolute;
   top: 33px;
@@ -1376,25 +1147,21 @@ section #game-root .opponent {
   -webkit-animation-timing-function: cubic-bezier(0, 1, 1, 0);
           animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
-
 .lds-ellipsis div:nth-child(1) {
   left: 8px;
   -webkit-animation: lds-ellipsis1 0.6s infinite;
           animation: lds-ellipsis1 0.6s infinite;
 }
-
 .lds-ellipsis div:nth-child(2) {
   left: 8px;
   -webkit-animation: lds-ellipsis2 0.6s infinite;
           animation: lds-ellipsis2 0.6s infinite;
 }
-
 .lds-ellipsis div:nth-child(3) {
   left: 32px;
   -webkit-animation: lds-ellipsis2 0.6s infinite;
           animation: lds-ellipsis2 0.6s infinite;
 }
-
 .lds-ellipsis div:nth-child(4) {
   left: 56px;
   -webkit-animation: lds-ellipsis3 0.6s infinite;
@@ -1403,70 +1170,53 @@ section #game-root .opponent {
 
 @-webkit-keyframes lds-ellipsis1 {
   0% {
-    -webkit-transform: scale(0);
-            transform: scale(0);
+    transform: scale(0);
   }
   100% {
-    -webkit-transform: scale(1);
-            transform: scale(1);
+    transform: scale(1);
   }
 }
 
 @keyframes lds-ellipsis1 {
   0% {
-    -webkit-transform: scale(0);
-            transform: scale(0);
+    transform: scale(0);
   }
   100% {
-    -webkit-transform: scale(1);
-            transform: scale(1);
+    transform: scale(1);
   }
 }
-
 @-webkit-keyframes lds-ellipsis3 {
   0% {
-    -webkit-transform: scale(1);
-            transform: scale(1);
+    transform: scale(1);
   }
   100% {
-    -webkit-transform: scale(0);
-            transform: scale(0);
+    transform: scale(0);
   }
 }
-
 @keyframes lds-ellipsis3 {
   0% {
-    -webkit-transform: scale(1);
-            transform: scale(1);
+    transform: scale(1);
   }
   100% {
-    -webkit-transform: scale(0);
-            transform: scale(0);
+    transform: scale(0);
   }
 }
-
 @-webkit-keyframes lds-ellipsis2 {
   0% {
-    -webkit-transform: translate(0, 0);
-            transform: translate(0, 0);
+    transform: translate(0, 0);
   }
   100% {
-    -webkit-transform: translate(24px, 0);
-            transform: translate(24px, 0);
+    transform: translate(24px, 0);
   }
 }
-
 @keyframes lds-ellipsis2 {
   0% {
-    -webkit-transform: translate(0, 0);
-            transform: translate(0, 0);
+    transform: translate(0, 0);
   }
   100% {
-    -webkit-transform: translate(24px, 0);
-            transform: translate(24px, 0);
+    transform: translate(24px, 0);
   }
 }
-
 .ws-server-p {
   position: fixed;
   bottom: 10px;
@@ -1475,39 +1225,28 @@ section #game-root .opponent {
   padding: 5px 10px;
   z-index: 8000;
   border-radius: 8px;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -ms-flex-line-pack: center;
-      align-content: center;
+  flex-direction: row;
+  align-content: center;
   overflow: hidden;
 }
-
 .ws-server-p > div {
   position: relative;
   margin-right: 5px;
 }
-
 .ws-server-p > div svg {
   position: relative;
   height: 100%;
 }
-
 .ws-server-p > div svg path {
   fill: #FFF;
 }
-
 .ws-server-p p {
   line-height: 30px;
   font-size: 12px;
   line-break: anywhere;
   color: #FFF;
 }
-
 .ws-server-p .progression {
   margin: 0;
   position: absolute;
@@ -1515,5 +1254,4 @@ section #game-root .opponent {
   left: 0;
   background-color: #FFF;
   height: 3px;
-}
-/*# sourceMappingURL=style.css.map */
+}/*# sourceMappingURL=style.css.map */

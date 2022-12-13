@@ -16,7 +16,7 @@
 
 
 
-__  __                                                  ____                             
+ __  __                                                  ____                             
 |  \/  |   __ _  __  __   ___   _ __     ___    ___     / ___|   __ _   _ __ ___     __ _ 
 | |\/| |  / _` | \ \/ /  / _ \ | '_ \   / __|  / _ \   | |  _   / _` | | '_ ` _ \   / _` |
 | |  | | | (_| |  >  <  |  __/ | | | | | (__  |  __/   | |_| | | (_| | | | | | | | | (_| |
@@ -626,11 +626,18 @@ section {
 	}
 }
 
-.deck-toggle {
+.game-option {
 	z-index: 100;
 	position: fixed;
+
+	&.option-left {
+		left: 50px;
+	}
+	&.option-right {
+		right: 50px;
+	}
+
 	bottom: 20px;
-	right: 50px;
 	width: 50px;
 	height: 50px;
 	opacity: 0;
@@ -641,11 +648,31 @@ section {
 		visibility: visible;
 	}
 
+	&:not(.no-back) {
+		background-color: #FFFFFF;
+		border-radius: 50%;
+	}
+
+	&.hovered {
+		opacity: 0.5;
+		transition: opacity 0.3s;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+
 	.lc-in {
 		position: relative;
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
+
+		& > svg {
+			position: relative;
+			width: 100%;
+			height: 100%;
+		}
 	}
 }
 
@@ -931,7 +958,7 @@ section {
 		left: 50%;
 		margin-left: -75px;
 		opacity: 0;
-		transition: opacity 0.3s 0.5s;
+		transition: opacity 0.5s;
 		z-index: 100;
 	}
 	
