@@ -578,9 +578,9 @@ var setTransformProprety = function(a, b, c) {
 }
 var bindPort = function(a, b) {
 	if (!isNaN(parseInt(b))) {
-		return a+':'+b;
+		return ("//"+a+':'+b);
 	}
-	return b+'.'+a;
+	return ("//"+b+'.'+a);
 }
 
 var genRandomId = function(a) {
@@ -885,7 +885,7 @@ var Socket = function(g) {
 	try {
 		let sp = "8081",
 			sd = "uno-ws",
-			hr = ["//localhost", "//maxencegama.dev"];
+			hr = ["localhost", "maxencegama.dev"];
 		let WSProtocol = (location.protocol === 'https:') ? 'wss:' : 'ws:',
 			WSHost = (location.hostname === 'localhost') ? bindPort(hr[0], sp) : bindPort(hr[1], sd);
 		this.socket = new WebSocket(WSProtocol + WSHost);
