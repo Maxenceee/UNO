@@ -49,6 +49,7 @@ wss.on('connection', async function(ws) {
             }
         }
         if (msg.GAME_FINISHED) {
+            console.log("\033[0;36mGame finished");
             pool.finish(msg, ws.username);
         }
         if (msg.USER_DISCONNECTION) {
