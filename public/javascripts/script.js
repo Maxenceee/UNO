@@ -889,14 +889,21 @@ var Socket = function(g) {
 		let WSProtocol = (location.protocol === 'https:') ? 'wss:' : 'ws:',
 			WSHost = (location.hostname === 'localhost') ? bindPort(hr[0], sp) : bindPort(hr[1], sd);
 		this.socket = new WebSocket(WSProtocol + WSHost);
+        console.log(this.socket);
 	} catch (error) {
-		return this.gameParent.codeError(2);
+        this.gameParent.connectionError = true;
+		return this.gameParent.codeError(3);
 	}
     this.deck = null;
 
     var ld = new Loader
     this.loader = ld.create(Fe(document, "dialog-close"));
 	this.initPing();
+
+    this.socket.onerror = (error) => {
+        this.gameParent.connectionError = true;
+        return this.gameParent.codeError(3);
+    }
 
     this.socket.onopen = () => {
         console.info("Connection opened");
@@ -1088,7 +1095,7 @@ g.start = function(a) {
 };
 g.connectionTimeout = function() {
     this.tm = setTimeout(() => {
-        if (!this.connectionCreated) {
+        if (!this.connectionCreated && !this.connectionError) {
             this.gameSocket.delete();
             this.alert = new AlertPopup("Cannot find any opponent.\n\nWe're sorry, it seems there is no one to play with you.", "Leave", function() {
                 this.stop();
@@ -1152,7 +1159,7 @@ g.socketBuilder = function(s) {
     }.bind(this));
 
     gameSocket.on('close', function() {
-        console.info('The server closed the connetion');
+        // console.info('The server closed the connetion');
         let n = this;
         let y = function() {
             new AlertPopup("The game ended because the server closed the connection.", "Leave", function() {
@@ -1160,7 +1167,6 @@ g.socketBuilder = function(s) {
             }.bind(n));
         }
         if (n.connectionCreated) n.stop(y);
-        else clearTimeout(this.tm), n.codeError(3);
     }.bind(this));
 
     gameSocket.on('update', this.onUpdate.bind(this));
@@ -1185,12 +1191,15 @@ g.socketBuilder = function(s) {
                 this.reset();
             }.bind(n));
         }
+        n.handledisconnection = true;
         if (n.connectionCreated) n.stop(y);
     }.bind(this));
 };
 g.stop = function(a) {
     a && a();
+    clearTimeout(this.tm);
     this.connectionCreated = false;
+    console.log(this.connectionCreated);
     this.canPlay = false;
     this.gameSocket.end();
 	this.alert && this.alert.remove();
@@ -1244,6 +1253,7 @@ g.onFinish = function(a) {
 g.reset = function() {
     var cnt = Fe(document, "dialog-container");
     cnt.classList.remove('-hide-dialog');
+    this.handledisconnection = false;
 
     let t = this;
 
