@@ -889,7 +889,6 @@ var Socket = function(g) {
 		let WSProtocol = (location.protocol === 'https:') ? 'wss:' : 'ws:',
 			WSHost = (location.hostname === 'localhost') ? bindPort(hr[0], sp) : bindPort(hr[1], sd);
 		this.socket = new WebSocket(WSProtocol + WSHost);
-        console.log(this.socket);
 	} catch (error) {
         this.gameParent.connectionError = true;
 		return this.gameParent.codeError(3);
@@ -1199,7 +1198,6 @@ g.stop = function(a) {
     a && a();
     clearTimeout(this.tm);
     this.connectionCreated = false;
-    console.log(this.connectionCreated);
     this.canPlay = false;
     this.gameSocket.end();
 	this.alert && this.alert.remove();
@@ -1218,6 +1216,7 @@ g.end = function(a) {
     this.gameSocket.finish(undefined !== a ? a : true);
 };
 g.onFinish = function(a) {
+    this.unobutton.deactivate();
     let t = this,
         y = function() {
             let u = a.winning ? (a.id == t.gameSocket.gameid ? "You win the game." : (a.player+" win the game."))+" Well played!" : "Game is over, you ran out of cards!";
