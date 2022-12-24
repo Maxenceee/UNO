@@ -23,7 +23,7 @@ app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  res.render('404', {title: "Page introuvable"})
+  res.render('404', {title: "Page not found"})
 });
 
 module.exports = app;
