@@ -56,6 +56,6 @@ To serve WebSocket :
 </VirtualHost>
 ```
 
-## Note
+## Notes
 
 For the moment game can be played with only two players.
