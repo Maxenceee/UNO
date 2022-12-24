@@ -58,4 +58,4 @@ To serve WebSocket :
 
 ## Notes
 
-For the moment game can be played with only two players.
+For the moment game can be played with only two players and UNO button is not working.
