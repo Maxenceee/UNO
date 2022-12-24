@@ -31,17 +31,19 @@ wss.on('connection', async function(ws) {
         let msg = p(message),
             pool = await getPoolById(ws.poolId);
 
-        if (!pool) return ;
+        if (!pool)
+            return ;
 
         if (msg.UPDATE) {
-            console.log("received update", msg.UPDATE);
+            console.log("\n--------------------");
+            console.log("\033[0;36mreceived update\033[0m", msg.UPDATE);
             if (!pool.gameEnded) pool.update(msg);
         }
         if (msg.ready) {
             ws.ready = true;
             pool.playerReady++;
             pool.defUsername(msg.username, ws);
-            console.log(ws.id, "is ready");
+            console.log("player\033[0;32m", ws.id, "\033[0;37mis ready");
             if (pool.playersAllReady()) {
                 pool.beginGame();
             }
@@ -50,10 +52,9 @@ wss.on('connection', async function(ws) {
             pool.finish(msg, ws.username);
         }
         if (msg.USER_DISCONNECTION) {
-            console.log(ws.id, "disconnected");
-            // pool && pool.disconnected(ws.id);
-            removeClient(ws.id, CLIENTS);
-            removeClient(ws.id, WAITINGPLAYERS);
+            // console.log("\033[0;31m"+ws.id, "disconnected");
+            // removeClient(ws.id, CLIENTS);
+            // removeClient(ws.id, WAITINGPLAYERS);
             ws.close();
         }
         if (msg.PING) {
@@ -63,14 +64,14 @@ wss.on('connection', async function(ws) {
     });
 
     ws.on('close', async function() {
-        console.log(ws.id, "disconnected");
-        console.log("number of client", CLIENTS.length);
+        console.log("\033[0;31m"+ws.id, "disconnected");
 
         let pool = await getPoolById(ws.poolId);
         pool && pool.disconnected(ws.id);
 
         removeClient(ws.id, CLIENTS);
         removeClient(ws.id, WAITINGPLAYERS);
+        console.log("\033[0;33mtotal of client players", CLIENTS.length);
     });
 
     clientConnection(ws);
@@ -78,15 +79,15 @@ wss.on('connection', async function(ws) {
 
 function clientConnection(a) {
     WAITINGPLAYERS.push(a);
-    console.log("new waiting", a.id);
+    console.log("\033[0;32mnew player waiting\033[0;37m", a.id);
     CLIENTS.push(a);
-    console.log("number of client", CLIENTS.length);
-    if (WAITINGPLAYERS.length == GAME_POOL_SIZE) {
-        let pool = new Pool(WAITINGPLAYERS);
+    console.log("\033[0;33mtotal of client players", CLIENTS.length);
+    if (WAITINGPLAYERS.length >= GAME_POOL_SIZE) {
+        let pool = new Pool(WAITINGPLAYERS.splice(0, 2));
         
         GAME_POOL.push(pool);
         pool.initGame();
-        WAITINGPLAYERS = [];
+        WAITINGPLAYERS = WAITINGPLAYERS.splice(2);
     }
 }
 
@@ -99,7 +100,7 @@ var Pool = function(a) {
     this.playerReady = 0,
     this.poolId = uuid.v4();
     this.playersId();
-    console.log("new pool id :", this.poolId);
+    console.log("\033[0;32mcreating new pool with id :\033[0;37m", this.poolId, "with", this.players.map((e) => {return e.id}));
 }
 var p = Pool.prototype;
 p.initGame = function() {
@@ -109,7 +110,7 @@ p.initGame = function() {
     this.sendDeck(c.decks);
 };
 p.beginGame = function() {
-    console.log("begin game for pool :", this.poolId);
+    console.log("\033[0;36mbegin game for pool :\033[0;37m", this.poolId);
     let tk = takeCard(this.fullDeck);
     this.sendId();
     this.sendAll({BEGIN: {startCard: tk.c, full: tk.f, canPlay: false, players: this.playersUsername}});
@@ -123,7 +124,7 @@ p.setPropety = function(a, b) {
 };
 p.update = function(a) {
     let eff = cardAsEffects(a.UPDATE.card);
-    console.log("played effect", eff);
+    console.log("played card effect", eff);
     this.sendAll({UPDATE: {...a.UPDATE, canPlay: false}});
 
     a.UPDATE.isDrawCards && this.sendAll({info: this.players[this.currentPlaying].username+" draws "+a.UPDATE.pileChanges.length+" cards!"})
@@ -134,7 +135,7 @@ p.update = function(a) {
 
     console.log("same player", isSame);
     this.currentPlaying = nplayer;
-    console.log("player turn", this.currentPlaying, "direction -> clockwise", this.direction);
+    console.log("next player", this.currentPlaying, "direction -> clockwise", this.direction);
     this.sendAll({CURRENT_PLAYER: {username: this.players[this.currentPlaying].username, id:  this.players[this.currentPlaying].id}});
     this.players[this.currentPlaying].send(j({canPlay: true, isSame: isSame}));
 };

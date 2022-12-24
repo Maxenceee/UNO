@@ -885,10 +885,10 @@ var Socket = function(g) {
 	try {
 		let sp = "8081",
 			sd = "uno-ws",
-			hr = "maxencegama.dev";
+			hr = ["//localhost", "//maxencegama.dev"];
 		let WSProtocol = (location.protocol === 'https:') ? 'wss:' : 'ws:',
-			WSHost = (location.hostname === 'localhost') ? bindPort(location.hostname, sp) : bindPort(hr, sd);
-		this.socket = new WebSocket(WSProtocol+"//"+WSHost);
+			WSHost = (location.hostname === 'localhost') ? bindPort(hr[0], sp) : bindPort(hr[1], sd);
+		this.socket = new WebSocket(WSProtocol + WSHost);
 	} catch (error) {
 		return this.gameParent.codeError(2);
 	}
@@ -1152,7 +1152,16 @@ g.socketBuilder = function(s) {
     }.bind(this));
 
     gameSocket.on('close', function() {
-        if (this.connectionCreated) this.stop();
+        console.info('The server closed the connetion');
+        let n = this;
+        if (!n.gameStarted)
+            return ;
+        let y = function() {
+            new AlertPopup("The game ended because the server closed the connection.", "Leave", function() {
+                this.reset();
+            }.bind(n));
+        }
+        if (n.connectionCreated) n.stop(y);
     }.bind(this));
 
     gameSocket.on('update', this.onUpdate.bind(this));
@@ -1170,7 +1179,8 @@ g.socketBuilder = function(s) {
     gameSocket.on('userdisconnetion', function() {
         console.info('User disconnetion');
         let n = this;
-        if (!n.gameStarted) return
+        if (!n.gameStarted)
+            return ;
         let y = function() {
             new AlertPopup("Game ended due to opponent disconnection.", "Leave", function() {
                 this.reset();
@@ -1185,6 +1195,7 @@ g.stop = function(a) {
     this.canPlay = false;
     this.gameSocket.end();
 	this.alert && this.alert.remove();
+    this.unobutton.remove();
     if (!a) {
         var ld = new Loader;
         ld.create(Fe(document, "dialog-close"));
@@ -1251,7 +1262,6 @@ g.reset = function() {
     Fe(document, "close-btn").classList.remove("-show");
     Fe(document, "deck-toggle").classList.remove("-show");
     Fe(document, "game-info").classList.remove("-show");
-	t.unobutton.remove();
 
     // this.gamepack && this.gamepack.delete();
     // Fe(document, "pie-container") && Fe(document, "pie-container").remove();
@@ -1472,7 +1482,7 @@ g.pileEvent = function(a) {
                 n.placeDeck();
             }, 50);
         }
-        n.sendGameUpdate((l ? d : null), {played: l, fromPile: true, pileChanges: b, changedColor: l && (d[0] == "W"  && d[1] == "Z"), isDrawCards: false});
+        n.sendGameUpdate((l ? d : null), {played: l, fromPile: true, pileChanges: b, changedColor: l && (d[0] == "W" && d[1] == "Z"), isDrawCards: false});
     });
 };
 g.sendGameUpdate = async function(a, b) {
@@ -1956,12 +1966,10 @@ var AlertPopup = function(t, a, b, c, d) {
 var UsernamePopup = function(t, a) {
     let o = false,
         p = Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: "Search for opponent"})), "id", "ad-err-close-btn"),
-        // m = Ms(Me("input", "SIU-tf"), ["autocomplete", "autocapitalize", "autofocus", "required", "maxlength", "type", "id"], ["off", "off", "", "", "15", "text", "on-user-input"]),
         m = Me("label", "f0n8F"),
         n = Ms(Me("input", "_2hvTZ pexuQ zyHYP"), ["autocomplete", "autocorrect", "autocapitalize", "autofocus", "required", "maxlength", "type", "aria-required", "name", "id", "value"], ["off", "off", "off", "", "", "15", "text", "true", "username", "on-user-input", ""]),
         j = Md(Me("div", "ttpo"), Md(m, [Me("span", "_9nyy2", {in: "Username"}), n])),
-        l = Md(Me("div", "ad-pn-c"), Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), [Me("p", "", {style: "min-height: auto;", in: t}), j]), Md(Me("div", "ad-btn"), p)])); //[m, Md(Ms(Me("label", "label-name"), "for", "name"), Me("span", "content-name", {in: "Username"}))]
-
+        l = Md(Me("div", "ad-pn-c"), Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), [Me("p", "", {style: "min-height: auto;", in: t}), j]), Md(Me("div", "ad-btn"), p)]));
     let y = function(a) {
         if (n.value.length)
             m.classList.add("FATdn");
@@ -2044,10 +2052,6 @@ var Hh = function() {
  * - stack could be usefull for end game animation to wait for player action to end before ending
  * - can be acheived by adding transition end so we can detect when transitions terminates
  * 
- * Working on :
- * 
- * Better error gestion in case of code break or bug and lag
- * -> add new codeError (currently 0 for connection, 1 for code any execution problem)
  * 
  * 
  */
