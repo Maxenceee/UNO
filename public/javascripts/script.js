@@ -1154,14 +1154,13 @@ g.socketBuilder = function(s) {
     gameSocket.on('close', function() {
         console.info('The server closed the connetion');
         let n = this;
-        if (!n.gameStarted)
-            return ;
         let y = function() {
             new AlertPopup("The game ended because the server closed the connection.", "Leave", function() {
                 this.reset();
             }.bind(n));
         }
         if (n.connectionCreated) n.stop(y);
+        else clearTimeout(this.tm), n.codeError(3);
     }.bind(this));
 
     gameSocket.on('update', this.onUpdate.bind(this));
@@ -1195,7 +1194,7 @@ g.stop = function(a) {
     this.canPlay = false;
     this.gameSocket.end();
 	this.alert && this.alert.remove();
-    this.unobutton.remove();
+    this.unobutton && this.unobutton.remove();
     if (!a) {
         var ld = new Loader;
         ld.create(Fe(document, "dialog-close"));
@@ -1297,6 +1296,9 @@ g.codeError = function(a) {
 			break;
 		case 2:
 			m = "Houston we have a problem!\nGame ended because something went wrong.";
+			break;
+		case 3:
+			m = "Houston we have a problem!\nSomething went wrong, the server closed the connection.";
 			break;
 		default:
 			break;
