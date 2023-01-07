@@ -32,7 +32,7 @@ Multiple games can be played in the same time, players are automatically matched
 
 An easy way to do is to enable ProxyPass on virtual host and configure the server as follow.
 
-To serve node application :
+To serve the Node application:
 
 ```sh
 <VirtualHost *:80 *:443 >
@@ -44,7 +44,7 @@ To serve node application :
 </VirtualHost>
 ```
 
-To serve WebSocket :
+To serve the WebSocket:
 
 ```sh
 <VirtualHost *:80 *:443 >
