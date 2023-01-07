@@ -322,8 +322,7 @@ jf = function(a, b, c) {
     a.style.height = gf(c, !0)
 },
 gf = function(a, b) {
-    "number" == typeof a && (a = (b ? Math.round(a) : a) + "px");
-    return a
+    return ma(a) && (a = (b ? Math.round(a) : a) + "px"), a
 }
 ,
 hf = function(a, b, c) {
