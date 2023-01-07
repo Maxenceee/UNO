@@ -28,7 +28,7 @@ Multiple games can be played in the same time, players are automatically matched
 
 ## Play online
 
-### Node.js Apache server Configuration
+### Example configuration of a Node.js Apache server
 
 An easy way to do is to enable ProxyPass on virtual host and configure the server as follow.
 
