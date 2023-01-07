@@ -823,7 +823,7 @@ p.flipPack = function(a) {
         p = new Qf(n);
     n.width = uf().width;
     n.height = uf().height;
-    this.pack.canv().appendChild(n);
+    Md(this.pack.canv(), n);
     p.ta(m, 0, 0);
 
     window.setTimeout(() => {
