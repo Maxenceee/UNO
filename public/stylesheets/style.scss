@@ -390,6 +390,7 @@ section {
 
 	h3 {
 		margin: 20px 0;
+		text-align: center;
 	}
 }
 
@@ -561,11 +562,12 @@ section {
 
 #sheep {
 	position: absolute;
-	bottom: 0;
+	// bottom: 0;
 	left: -100%;
+	top: 0;
 	width: 50px;
 	height: 50px;
-	animation: sheep-anim 65s linear infinite 20s;
+	// animation: sheep-anim 65s linear infinite 20s;
 }
 
 @keyframes sheep-anim {
@@ -676,7 +678,7 @@ section {
 	}
 }
 
-.ad-pn-c {
+.ad-pn-c, .ad-pn-cp {
     position: fixed;
     top: 0;
     left: 0;
@@ -879,6 +881,7 @@ section {
 				font-size: 1em;
 				margin: 0;
 				color: #008744;
+				text-align: left;
 
 				@media screen and (max-width: 800px) {
 					font-size: 0.8em;

@@ -31,7 +31,7 @@
 *   @license © Copyright 2022, All rights reserved.
 *   @author: Maxence Gama, maxence.gama@gmail.com, @maxencegama
 */
-
+"use strict";
 var g,
     aa = function(a) {
         var b = 0;
@@ -259,7 +259,7 @@ var od = function(a) {
 od.prototype.xb = function() {
     return this.Tb
 };
-pd = function(a) {
+var pd = function(a) {
     if (!a.Tb) {
         a.Tb = !0;
         for (var b = 0, c; c = a.Ad[b]; b++) {
@@ -281,8 +281,8 @@ qd.prototype.preload = function() {
 };
 Pe = function(a, b) {
     a.appendChild(b)
-},
-n = function(a) {
+}
+var n = function(a) {
     return void 0 !== a
 },
 r = function(a) {
@@ -495,7 +495,7 @@ var mergeProto = function(a, b) {
 
 var moveEffect = function() {
     console.log();
-}
+},
 Jf = function(a, b) {
     var c = a.bc;
     a = isNaN(c.left) ? null : c.left;
@@ -507,7 +507,7 @@ Kf = function(a, b) {
     a = isNaN(c.top) ? null : c.top;
     c = isNaN(c.height) ? 0 : c.height;
     return Math.min(null != a ? a + c : Infinity, Math.max(null != a ? a : -Infinity, b))
-};
+},
 Lf = function(a, b) {
     var c = a-b
     return a-c
@@ -522,6 +522,8 @@ CallBack.prototype.on = function(t, e) {
 CallBack.prototype.emit = function(t) {
     for (var e = arguments.length, n = Array(e > 1 ? e - 1 : 0), o = 1; o < e; o++)
         n[o - 1] = arguments[o];
+    if (!this.listeners)
+        return ;
     var i = this.listeners[t];
     i && i.length && i.forEach(function(t) {
         return t.apply(void 0, n)
@@ -775,7 +777,7 @@ c.delete = function() {
     mdg(this.event);
     delete this;
 }
-defineCode = function(a, b) {
+var defineCode = function(a, b) {
     a.cardCode = b;
 };
 
@@ -879,7 +881,7 @@ Loader.prototype.delete = function() {
     this.loader.remove();   
 };
 
-var Socket = function(g) {
+var Socket = function(g, n) {
 	kfg(g, this);
 	try {
 		let sp = "8081",
@@ -887,7 +889,7 @@ var Socket = function(g) {
 			hr = ["localhost", "maxencegama.dev"];
 		let WSProtocol = (location.protocol === 'https:') ? 'wss:' : 'ws:',
 			WSHost = (location.hostname === 'localhost') ? bindPort(hr[0], sp) : bindPort(hr[1], sd);
-		this.socket = new WebSocket(WSProtocol + WSHost);
+		this.socket = new WebSocket(WSProtocol + WSHost + (g.noop ? '?no_op' : ''));
 	} catch (error) {
         this.gameParent.connectionError = true;
 		return this.gameParent.codeError(3);
@@ -905,6 +907,7 @@ var Socket = function(g) {
 
     this.socket.onopen = () => {
         console.info("Connection opened");
+        // this.socket.send(this.j({NO_OPONENT: true}));
     };
 
     this.socket.onmessage = (message) => {
@@ -933,6 +936,9 @@ var Socket = function(g) {
             if (msg.info) {
                 this.emit('info', msg.info);
             }
+            if (msg.alertinfo) {
+                this.emit('alertinfo', msg.alertinfo);
+            }
             if(msg.UPDATE) {
                 this.gameParent.canPlay = msg.UPDATE.canPlay;
                 if (this.gameid !== msg.UPDATE.playerid) this.emit('update', msg.UPDATE);
@@ -943,12 +949,15 @@ var Socket = function(g) {
             if (msg.USER_DISCONNECTED) {
                 this.emit('userdisconnetion');
             }
+            if (msg.TIMEOUT_PLAYING_ALERT) {
+                this.emit('playingtimeout', msg.TIMEOUT_PLAYING_ALERT.delay);
+            }
             if (msg.PING) {
                 this.emit("server-ping");
             }
         } catch (error) {
-            this.gameParent.codeError(1);
             console.error(error);
+            this.gameParent.codeError(1);
         }
     }
 
@@ -990,19 +999,17 @@ s.p = function(a) {
     return JSON.parse(a);
 };
 s.begin = function(a) {
-    let m = this.j({ready: a, username: this.gameParent.username}); 
-    this.socket.send(m);
+    this.send({ready: a, username: this.gameParent.username});
 };
 s.sendUpdate = function(a, b, c, d) {
-    let m = this.j({UPDATE: {playerid: this.gameid, card: a || null, deckSize: b, ...c, newColor: d}});
-    this.socket.send(m);
+    this.send({UPDATE: {playerid: this.gameid, card: a || null, deckSize: b, ...c, newColor: d}});
 	this.pingServer();
 };
 s.finish = function(a) {
-    this.socket.send(this.j({GAME_FINISHED: true, closeconnection: true, id: this.gameid, winning: a}));
+    this.send({GAME_FINISHED: true, closeconnection: true, id: this.gameid, winning: a});
 };
 s.end = function() {
-    this.socket.send(this.j({USER_DISCONNECTION: true, endconnection: true}));
+    this.send({USER_DISCONNECTION: true, endconnection: true});
     this.delete();
 };
 s.send = function(a) {
@@ -1073,8 +1080,9 @@ s.delete = function() {
 
 var Game = function() {}
 var g = Game.prototype;
-g.start = function(a) {
+g.start = function(a, b) {
     this.username = a.length ? a : null
+    this.noop = undefined == b ? false : b;
     this.connectionCreated = false;
     this.canPlay = false;
     this.gameStarted = true;
@@ -1095,7 +1103,7 @@ g.connectionTimeout = function() {
     this.tm = setTimeout(() => {
         if (!this.connectionCreated && !this.connectionError) {
             this.gameSocket.delete();
-            this.alert = new AlertPopup("Cannot find any opponent.\n\nWe're sorry, it seems there is no one to play with you.", "Leave", function() {
+            this.gameAlert("Cannot find any opponent.\n\nWe're sorry, it seems there is no one to play with you.", "Leave", function() {
                 this.stop();
             }.bind(this), "Try again", function() {
                 this.socketBuilder(new Socket(this));
@@ -1128,9 +1136,9 @@ g.socketBuilder = function(s) {
         t.full = b;
         t.canPlay = c;
 		t.starting = true;
-        t.unobutton = new UNOButton(t.deckContainer);
+        t.unobutton = new UNOButton(t.deckContainer, true);
         let msg = "You play against "+hko(d);
-        new AlertPopup(msg, false, function() {
+        this.gameAlert(msg, false, function() {
 			t.starting = false;
             new InfoMessage(t.overlay, "Game is starting!")
             t.createPack(a);
@@ -1156,12 +1164,16 @@ g.socketBuilder = function(s) {
         new InfoMessage(this.overlay, a);
     }.bind(this));
 
+    gameSocket.on('alertinfo', function(a) {
+        this.gameAlert(a, "Okay");
+    }.bind(this));
+
     gameSocket.on('close', function() {
         // console.info('The server closed the connetion');
         let n = this;
         let y = function() {
-            new AlertPopup("The game ended because the server closed the connection.", "Leave", function() {
-                this.reset();
+            n.gameAlert("The game ended because the server closed the connection.", "Leave", function() {
+                this.stop();
             }.bind(n));
         }
         if (n.connectionCreated) n.stop(y);
@@ -1179,14 +1191,30 @@ g.socketBuilder = function(s) {
         this.onFinish(a);
     }.bind(this));
 
+    gameSocket.on('playingtimeout', function(a) {
+        console.info('Playing timeout', "delay", a);
+        console.log(this);
+        if (!this.canPlay)
+            return ;
+        let u = setTimeout(() => {
+            this.stop();
+        }, a * 1000);
+        return !function(t) {
+            t.gameAlert("You seem to take a long time to play, are you still there?", "Yes", function() {
+                clearTimeout(u),
+                t.gameSocket.send({TIMEOUT_RECEIVED: true});
+            }.bind(t));
+        }(this);
+    }.bind(this));
+
     gameSocket.on('userdisconnetion', function() {
         console.info('User disconnetion');
         let n = this;
         if (!n.gameStarted)
             return ;
         let y = function() {
-            new AlertPopup("Game ended due to opponent disconnection.", "Leave", function() {
-                this.reset();
+            n.gameAlert("Game ended due to opponent disconnection.", "Leave", function() {
+                this.stop();
             }.bind(n));
         }
         n.handledisconnection = true;
@@ -1199,8 +1227,10 @@ g.stop = function(a) {
     this.connectionCreated = false;
     this.canPlay = false;
     this.gameSocket.end();
-	this.alert && this.alert.remove();
+	this.alert && this.alert.remove(), delete this.alert;
+    this.pie && this.pie.delete(), delete this.pie;
     this.unobutton && this.unobutton.remove();
+    this.overlay && this.overlay.remove();
     if (!a) {
         var ld = new Loader;
         ld.create(Fe(document, "dialog-close"));
@@ -1219,8 +1249,8 @@ g.onFinish = function(a) {
     let t = this,
         y = function() {
             let u = a.winning ? (a.id == t.gameSocket.gameid ? "You win the game." : (a.player+" win the game."))+" Well played!" : "Game is over, you ran out of cards!";
-            new AlertPopup(u, "Leave", function() {
-                t.reset();
+            t.gameAlert(u, "Leave", function() {
+                t.stop();
             });
         }
         u = () => {
@@ -1248,6 +1278,17 @@ g.onFinish = function(a) {
         }, L + 100);
     }, this.gameStarted ? L : 0);
 };
+g.gameAlert = function() {
+    let t = this;
+    t.pie && t.pie.hide();
+    setTimeout(() => {
+        this.alert && this.alert.remove();
+        this.alert = new AlertPopup(...arguments)
+        .on('onclose', function() {
+            (t.pie && t.connectionCreated == true) && t.pie.show();
+        })
+    }, t.pie ? 1000 : 0);
+};
 g.reset = function() {
     var cnt = Fe(document, "dialog-container");
     cnt.classList.remove('-hide-dialog');
@@ -1255,24 +1296,25 @@ g.reset = function() {
 
     let t = this;
 
-    let cv = () => {
+    let cv = (s) => {
         Mc(cnt,'-hide-dialog');
         setTimeout(() => {
             // console.log("restart on reset");
             new UsernamePopup("Choose your username", function(a) {
-                t.start(a);
+                t.start(a, s);
             });
         }, 100);
     }
 
-    jh(Fe(document, "start-easy-btn"), cv);
+    jh(Fe(document, "start-online-btn"), () => cv());
+    jh(Fe(document, "start-ai-btn"), () => cv(true));
     Fe(document, "close-btn").classList.remove("-show");
     Fe(document, "deck-toggle").classList.remove("-show");
     Fe(document, "game-info").classList.remove("-show");
 
     // this.gamepack && this.gamepack.delete();
     // Fe(document, "pie-container") && Fe(document, "pie-container").remove();
-    document.querySelectorAll(".card, .pile, .gamepack, .opponent, .display, .display, .ad-pn-c").forEach(e => {
+    document.querySelectorAll(".card, .pile, .gamepack, .opponent, .display, .ad-pn-c, .ad-pn-cp").forEach(e => {
         e.remove();
     }); 
     // this.cards && this.cards.forEach(e => {
@@ -1291,7 +1333,7 @@ g.initCloseGame = function() {
     v.classList.add("-show");
     v.onclick = () => {
         let mess = "You are about to leave the game. Game will end, there is no way back.";
-        this.alert = new AlertPopup(mess, "Leave", function() {
+        t.gameAlert(mess, "Leave", function() {
             t.stop();
         }, "Stay here");
     }
@@ -1311,14 +1353,14 @@ g.codeError = function(a) {
 		default:
 			break;
 	}
-    this.alert = new AlertPopup(m, "Leave", function() {
+    this.gameAlert(m, "Leave", function() {
         this.stop();
     }.bind(this));
 };
 g.connectionLoss = function() {
 	let m;
 	m = "Houston we have a connection problem!\nCheck your internet connection, we're trying to reconnect you.";
-    this.alert = new AlertPopup(m);
+    this.gameAlert(m);
 };
 g.onReconnection = function() {
 	this.alert.remove();
@@ -1496,13 +1538,13 @@ g.pileEvent = function(a) {
     });
 };
 g.sendGameUpdate = async function(a, b) {
-    this.canPlay = false;
     let newColor = null;
     if (this.cards.length && a && (a[1] == "Z" && (a[0] == "W" || a[0] == "X"))) {
         newColor = await this.chooseNewColor();
         if (!newColor)
-        	return this.codeError(2);
+            return this.codeError(2);
     }
+    this.canPlay = false;
     new InfoMessage(this.overlay, "Waiting for next player...");
     if (newColor) this.gamepack.update(this.gamepack.gtp().cardCode, newColor);
     window.setTimeout(() => {
@@ -1618,11 +1660,12 @@ g.playCardEffects = function(a) {
     }, L + 150);
 };
 g.chooseNewColor = async function() {
+    let that = this;
     try {
         return await new Promise((resolve, reject) => {
             window.setTimeout(() => {
-                new PiePopup(function(a) {
-                    resolve(a);
+                that.pie = new PiePopup(function(a) {
+                    delete that.pie, resolve(a);
                 });
             }, 500);
         });
@@ -1708,12 +1751,12 @@ jh = function(a, b) {
         if (o) return
         o = true, b();
     };
-    window.addEventListener("keyup", function(key) {
-        if (key.keyCode === 13 && !o) {
-            o = true;
-            b();
-        }
-    });
+    // window.addEventListener("keyup", function(key) {
+    //     if (key.keyCode === 13 && !o) {
+    //         o = true;
+    //         b();
+    //     }
+    // });
 },
 hko = function(a) {
     let u = "",
@@ -1727,20 +1770,45 @@ hko = function(a) {
 var PiePopup = function(a) {
     this.callBack = a;
     let m = Me("div", "color-pie ad-status-panel"),
-        n = this.n = Md(Me("div", "pie-container ad-pn-c"), m);
+        n = this.n = Md(Me("div", "pie-container ad-pn-cp"), m);
     this.colors = ["#ff5555", "#ffaa00", "#55aa55", "#5555ff"],
     this.canSelect = false;
+    this.ev = [];
     this.generate(m);
     Md(document.body, n);
 };
 var p = PiePopup.prototype;
+p.hide = function() {
+    Mc(this.n, 'remove');
+    setTimeout(() => {
+		this.n.remove();
+        Mr(this.n, 'remove');
+        this.h.forEach((e) => {
+            e.style.transform = null;
+        });
+	}, 1000);
+};
+p.show = function() {
+    let t = this;
+    Mc(t.n, 'adding');
+    Md(document.body, t.n);
+    setTimeout(() => {
+        this.h.forEach((e) => {
+            e.style.transform = "scale(1)";
+        });
+        setTimeout(() => {
+            Mr(t.n, 'adding');
+            t.canSelect = true;
+        }, 100);
+    }, 1000);
+};
 p.generate = function(a) {
     let ur = "http://www.w3.org/2000/svg",
         n = Ms(Me("svg"), ["class", "xmlns", "viewBox"], ["pie", ur, "0 0 180 180"]),
         r = Ms(Me("text"), ["y", "dx", "dominant-baseline", "text-anchor"], ["-30", "50%", "middle", "middle"]),
         k = ["R", "Y", "G", "B"],
-        t = this,
-        h = [];
+        t = this;
+    this.h = [];
     r.textContent = "Choose your new color";
     Md(n, r);
     for (var i = 0; i < 4; i++) {
@@ -1752,19 +1820,19 @@ p.generate = function(a) {
             j = k[i],
             d = "M" + o + "," + p + " A90,90 0 0 1 " + q + "," + o + " L90,90 A0,0 0 0 0 90,90 Z"
         Ms(m, ["id", "fill", "d"], [i, c, d]);
-        new Events(["click"], m, function() {
+        this.ev.push(new Events(["click"], m, function() {
             if (!t.canSelect) return
             t.canSelect = false;
             t.callBack(j);
             t.delete();
-        });
-        h.push(m);
+        }));
+        this.h.push(m);
         Md(n, m);
     }
     Mc(t.n, 'adding');
     Md(a, n);
     setTimeout(() => {
-        h.forEach((e) => {
+        this.h.forEach((e) => {
             e.style.transform = "scale(1)";
         });
         setTimeout(() => {
@@ -1777,25 +1845,29 @@ p.delete = function() {
 	Mc(this.n, 'remove');
 	setTimeout(() => {
 		this.n.remove();
-		delete this;
+        this.ev.forEach(e => e.removeEvent());
+        delete this;
 	}, 1000);
 };
 
-var UNOButton = function(a) {
+var UNOButton = function(a, b) {
 	this.b = Md(Me("div", "ovr-uno-button-container"), Md(Me("div", "ovr-uno-button"), Me("div", "ovr-uno-button-logo")));
+    b && (this.inactive = true);
 	this.width = T * 1.5;
 	this.height = T * 1.5;
 	this.root = a;
 	this.buttonCoords = new O(0, window.innerHeight / 3);
 	this.placeButton(this.buttonCoords);
 	this.b.classList.add("reduced");
-	Md(this.root, this.b);
+	!b && Md(this.root, this.b);
 	this.disabled = true;
 	this.initPartucles();
 	return (this);
 };
 var u = UNOButton.prototype;
 u.activate = function() {
+    if (this.inactive)
+        return ;
 	this.disabled = false;
 	this.b.classList.remove("reduced");
 	this.b.onclick = () => {
@@ -1804,6 +1876,8 @@ u.activate = function() {
 	}
 };
 u.deactivate = function() {
+    if (this.inactive)
+        return ;
 	this.disabled = true;
 	this.b.classList.add("reduced");
 	this.b.onclick = null;
@@ -1933,10 +2007,12 @@ var AlertPopup = function(t, a, b, c, d) {
     let l = Me("div", "ad-pn-c"),
         u,
         v,
+        that = this,
         w,
         k = 0,
         r = [];
     Md(document.body, l);
+    that.l = l;
     if (t.includes("\n")) t = t.replaceAll(/\n/g, "<br/>");
     if (c && a != false) {
         let n = Ms(Md(Me("div", "ad-err-close ad-demi ad-demi-sup left"), Me("p", "", {in: a})), "id", "ad-err-reset-btn"),
@@ -1959,17 +2035,26 @@ var AlertPopup = function(t, a, b, c, d) {
 		}
     }
     Md(l, Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), Me("p", "", {in: t})), u]));
-    r.map(e => e.addEventListener("click", function() {l.remove()}));
+    r.map(e => e.addEventListener("click", function() {
+        l.remove(),
+        that.emit('onclose');
+    }));
     if (a == false) {
         let tm = c/100,
             x = window.setInterval(() => {
                 k++;
-                if (k >= 100) clearInterval(x), l.remove(), b();
+                if (k >= 100) clearInterval(x), l.remove(), that.emit('onclose'), b();
                 w.style.width = 100 - k + "%";
             }, tm);
     }
-    return l
+    return (this);
 }
+mergeProto(AlertPopup, CallBack);
+AlertPopup.prototype.remove = function() {
+    this.l.remove(),
+    this.l = null,
+    delete this;
+};
 
 var UsernamePopup = function(t, a) {
     let o = false,
@@ -2019,7 +2104,66 @@ i.delete = function() {
     this.message.remove();
     delete this
 };
- 
+
+var Sheep = function(a) {
+    this.left = a.left || null;
+    this.top = a.top || null;
+    this.b = Ms(Me("object"), ["id", "type", "data"], ["sheep", "image/svg+xml", "/images/sheep-animated.svg"]);
+    this.isflip = false;
+    this.speed = 4;
+    this.width = 50;
+    this.height = 50;
+    Md(document.body, this.b);
+    return (this);
+}
+Sheep.prototype.getDistance = function(a, b) {
+    let y = b.left - a.left;
+    let x = b.top - a.top;
+    
+    return Math.sqrt(x * x + y * y);
+}
+Sheep.prototype.walk = function() {
+    this.moveTo(new O(-this.width, window.innerHeight - this.height));
+    this.enableTransitions();
+
+    let p = () => {
+        return ((min, max) => Math.floor(Math.random() * (max - min)) + min)(-window.innerWidth / 2, window.innerWidth * 1.5);
+    };
+    let loop = async () => {
+        let u = p();
+        await this.moveTo(new O(u, window.innerHeight - this.height));
+        loop();
+    };
+    setTimeout(loop);
+    return (this);
+}
+Sheep.prototype.enableTransitions = function() {
+    this.transition = true;
+    return (this);
+};
+Sheep.prototype.disableTransitions = function() {
+    this.transition = false;
+    return (this);
+};
+Sheep.prototype.moveTo = async function(a) {
+    if (this.transition) {
+        this.duration = this.getDistance(new O(this.left, this.top), a) / (this.speed / 100);
+        this.b.style.transition = "left "+this.duration+"ms linear, top "+this.duration+"ms linear";
+    }
+    if (this.isflip && a.left > this.left || !this.isflip && a.left < this.left)
+        this.flip();
+    a && (this.left = a.left, this.top = a.top)
+    this.b.style.left = this.left+"px";
+    this.b.style.top = this.top+"px";
+    return await new Promise((resolve) => {
+        setTimeout(resolve, this.duration);
+    });
+}
+Sheep.prototype.flip = function() {
+    this.isflip = !this.isflip;
+    this.b.style.transform = this.isflip ? "scaleX(-1)" : null;
+}
+
 var Hh = function() {
     var started = null;
     if(!started) {
@@ -2033,18 +2177,20 @@ var Hh = function() {
     var started = null;
     var cnt = Fe(document, "dialog-container");
     Mr(cnt, '-hide-dialog');
-    let cv = () => {
+    let cv = (s) => {
         if (started) return
         started = new Game;
         Mc(cnt,'-hide-dialog');
         setTimeout(() => {
             new UsernamePopup("Choose your username", function(a) {
-                started.start(a);
+                started.start(a, s);
             });
         }, 100);
     }
 
-    jh(Fe(document, "start-easy-btn"), cv);
+    jh(Fe(document, "start-online-btn"), () => cv());
+    jh(Fe(document, "start-ai-btn"), () => cv(true));
+    new Sheep(new O(0, 0)).walk();
 }());
 
 /*
@@ -2056,9 +2202,9 @@ var Hh = function() {
  * - create an animation stack to store all incoming animations
  * - so we can put delay between animations or stop animation propagation or even delay all incomes
  * -> on each update receive, add update to the stack and if everything is good an nothing has to be done first, run stack content
- * -> if not wait for work to finish
+ * -> if not, wait for work to finish
  * - stack could be usefull for end game animation to wait for player action to end before ending
- * - can be acheived by adding transition end so we can detect when transitions terminates
+ * - can be acheived by adding transitionend listener so we can detect when transitions terminates
  * 
  * 
  * 
