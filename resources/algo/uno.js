@@ -40,7 +40,7 @@ class UNOPlayer {
 				// console.log(v);
 				this.canPlay = v.canPlay;
 				// console.log("can play", this.canPlay);
-				this.onUpdate(v);
+				if (this.id !== v.playerid) this.onUpdate(v);
 			}
 			if (v = arg.canPlay) {
 				this.canPlay = v;
@@ -92,7 +92,7 @@ class UNOPlayer {
 	playCard() {
 		let p = ((a) => {
 			for (let c of a) {
-				// console.log(this.currentCard, c, this.iscompatible(c, this.currentCard, this.customColor));
+				console.log(this.currentCard, c, this.iscompatible(c, this.currentCard, this.customColor));
 				if (this.iscompatible(c, this.currentCard, this.customColor))
 					return (c);
 			}

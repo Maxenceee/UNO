@@ -1242,6 +1242,7 @@ g.stop = function(a) {
 };
 g.end = function(a) {
     this.canPlay = false;
+    this.overlay.remove();
     this.gameSocket.finish(undefined !== a ? a : true);
 };
 g.onFinish = function(a) {
@@ -1548,7 +1549,8 @@ g.sendGameUpdate = async function(a, b) {
     new InfoMessage(this.overlay, "Waiting for next player...");
     if (newColor) this.gamepack.update(this.gamepack.gtp().cardCode, newColor);
     window.setTimeout(() => {
-        this.gameSocket.sendUpdate(a, this.deck.length, b, newColor);
+        this.gameSocket.sendUpdate(a, this.deck.length, b, newColor);   
+        this.updateCurrentPlayer(undefined, false, this);
 		if (this.deck > 1)
 			this.unobutton.deactivate();
     }, newColor ? 700 : 0);
@@ -1689,7 +1691,7 @@ g.addCardsToDeck = function(a) {
     this.sendGameUpdate(null, {played: false, fromPile: true, pileChanges: b, changedColor: false, isDrawCards: true});
 };
 g.updateCurrentPlayer = function(a, b, c) {
-    Fa(c.overlay, "display-inner-p").innerText = (!b ? a.username+" is playing" : "It's your turn")
+    Fa(c.overlay, "display-inner-p").innerText = (!a ? "Waiting for server" : !b ? a.username+" is playing" : "It's your turn")
 };
 
 var iscompatible = function(a, b, c) {
