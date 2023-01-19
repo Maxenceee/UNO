@@ -2073,6 +2073,7 @@ var UsernamePopup = function(t, a) {
     }; 
     m.onkeyup = y;
     m.onkeypress = y;
+    m.onkeydown = y;
     Md(document.body, l);
     var pp = () => {
         let str = n.value;
