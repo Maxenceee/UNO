@@ -1303,7 +1303,7 @@ g.reset = function() {
             // console.log("restart on reset");
             new UsernamePopup("Choose your username", function(a) {
                 t.start(a, s);
-            });
+            }, s && "Play" || void 0);
         }, 100);
     }
 
@@ -2058,9 +2058,9 @@ AlertPopup.prototype.remove = function() {
     delete this;
 };
 
-var UsernamePopup = function(t, a) {
+var UsernamePopup = function(t, a, k) {
     let o = false,
-        p = Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: "Search for opponent"})), "id", "ad-err-close-btn"),
+        p = Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: k || "Search for opponent"})), "id", "ad-err-close-btn"),
         m = Me("label", "f0n8F"),
         n = Ms(Me("input", "_2hvTZ pexuQ zyHYP"), ["autocomplete", "autocorrect", "autocapitalize", "autofocus", "required", "maxlength", "type", "aria-required", "name", "id", "value"], ["off", "off", "off", "", "", "15", "text", "true", "username", "on-user-input", ""]),
         j = Md(Me("div", "ttpo"), Md(m, [Me("span", "_9nyy2", {in: "Username"}), n])),
@@ -2187,7 +2187,7 @@ var Hh = function() {
         setTimeout(() => {
             new UsernamePopup("Choose your username", function(a) {
                 started.start(a, s);
-            });
+            }, s && "Play" || void 0);
         }, 100);
     }
 
