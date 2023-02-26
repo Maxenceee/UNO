@@ -1165,8 +1165,8 @@ section {
 
 		.progress-text {
 			position: absolute;
-			top: 0;
-			transform: translateY(50%);
+			top: 50%;
+			transform: translateY(-50%);
 			left: 10px;
 			color: var(--primary-darkest);
 		}
