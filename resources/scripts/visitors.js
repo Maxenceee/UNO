@@ -10,7 +10,7 @@ let logsPath = require('path').resolve(__dirname, "../logs/requests.log");
 class Visitors {
     static getVisitorsInstance() {
         // create logs dir if does exist
-        if (!fs.existsSync(logsPath)) {
+        if (!fs.existsSync(dirlogsPath)) {
             fs.mkdirSync(dirlogsPath);
         }
         return instance ? instance : new Visitors();
