@@ -1082,7 +1082,7 @@ var Game = function() {}
 var g = Game.prototype;
 g.start = function(a, b) {
     this.username = a.length ? a : null
-    this.noop = undefined == b ? false : b;
+    this.noop = "ai" == b;
     this.connectionCreated = false;
     this.canPlay = false;
     this.gameStarted = true;
@@ -2187,12 +2187,12 @@ var Hh = function() {
         setTimeout(() => {
             new UsernamePopup("Choose your username", function(a) {
                 started.start(a, s);
-            }, s && "Play" || void 0);
+            }, (s == "ai") && "Play" || void 0);
         }, 100);
     }
 
-    jh(Fe(document, "start-online-btn"), () => cv());
-    jh(Fe(document, "start-ai-btn"), () => cv(true));
+    jh(Fe(document, "start-online-btn"), () => cv("online"));
+    jh(Fe(document, "start-ai-btn"), () => cv("ai"));
     new Sheep(new O(0, 0)).walk();
 }());
 
