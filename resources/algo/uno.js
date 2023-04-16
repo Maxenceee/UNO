@@ -2,6 +2,8 @@ var uuid = require('node-uuid');
 
 let rdelay = ((min, max) => Math.floor(Math.random() * (max - min)) + min)(800, 1200)
 
+// still in development 
+// for the moment it only select randomly the card in its deck
 class UNOPlayer {
 	constructor(a, b, c, d) {
 		this.id = uuid.v4();
@@ -85,18 +87,22 @@ class UNOPlayer {
 		}
 		if (a.played) {
 			this.currentCard = a.card;
+			console.info("\x1b[0;36mnew current card\x1b[0m", this.currentCard);
 			this.playCardEffects(a.card);
 		}
 	}
 
 	playCard() {
 		let p = ((a) => {
+			console.info("\x1b[0;36mtest deck cards\x1b[0m");
 			for (let c of a) {
-				console.log(this.currentCard, c, this.iscompatible(c, this.currentCard, this.customColor));
+				console.log(this.currentCard, c, this.customColor, this.iscompatible(c, this.currentCard, this.customColor));
 				if (this.iscompatible(c, this.currentCard, this.customColor))
 					return (c);
 			}
+			return (null);
 		})(this.deck);
+		console.info("\x1b[0;36mvalid card in deck\x1b[0m", null != p);
 		if (!p) {
 			this.takeCardFromPile();
 		} else {
@@ -118,6 +124,7 @@ class UNOPlayer {
 			l = true;
 		else
 			this.deck.push(d);
+		console.info("\x1b[0;36mdraw card\x1b[0m", d);
 		this.sendGameUpdate((l ? d : null), {played: l, fromPile: true, pileChanges: b, changedColor: l && (d[0] == "W" && d[1] == "Z"), isDrawCards: false});
 	}
 

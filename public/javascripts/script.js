@@ -28,9 +28,11 @@
 
 */
 /*!
-*   @license © Copyright 2022, All rights reserved.
-*   @author: Maxence Gama, maxence.gama@gmail.com, @maxencegama
+*	@license © Copyright 2023, All rights reserved.
+*	@author: Maxence Gama, maxence.gama@gmail.com, @maxencegama
+*	Github https://github.com/Maxenceee
 */
+
 "use strict";
 var g,
     aa = function(a) {
@@ -380,8 +382,8 @@ var Cf = function(a, b, e) {
     c.drawImage(d.getContext("2d"), b, 0, 0);
     return d
 }
-var S = Math.round(uf().width * (Bf() ? .55 : .33)),
-    T = Math.round(uf().height * (Bf() ? .55 : .33)),
+let S = Math.round(uf().width * (Bf() ? .55 : .33)),
+	T = Math.round(uf().height * (Bf() ? .55 : .33)),
     L = 500;
 
 var Qf = function(a) {
@@ -571,7 +573,7 @@ dkf = function(a) {
     return typeof a === "object"
 }
 
-var setTransformProprety = function(a, b, c) {
+var setTransformProperty = function(a, b, c) {
     let l = "";
     undefined !== c && (l += " scale("+c+") ")
     l += "rotate("+b+"deg)";
@@ -665,21 +667,22 @@ c.resize = function(a, b) {
     return this
 };
 c.flip = function(a, b, c, d) {
-    let n = this.I("CANVAS", "card-canvas backface"),
+	// flip a card
+    let n = this.I("CANVAS", "card-canvas backface"), // create backface texture
         l = codeToCoord(a),
         m = [0, 240 * (l.x + (hjr(b) || 0)), 360 * l.y, 240, 360],
         p = new Qf(n);
     n.width = uf().width;
     n.height = uf().height;
     this.card.appendChild(n);
-    p.ta(m, 0, 0);
+    p.ta(m, 0, 0); // show backface texture on card back
 
     window.setTimeout(() => {
         this.zc("gamepack").style.opacity = 0;
         this.card.style.transform += "rotateY(180deg)";
         window.setTimeout(() => {
             this.zc("gamepack").style.opacity = 1;
-            d && d();
+            d && d(); // call flip callback function
         }, L);
     }, c);
 };
@@ -723,13 +726,14 @@ c.dragMoveEnd = function(a) {
     e.card.style.transition = "left "+L+"ms ease, top "+L+"ms ease, transform "+L+"ms ease";
 
     e.emit('dragend', function(a, b, c) {
-        let n = new O(d.clientX-e.deltaX, d.clientY-e.deltaY, e.width, e.height),
-            m = a.sqrt().inter(n) || e.clicked,
-            o = m && iscompatible(a.gtp().cardCode, e.cardCode, a.customColor);
+		// when card dropped OR clicked by the user
+        let n = new O(d.clientX-e.deltaX, d.clientY-e.deltaY, e.width, e.height), // get coords of current dropped card
+            m = a.sqrt().inter(n) || e.clicked, // check if card intersect gamepack of if it is clicked
+            o = m && iscompatible(a.gtp().cardCode, e.cardCode, a.customColor); // if card is played check if it is valid to play
         o && e.placeZ(1001);
-        e.moveTo(o ? a.sqrt() : new O(e.lt, e.tp), !o ? e.trotate : 0);
+        e.moveTo(o ? a.sqrt() : new O(e.lt, e.tp), !o ? e.trotate : 0); // if card is good to play place it on top of gamepack else move it back to it place
         // (e.card.style.transform = !o ? e.trotate : "rotate(0deg)");
-        (o && m) && b(e, c);
+        (o && m) && b(e, c); // if card is good to play call callback function c
     });
 };
 c.dragCancel = function(e) {
@@ -764,7 +768,7 @@ c.initEvents = function() {
         [["touchstart", "mousedown"], d.card, d.dragMoveStart.bind(d)],
         [["touchmove", "mousemove"], dragTarget, function(a) {d.dragging && d.dragMove(a)}, {
             capture: !0,
-            passive: !1
+            passive: !1,
         }],
         [["losecapture"], d.card, d.dragCancel.bind(d)],
         [["click"], document, d.onClick.bind(d), {passive: false}],
@@ -820,18 +824,19 @@ p.sqrt = function() {
     return new O(b.left, b.top, b.width, b.height)
 };
 p.flipPack = function(a) {
-    let n = Me("CANVAS", "card-canvas backface"),
+	// flip game pack
+    let n = Me("CANVAS", "card-canvas backface"), // create backface texture
         m = qe,
         p = new Qf(n);
     n.width = uf().width;
     n.height = uf().height;
     Md(this.pack.canv(), n);
-    p.ta(m, 0, 0);
+    p.ta(m, 0, 0); // show backface texture on card back
 
     window.setTimeout(() => {
         this.pack.canv().style.transform += "rotateY(180deg)";
         window.setTimeout(() => {
-            a && a();
+            a && a(); // call flip callback function
         }, L);
     }, c);
 };
@@ -883,6 +888,7 @@ Loader.prototype.delete = function() {
 
 var Socket = function(g, n) {
 	kfg(g, this);
+	// try to open socket with server
 	try {
 		let sp = "8081",
 			sd = "uno-ws",
@@ -911,6 +917,7 @@ var Socket = function(g, n) {
     };
 
     this.socket.onmessage = (message) => {
+		// try to reac socket message
         try {
             let msg = this.p(message.data);
             // console.log(msg);
@@ -1028,6 +1035,7 @@ s.initPing = function() {
     });
 };
 s.pingServer = function() {
+	// check connection with server
 	this.ps = Date.now();
 	if (this.lastPing && this.ps - this.lastPing < 1 * 60 * 1000) return
 	this.lastPing = this.ps;
@@ -1081,6 +1089,7 @@ s.delete = function() {
 var Game = function() {}
 var g = Game.prototype;
 g.start = function(a, b) {
+	// init Game
     this.username = a.length ? a : null
     this.noop = "ai" == b;
     this.connectionCreated = false;
@@ -1352,6 +1361,7 @@ g.codeError = function(a) {
 			m = "Houston we have a problem!\nSomething went wrong, the server closed the connection.";
 			break;
 		default:
+			m = "An error has occured."
 			break;
 	}
     this.gameAlert(m, "Leave", function() {
@@ -1452,47 +1462,50 @@ g.createPack = function(a) {
 };
 g.updateDeck = function() {};
 g.placeDeck = function() {
-    let n = window.innerWidth,
-        x = this.circleDeck,
-        o = this.deck.length,
-        p = (n - (S + 10) * o) / 2,
-        a = o >= 10 ? 6 : 4,
-        lm = ((n - 200) / o),
-        y = (50) * o >= n - 200 ? lm : 50,
-        q = x ? y : p < n / a ? (p = n / a, (n - n / a * 2)) / o : S + 10,
-        m = x ? (n - (o * y + S - y )) / 2 : p,
+	// place deck card in game space
+    let n = window.innerWidth, // given xspace to place cards
+        x = this.circleDeck, // line OR arc disposition
+        o = this.deck.length, // cards num
+        p = (n - (S + 10) * o) / 2, // xpos of the first card -> (n - (cards num)) / 2 when !circleDeck, S = graphic card width
+        a = o >= 10 ? 6 : 4, // portion of space given of cards depending of cards num -> n / (6|4)
+        lm = ((n - 200) / o), // xmargins of 200
+        y = (50) * o >= n - 200 ? lm : 50, // xoffset of each card from the left neighbor
+        q = x ? y : p < n / a ? (p = n / a, (n - n / a * 2)) / o : S + 10, // xspace given to each card
+        m = x ? (n - (o * y + S - y)) / 2 : p, // when !circleDeck m = p else n - (cards num * xoffset + (S - y to center on x axis))
         r = 0,
-        s = o % 2,
-        g = (o - s) || 1,
-        f = o > 4 ? 30 : 15,
-        e = (S - 50) * o >= n - 100 ? 45 : o > 2 ? o > 4 ? 80 : 60 : 45,
-        c = [],
-        z = window.innerHeight,
+        s = o % 2, // is an even num of cards
+        g = (o - s) || 1, // cards num to event -> if o is odd g = o - 1
+        f = o > 4 ? 30 : 15, // yspace-gap for arc disposition
+        e = (S - 50) * o >= n - 100 ? 45 : o > 2 ? o > 4 ? 80 : 60 : 45, // zangle beween each cards depending of cards num
+        c = [], // buffer for card coords 
+        z = window.innerHeight, // given yspace to place cards
         b = o > 20 ? 10 : 20,
-        k = o > 10 ? b / o * 10 : 40,
+        k = o > 10 ? b / o * 10 : 40, // interval between each cards in setInterval loop
         d = this.cards.length > 1 ? this.cards.sort(function(a, b) {
             return (a.cardCode[1] >= b.cardCode[1])
-        }) : this.cards;
+        }) : this.cards; // sort card depending on the card digit
 
     for(var j = 0; j < o; j++) {
-        let t = (m + q * j).toFixed(3),
-            l = f / (g / 2),
-            u = z - 250 + (x ? -(j >= g / 2 ? (s > 0 ? l * (g - j) : l * (o - j - 1)) : l * j) : 0),
-            v = d[j],
-            h = x ? o > 1 ? (j < g / 2 ? (g - j) - g / 2 : (s > 0 ? 0 : -1) - (j - g / 2)) * -(e / 2) / (g / 2) : 0 : 0;
-        
+		// for each card of index j to place
+        let t = (m + q * j).toFixed(3), // get xcoord
+            l = f / (g / 2), // yoffset between each cards -> (max yspace-gap / (cards num to even / 2))
+            u = z - 250 + (x ? -(j >= g / 2 ? (s > 0 ? l * (g - j) : l * (o - j - 1)) : l * j) : 0), // get ycoord -> when !circleDeck u = 0 else if (j < cards num to even / 2) u = ysapce-gap * j else u = ysapce-gap * (cards num - index - 1) (decrement from o / 2 to 0)(if o is odd and j is middle of o -> u = ysapce-gap * g(cards num to even) / 2)
+            v = d[j], // current card object
+            h = x ? o > 1 ? (j < g / 2 ? (g - j) - g / 2 : (s > 0 ? 0 : -1) - (j - g / 2)) * -(e / 2) / (g / 2) : 0 : 0; // if circleDeck and cards num > 1 get zrotation of each card
         c.push([v, t, u, j+1, h]);
     }
     for(var i = o - 1; i >= 0; i--) {
         let d = c[i];
+		// set zindex of each card
         d[0].placeZ(d[3]);
     }
     var w = window.setInterval(() => {
         if (r === o) return clearInterval(w);
         let d = c[r];
 
+		// for each card place and rotate it on the sceen
         d[0].moveTo(new O(d[1], d[2]), d[4]);
-        d[0].trotate = x ? d[4] : 0;
+        // d[0].trotate = x ? d[4] : 0;
         r++;
     }, k);
 };
@@ -1567,6 +1580,7 @@ g.createOpponentDeck = function(a) {
     this.placeOpponentDeck();
 };
 g.updateOpponentDeckAndGamepack = function(a) {
+	// on update message update display components
     if (a.fromPile && a.played) {
         let oc = new Card(this.pileCoords, "card rinverted");
         oc.drawcard(this.deckContainer, qe);
@@ -1609,6 +1623,7 @@ g.updateOpponentDeckAndGamepack = function(a) {
     this.placeOpponentDeck();
 };
 g.placeOpponentDeck = function() {
+	// same as placeDeck() but inverted on x-axis
     let n = window.innerWidth,
         o = this.oppn.length,
         p = Bf() ? n / 3 : 200,
@@ -1897,6 +1912,7 @@ u.remove = function() {
 	delete this;
 };
 u.initPartucles = function() {
+	// particle generator for UNO button
 	let t = this,
         i;
 	t.canvas = Me("canvas");
@@ -2158,9 +2174,7 @@ Sheep.prototype.moveTo = async function(a) {
     a && (this.left = a.left, this.top = a.top)
     this.b.style.left = this.left+"px";
     this.b.style.top = this.top+"px";
-    return await new Promise((resolve) => {
-        setTimeout(resolve, this.duration);
-    });
+    return await new Promise((resolve) => setTimeout(resolve, this.duration));
 }
 Sheep.prototype.flip = function() {
     this.isflip = !this.isflip;
