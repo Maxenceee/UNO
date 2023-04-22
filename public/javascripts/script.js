@@ -917,7 +917,6 @@ var Socket = function(g, n) {
     };
 
     this.socket.onmessage = (message) => {
-		// try to reac socket message
         try {
             let msg = this.p(message.data);
             // console.log(msg);

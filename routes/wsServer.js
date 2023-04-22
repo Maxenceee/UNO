@@ -30,9 +30,9 @@ wss.on('connection', async function(ws, req) {
     ws.send(j({CONNECTION_ACCEPTED: true, IS_AVAILABLE_OPPONENT: WAITINGPLAYERS.length > 0}));
 
     ws.on('message', async function(message) {
+        console.log("msg", message);
         let msg = p(message),
             pool = await getPoolById(ws.poolId);
-        // console.log("msg", msg);
 
         if (msg.NO_OPONENT) {
             ws.NO_OPONENT = true;
