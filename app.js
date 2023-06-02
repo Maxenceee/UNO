@@ -20,19 +20,24 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 /**
- * 
- * Get origin ip
- * 
+ *  IP logs
  */
 
+const normalize = function(a) {
+	if (a < 10)
+		return ("0".concat(a));
+	return (a);
+}
+
 morgan.token('ip', (req, res) => {
-  return (req.get('x-forwarded-for') || '').split(',')[0] || req.socket.remoteAddress;
+    return (req.get('x-forwarded-for') || '').split(',')[0] || req.socket.remoteAddress;
 });
 
 morgan.token('current_time', (req, res) => {
-  let t = new Date();
-  return "\t"+t.getFullYear()+"-"+(t.getMonth()+1)+"-"+t.getDate()+" "+t.getHours()+":"+t.getMinutes()+":"+t.getSeconds()
+    let t = new Date();
+    return "\t"+t.getFullYear()+"-"+normalize(t.getMonth()+1)+"-"+normalize(t.getDate())+" "+normalize(t.getHours())+":"+normalize(t.getMinutes())+":"+normalize(t.getSeconds())
 });
 
 morgan.token('server_instance', (req, res) => {
