@@ -36,7 +36,7 @@ morgan.token('current_time', (req, res) => {
 });
 
 morgan.token('server_instance', (req, res) => {
-  return "\tuno"
+  return "\tUNO"
 });
 
 morgan.token('methode', (req, res) => {
