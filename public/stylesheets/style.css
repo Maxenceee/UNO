@@ -1,5 +1,5 @@
 @charset "UTF-8";
-/*
+/*!
 
 
 
@@ -63,7 +63,6 @@ body {
   width: 100vw;
   -webkit-user-select: none;
      -moz-user-select: none;
-      -ms-user-select: none;
           user-select: none;
 }
 
@@ -99,8 +98,7 @@ section #game-root .card, section #game-root .pile, section #game-root .gamepack
 section #game-root .card .card-canvas, section #game-root .pile .card-canvas, section #game-root .gamepack .card-canvas, section #game-root .opponent .card-canvas {
   width: 100%;
   height: 100%;
-  -webkit-backface-visibility: hidden !important;
-          backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
   background: url("/images/UNO_back_card.svg");
 }
 section #game-root .card .card-canvas.backface, section #game-root .pile .card-canvas.backface, section #game-root .gamepack .card-canvas.backface, section #game-root .opponent .card-canvas.backface {
@@ -180,17 +178,6 @@ section #game-root .opponent {
   display: none;
 }
 
-@-webkit-keyframes show-pan {
-  0% {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
 @keyframes show-pan {
   0% {
     opacity: 0;
@@ -210,8 +197,7 @@ section #game-root .opponent {
   display: flex;
   position: absolute;
   z-index: 10000;
-  -webkit-animation: show-pan 0.2s ease-in-out forwards;
-          animation: show-pan 0.2s ease-in-out forwards;
+  animation: show-pan 0.2s ease-in-out forwards;
 }
 
 .cdk-overlay-backdrop {
@@ -418,7 +404,6 @@ section #game-root .opponent {
   position: relative;
   -webkit-user-select: none;
   -moz-user-select: none;
-   -ms-user-select: none;
        user-select: none;
   cursor: pointer;
   outline: none;
@@ -447,7 +432,6 @@ section #game-root .opponent {
   position: relative;
   -webkit-user-select: none;
   -moz-user-select: none;
-   -ms-user-select: none;
        user-select: none;
   cursor: pointer;
   outline: none;
@@ -530,38 +514,6 @@ section #game-root .opponent {
   top: 0;
   width: 50px;
   height: 50px;
-}
-
-@-webkit-keyframes sheep-anim {
-  100%, 0% {
-    opacity: 1;
-    left: -100px;
-  }
-  24% {
-    transform: scaleX(1);
-    left: 70%;
-  }
-  25% {
-    transform: scaleX(-1);
-  }
-  28% {
-    transform: scaleX(-1);
-    left: 65%;
-  }
-  29% {
-    transform: scaleX(1);
-  }
-  40% {
-    opacity: 1;
-    left: 110%;
-  }
-  41% {
-    opacity: 0;
-  }
-  99% {
-    opacity: 0;
-    left: -100px;
-  }
 }
 
 @keyframes sheep-anim {
@@ -679,7 +631,6 @@ section #game-root .opponent {
 .ad-pn-c .ad-panel, .ad-pn-c .ad-status-panel, .ad-pn-cp .ad-panel, .ad-pn-cp .ad-status-panel {
   position: relative;
   width: 350px;
-  height: -webkit-max-content;
   height: -moz-max-content;
   height: max-content;
   border-radius: 15px;
@@ -692,8 +643,7 @@ section #game-root .opponent {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  -webkit-animation: show-pan 0.3s ease-in-out forwards;
-          animation: show-pan 0.3s ease-in-out forwards;
+  animation: show-pan 0.3s ease-in-out forwards;
 }
 .ad-pn-c .ad-panel .ad-err, .ad-pn-c .ad-status-panel .ad-err, .ad-pn-cp .ad-panel .ad-err, .ad-pn-cp .ad-status-panel .ad-err {
   height: 100%;
@@ -804,7 +754,6 @@ section #game-root .opponent {
   position: absolute;
   top: 20px;
   left: 20px;
-  height: -webkit-max-content;
   height: -moz-max-content;
   height: max-content;
   width: 200px;
@@ -854,36 +803,11 @@ section #game-root .opponent {
   background-color: var(--dot-color);
   color: var(--dot-color);
   box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-  -webkit-animation: dotTyping 1.5s infinite linear;
-          animation: dotTyping 1.5s infinite linear;
+  animation: dotTyping 1.5s infinite linear;
 }
 @media screen and (max-width: 800px) {
   .display .display-inner .dot-typing {
     --dot-size: 4px ;
-  }
-}
-
-@-webkit-keyframes dotTyping {
-  0% {
-    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-  }
-  16.667% {
-    box-shadow: 9984px -10px 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-  }
-  33.333% {
-    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-  }
-  50% {
-    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px -10px 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-  }
-  66.667% {
-    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
-  }
-  83.333% {
-    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px -10px 0 0 var(--dot-color);
-  }
-  100% {
-    box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
   }
 }
 
@@ -948,18 +872,14 @@ section #game-root .opponent {
   padding: 50px;
 }
 .pie-container.remove {
-  -webkit-animation: fade-out 0.2s ease-in-out forwards;
-          animation: fade-out 0.2s ease-in-out forwards;
-  -webkit-animation-delay: 0.6s;
-          animation-delay: 0.6s;
+  animation: fade-out 0.2s ease-in-out forwards;
+  animation-delay: 0.6s;
 }
 .pie-container.remove .color-pie .pie path {
-  -webkit-animation: ungrow-part 0.2s ease-in-out forwards;
-          animation: ungrow-part 0.2s ease-in-out forwards;
+  animation: ungrow-part 0.2s ease-in-out forwards;
 }
 .pie-container.adding .color-pie .pie path {
-  -webkit-animation: grow-part 0.5s ease-in-out forwards;
-          animation: grow-part 0.5s ease-in-out forwards;
+  animation: grow-part 0.5s ease-in-out forwards;
 }
 .pie-container .color-pie {
   position: relative;
@@ -985,26 +905,16 @@ section #game-root .opponent {
   text-align: center;
 }
 .pie-container .color-pie .pie path:nth-child(1) {
-  -webkit-animation-delay: 0s;
-          animation-delay: 0s;
+  animation-delay: 0s;
 }
 .pie-container .color-pie .pie path:nth-child(2) {
-  -webkit-animation-delay: 0.1s;
-          animation-delay: 0.1s;
+  animation-delay: 0.1s;
 }
 .pie-container .color-pie .pie path:nth-child(3) {
-  -webkit-animation-delay: 0.2s;
-          animation-delay: 0.2s;
+  animation-delay: 0.2s;
 }
 .pie-container .color-pie .pie path:nth-child(4) {
-  -webkit-animation-delay: 0.3s;
-          animation-delay: 0.3s;
-}
-
-@-webkit-keyframes grow-part {
-  to {
-    transform: scale(1);
-  }
+  animation-delay: 0.3s;
 }
 
 @keyframes grow-part {
@@ -1012,19 +922,9 @@ section #game-root .opponent {
     transform: scale(1);
   }
 }
-@-webkit-keyframes ungrow-part {
-  to {
-    transform: scale(0);
-  }
-}
 @keyframes ungrow-part {
   to {
     transform: scale(0);
-  }
-}
-@-webkit-keyframes fade-out {
-  to {
-    opacity: 0;
   }
 }
 @keyframes fade-out {
@@ -1108,7 +1008,6 @@ section #game-root .opponent {
 .progress-bar {
   position: relative;
   width: 100%;
-  height: -webkit-max-content;
   height: -moz-max-content;
   height: max-content;
 }
@@ -1121,8 +1020,8 @@ section #game-root .opponent {
 }
 .progress-bar .progress-body .progress-text {
   position: absolute;
-  top: 0;
-  transform: translateY(50%);
+  top: 50%;
+  transform: translateY(-50%);
   left: 10px;
   color: var(--primary-darkest);
 }
@@ -1144,37 +1043,23 @@ section #game-root .opponent {
   height: 13px;
   border-radius: 50%;
   background: #000;
-  -webkit-animation-timing-function: cubic-bezier(0, 1, 1, 0);
-          animation-timing-function: cubic-bezier(0, 1, 1, 0);
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
 .lds-ellipsis div:nth-child(1) {
   left: 8px;
-  -webkit-animation: lds-ellipsis1 0.6s infinite;
-          animation: lds-ellipsis1 0.6s infinite;
+  animation: lds-ellipsis1 0.6s infinite;
 }
 .lds-ellipsis div:nth-child(2) {
   left: 8px;
-  -webkit-animation: lds-ellipsis2 0.6s infinite;
-          animation: lds-ellipsis2 0.6s infinite;
+  animation: lds-ellipsis2 0.6s infinite;
 }
 .lds-ellipsis div:nth-child(3) {
   left: 32px;
-  -webkit-animation: lds-ellipsis2 0.6s infinite;
-          animation: lds-ellipsis2 0.6s infinite;
+  animation: lds-ellipsis2 0.6s infinite;
 }
 .lds-ellipsis div:nth-child(4) {
   left: 56px;
-  -webkit-animation: lds-ellipsis3 0.6s infinite;
-          animation: lds-ellipsis3 0.6s infinite;
-}
-
-@-webkit-keyframes lds-ellipsis1 {
-  0% {
-    transform: scale(0);
-  }
-  100% {
-    transform: scale(1);
-  }
+  animation: lds-ellipsis3 0.6s infinite;
 }
 
 @keyframes lds-ellipsis1 {
@@ -1185,28 +1070,12 @@ section #game-root .opponent {
     transform: scale(1);
   }
 }
-@-webkit-keyframes lds-ellipsis3 {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(0);
-  }
-}
 @keyframes lds-ellipsis3 {
   0% {
     transform: scale(1);
   }
   100% {
     transform: scale(0);
-  }
-}
-@-webkit-keyframes lds-ellipsis2 {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(24px, 0);
   }
 }
 @keyframes lds-ellipsis2 {
