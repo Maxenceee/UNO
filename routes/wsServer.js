@@ -172,7 +172,7 @@ p.update = function(a) {
     :
     this.sendAll({UPDATE: {canPlay: false}});
 
-    (a && a.UPDATE.isDrawCards) && this.sendAll({info: this.players[this.currentPlaying].username+" draws "+a.UPDATE.pileChanges.length+" cards!"})
+    (a && a.UPDATE.isDrawCards) && this.sendAll({info: this.players[this.currentPlaying].username+" draws " + a.UPDATE.pileChanges.length + " cards!"})
 
     if (eff && eff.reverse == true) this.direction = !this.direction, this.sendAll({info: "New game direction."});
     let nplayer = newPlayerFromDirection(this.currentPlaying, this.direction, this.poolSize, eff),
@@ -183,7 +183,7 @@ p.update = function(a) {
     console.log("currentPlaying: ", this.currentPlaying);
     this.playingTimeOut(this.playingWithAI);
     console.info("next player", this.currentPlaying, "direction -> clockwise", this.direction);
-    if (!this.mustPassTurn(a.UPDATE)) {
+    if (a && !this.mustPassTurn(a.UPDATE)) {
         console.log("not mustPassTurn");
         this.sendAll({CURRENT_PLAYER: {username: this.players[this.currentPlaying].username, id:  this.players[this.currentPlaying].id}});
         this.players[this.currentPlaying].send(j({canPlay: true, isSame: isSame}));
