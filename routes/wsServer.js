@@ -183,7 +183,7 @@ p.update = function(a) {
     console.log("currentPlaying: ", this.currentPlaying);
     this.playingTimeOut(this.playingWithAI);
     console.info("next player", this.currentPlaying, "direction -> clockwise", this.direction);
-    if (a && !this.mustPassTurn(a.UPDATE)) {
+    if (!a || !this.mustPassTurn(a.UPDATE)) {
         console.log("not mustPassTurn");
         this.sendAll({CURRENT_PLAYER: {username: this.players[this.currentPlaying].username, id:  this.players[this.currentPlaying].id}});
         this.players[this.currentPlaying].send(j({canPlay: true, isSame: isSame}));
@@ -260,11 +260,11 @@ p.mustPassTurn = function(u) {
     if (u.played) {
         let a = u.card;
         if (a[1] == "V") {
-            return true
+            return (true);
         } else if ((a[1] == "Z" && a[0] == "X")) {
-            return true
+            return (true);
         } else if (a[1] == "V" || (a[1] == "Z" && a[0] == "X")) {
-            return false;
+            return (false);
         }
     }
 };
@@ -275,7 +275,7 @@ p.passPlayerOnTimeOut = function() {
     if (this.playingTimeout)
         clearTimeout(this.playingTimeout);
     this.playingTimeout = setTimeout(() => {
-        this.sendAll({info: this.players[this.currentPlaying].username+" took too long to play, he misses his turn."});
+        this.sendAll({info: this.players[this.currentPlaying].username + " took too long to play, he misses his turn."});
         this.update();
     }, 20 * 1000);
 };
