@@ -100,6 +100,7 @@ function clientConnection(a, url) {
         let pool = new Pool([a, UNOPlayer]);
         
         GAME_POOL.set(pool.poolId, pool);
+		pool.playingWithAI = true;
         pool.initGame();
         return ;
     }
@@ -126,9 +127,10 @@ function clientConnection(a, url) {
 /**
  * 
  * @param {Array} a 
+ * @param {boolean} b
  */
 
-var Pool = function(a) {
+var Pool = function(a, b = false) {
     this.players = a,
     this.playersUsername = [],
     this.poolSize = a.length,
@@ -136,8 +138,10 @@ var Pool = function(a) {
     this.currentPlaying = 0,
     this.playerReady = 0,
     this.poolId = uuid.v4();
+	this.playingWithAI = b;
     this.playersId();
     console.info("\x1b[0;32mcreating new pool with id :\x1b[0;37m", this.poolId, "with", this.players.map((e) => {return e.id}));
+	return (this);
 }
 var p = Pool.prototype;
 p.initGame = function() {
@@ -153,7 +157,7 @@ p.beginGame = function() {
     this.sendAll({BEGIN: {startCard: tk.c, full: tk.f, canPlay: false, players: this.playersUsername}});
     this.players[this.currentPlaying].send(j({canPlay: true}));
     this.sendAll({CURRENT_PLAYER: {username: this.players[this.currentPlaying].username, id: this.players[this.currentPlaying].id}});
-    // this.playingTimeOut();
+    this.playingTimeOut(this.playingWithAI);
 };
 p.setPropety = function(a, b) {
     for (var i = 0; i < this.players.length; i++) {
@@ -177,7 +181,7 @@ p.update = function(a) {
     console.info("same player", isSame);
     this.currentPlaying = nplayer;
     console.log("currentPlaying: ", this.currentPlaying);
-    this.playingTimeOut();
+    this.playingTimeOut(this.playingWithAI);
     console.info("next player", this.currentPlaying, "direction -> clockwise", this.direction);
     if (!this.mustPassTurn(a.UPDATE)) {
         console.log("not mustPassTurn");
@@ -275,12 +279,12 @@ p.passPlayerOnTimeOut = function() {
         this.update();
     }, 20 * 1000);
 };
-p.playingTimeOut = function() {
+p.playingTimeOut = function(a) {
     if (this.playingTimeout)
         clearTimeout(this.playingTimeout);
     this.playingTimeout = setTimeout(() => {
         this.sendTimeOutAlert();
-    }, 10 * 1000);
+    }, (a ? 30 : 10) * 1000);
 };
 
 var newPlayerFromDirection = function(a, b, c, d) {
