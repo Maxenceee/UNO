@@ -915,7 +915,7 @@ section {
 			animation: dotTyping 1.5s infinite linear;
 
 			@media screen and (max-width: 800px) {
-				--dot-size: 4px
+				--dot-size: 4px;
 			}
 		}
 	}
@@ -923,25 +923,25 @@ section {
   
 @keyframes dotTyping {
 	0% {
-	  box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+		box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 	}
 	16.667% {
-	  box-shadow: 9984px -10px 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+		box-shadow: 9984px -10px 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 	}
 	33.333% {
-	  box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+		box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 	}
 	50% {
-	  box-shadow: 9984px 0 0 0 var(--dot-color), 9999px -10px 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+		box-shadow: 9984px 0 0 0 var(--dot-color), 9999px -10px 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 	}
 	66.667% {
-	  box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+		box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 	}
 	83.333% {
-	  box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px -10px 0 0 var(--dot-color);
+		box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px -10px 0 0 var(--dot-color);
 	}
 	100% {
-	  box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+		box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
 	}
 }
 
@@ -1019,7 +1019,7 @@ section {
             transform: scale(0);
             transform-origin: 50% 50%;
             transition: transform 0.25s ease-out;
-            pointer-events: all;   
+            pointer-events: auto;   
 
             &:hover {
                 transform: scale(1.1) !important;
@@ -1123,6 +1123,7 @@ section {
 		}
 		
 		.zyHYP {
+			appearance: none;
 			-webkit-appearance: none;
 		}
 
@@ -1252,6 +1253,8 @@ section {
 	& > div {
 		position: relative;
 		margin-right: 5px;
+		display: flex;
+		align-items: center;
 
 		svg {
 			position: relative;
@@ -1262,12 +1265,14 @@ section {
 			}
 		}
 	}
+
 	p {
-		line-height: 30px;
-		font-size: 12px;
+		line-height: 35px;
+		font-size: 15px;
 		line-break: anywhere;
 		color: #FFF;
 	}
+
 	.progression {
 		margin: 0;
 		position: absolute;

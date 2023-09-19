@@ -807,7 +807,7 @@ section #game-root .opponent {
 }
 @media screen and (max-width: 800px) {
   .display .display-inner .dot-typing {
-    --dot-size: 4px ;
+    --dot-size: 4px;
   }
 }
 
@@ -896,7 +896,7 @@ section #game-root .opponent {
   transform: scale(0);
   transform-origin: 50% 50%;
   transition: transform 0.25s ease-out;
-  pointer-events: all;
+  pointer-events: auto;
 }
 .pie-container .color-pie .pie path:hover {
   transform: scale(1.1) !important;
@@ -989,6 +989,8 @@ section #game-root .opponent {
   font-size: 16px;
 }
 .ttpo .f0n8F .zyHYP {
+  -moz-appearance: none;
+       appearance: none;
   -webkit-appearance: none;
 }
 .ttpo .f0n8F.FATdn .pexuQ {
@@ -1102,6 +1104,8 @@ section #game-root .opponent {
 .ws-server-p > div {
   position: relative;
   margin-right: 5px;
+  display: flex;
+  align-items: center;
 }
 .ws-server-p > div svg {
   position: relative;
@@ -1111,8 +1115,8 @@ section #game-root .opponent {
   fill: #FFF;
 }
 .ws-server-p p {
-  line-height: 30px;
-  font-size: 12px;
+  line-height: 35px;
+  font-size: 15px;
   line-break: anywhere;
   color: #FFF;
 }
@@ -1123,4 +1127,4 @@ section #game-root .opponent {
   left: 0;
   background-color: #FFF;
   height: 3px;
-}/*# sourceMappingURL=style.css.map */
+}

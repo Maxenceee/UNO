@@ -1,6 +1,6 @@
 var uuid = require('node-uuid');
 
-let rdelay = ((min, max) => Math.floor(Math.random() * (max - min)) + min)(800, 1200)
+let rdelay = ((min, max) => Math.floor(Math.random() * (max - min)) + min);
 
 // still in development 
 // for the moment it only select randomly the card in its deck
@@ -49,7 +49,7 @@ class UNOPlayer {
 				// console.log(this);
 				// console.log("can play", this.canPlay);
 				if (this.canPlay == true) {
-					setTimeout(() => this.playCard(), rdelay);
+					setTimeout(() => this.playCard(), rdelay(800, 1200));
 				}
 			}
 			// console.log(this);
@@ -94,10 +94,10 @@ class UNOPlayer {
 
 	playCard() {
 		let p = ((a) => {
-			console.info("\x1b[0;36mtest deck cards\x1b[0m");
+			console.info("\x1b[0;36mtest deck cards, current %s\x1b[0m", this.currentCard);
 			for (let c of a) {
 				console.log(this.currentCard, c, this.customColor, this.iscompatible(c, this.currentCard, this.customColor));
-				if (this.iscompatible(c, this.currentCard, this.customColor))
+				if (this.iscompatible(this.currentCard, c, this.customColor))
 					return (c);
 			}
 			return (null);
@@ -121,7 +121,7 @@ class UNOPlayer {
 			l = false;
 		b.push(d);
 		if (this.iscompatible(d, this.currentCard, this.customColor))
-			l = true;
+			l = true, this.currentCard = d;
 		else
 			this.deck.push(d);
 		console.info("\x1b[0;36mdraw card\x1b[0m", d);
@@ -149,7 +149,7 @@ class UNOPlayer {
 		}
 		setTimeout(() => {
 			this.sendGameUpdate(null, {played: false, fromPile: true, pileChanges: b, changedColor: false, isDrawCards: true});
-		}, rdelay);
+		}, rdelay(800, 1200));
 	}
 
 	iscompatible(a, b, c) {

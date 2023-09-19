@@ -18,22 +18,22 @@ Array.prototype.shuffle = function() {
  */
 
 let wss = new WebSocket.Server({ port:'8081' }),
-    CLIENTS=[],
-    GAME_POOL_SIZE = 2,
-    GAME_POOL = [],
-    WAITINGPLAYERS = [];
+    CLIENTS			= new Map(),
+    GAME_POOL_SIZE	= 2,
+    GAME_POOL		= new Map(),
+    WAITINGPLAYERS	= new Map();
 
 wss.on('connection', async function(ws, req) {
     ws.id = uuid.v4();
     console.log("request url for", ws.id, req.url);
 
-    ws.send(j({CONNECTION_ACCEPTED: true, IS_AVAILABLE_OPPONENT: WAITINGPLAYERS.length > 0}));
+    ws.send(j({CONNECTION_ACCEPTED: true, IS_AVAILABLE_OPPONENT: WAITINGPLAYERS.size > 0}));
 
-    ws.on('message', async function(message) {
-        console.log("msg", message);
-        let msg = p(message),
-            pool = await getPoolById(ws.poolId);
-
+    ws.on('message', function(message) {
+		let msg = p(message),
+			pool = GAME_POOL.get(ws.poolId);
+		console.log("msg", msg);
+		
         if (msg.NO_OPONENT) {
             ws.NO_OPONENT = true;
         }
@@ -43,14 +43,14 @@ wss.on('connection', async function(ws, req) {
 
         if (msg.UPDATE) {
             console.info("\n--------------------");
-            console.info("\033[0;36mreceived update\033[0m", msg.UPDATE);
+            console.info("\x1b[0;36mreceived update\x1b[0m", msg.UPDATE);
             if (!pool.gameEnded) pool.update(msg);
         }
         if (msg.ready) {
             ws.ready = true;
             pool.playerReady++;
             pool.defUsername(msg.username, ws);
-            console.info("player\033[0;32m", ws.id, "\033[0;37mis ready");
+            console.info("player\x1b[0;32m", ws.id, "\x1b[0;37mis ready");
             if (pool.playersAllReady()) {
                 pool.beginGame();
             }
@@ -59,11 +59,11 @@ wss.on('connection', async function(ws, req) {
             pool.passPlayerOnTimeOut();
         }
         if (msg.GAME_FINISHED) {
-            console.info("\033[0;36mGame finished");
+            console.info("\x1b[0;36mGame finished");
             pool.finish(msg, ws.username);
         }
         if (msg.USER_DISCONNECTION) {
-            // console.log("\033[0;31m"+ws.id, "disconnected");
+            // console.log("\x1b[0;31m"+ws.id, "disconnected");
             // removeClient(ws.id, CLIENTS);
             // removeClient(ws.id, WAITINGPLAYERS);
             ws.close();
@@ -74,42 +74,59 @@ wss.on('connection', async function(ws, req) {
         }
     });
 
-    ws.on('close', async function() {
-        console.info("\033[0;31m"+ws.id, "disconnected");
+    ws.on('close', function() {
+        console.info("\x1b[0;31m"+ws.id, "disconnected");
 
-        let pool = await getPoolById(ws.poolId);
+        let pool = GAME_POOL.get(ws.poolId);
         pool && pool.disconnected(ws.id);
 
-        removeClient(ws.id, CLIENTS);
-        removeClient(ws.id, WAITINGPLAYERS);
-        console.info("\033[0;33mtotal of client players", CLIENTS.length);
+        // removeClient(ws.id, CLIENTS);
+		CLIENTS.delete(ws.id);
+        // removeClient(ws.id, WAITINGPLAYERS);
+		WAITINGPLAYERS.delete(ws.id);
+        console.info("\x1b[0;33mtotal of client players", CLIENTS.size);
     });
 
     clientConnection(ws, req.url);
 });
 
 function clientConnection(a, url) {
+    console.log(url, new URLSearchParams(url.replace("/", "")));
     let u = new URLSearchParams(url.replace("/", ""));
+	CLIENTS.set(a.id, a);
+    console.info("\x1b[0;33mtotal of client players", CLIENTS.size);
     if (u.has('no_op')) {
         let UNOPlayer = new UNO;
         let pool = new Pool([a, UNOPlayer]);
         
-        GAME_POOL.push(pool);
+        GAME_POOL.set(pool.poolId, pool);
         pool.initGame();
         return ;
     }
-    WAITINGPLAYERS.push(a);
-    console.info("\033[0;32mnew player waiting\033[0;37m", a.id);
-    CLIENTS.push(a);
-    console.info("\033[0;33mtotal of client players", CLIENTS.length);
-    if (WAITINGPLAYERS.length >= GAME_POOL_SIZE) {
-        let pool = new Pool(WAITINGPLAYERS.splice(0, 2));
-        
-        GAME_POOL.push(pool);
+	WAITINGPLAYERS.set(a.id, a);
+    // WAITINGPLAYERS.push(a);
+    console.info("\x1b[0;32mnew player waiting\x1b[0;37m", a.id);
+    // CLIENTS.push(a);
+	// console.log(WAITINGPLAYERS, CLIENTS);
+    if (WAITINGPLAYERS.size >= GAME_POOL_SIZE) {
+		let players = [];
+		for (let I = 0; I < GAME_POOL_SIZE; I++) {
+			let [firstKey] = WAITINGPLAYERS.keys();
+			players.push(WAITINGPLAYERS.get(firstKey));
+			WAITINGPLAYERS.delete(firstKey);
+		}
+		// console.log(WAITINGPLAYERS);
+		// console.log(players);
+        let pool = new Pool(players);
+        GAME_POOL.set(pool.poolId, pool);
         pool.initGame();
-        WAITINGPLAYERS = WAITINGPLAYERS.splice(2);
     }
 }
+
+/**
+ * 
+ * @param {Array} a 
+ */
 
 var Pool = function(a) {
     this.players = a,
@@ -120,7 +137,7 @@ var Pool = function(a) {
     this.playerReady = 0,
     this.poolId = uuid.v4();
     this.playersId();
-    console.info("\033[0;32mcreating new pool with id :\033[0;37m", this.poolId, "with", this.players.map((e) => {return e.id}));
+    console.info("\x1b[0;32mcreating new pool with id :\x1b[0;37m", this.poolId, "with", this.players.map((e) => {return e.id}));
 }
 var p = Pool.prototype;
 p.initGame = function() {
@@ -130,7 +147,7 @@ p.initGame = function() {
     this.sendDeck(c.decks);
 };
 p.beginGame = function() {
-    console.info("\033[0;36mbegin game for pool :\033[0;37m", this.poolId);
+    console.info("\x1b[0;36mbegin game for pool :\x1b[0;37m", this.poolId);
     let tk = takeCard(this.fullDeck);
     this.sendId();
     this.sendAll({BEGIN: {startCard: tk.c, full: tk.f, canPlay: false, players: this.playersUsername}});
@@ -160,7 +177,7 @@ p.update = function(a) {
     console.info("same player", isSame);
     this.currentPlaying = nplayer;
     console.log("currentPlaying: ", this.currentPlaying);
-    this.playingTimeOut();
+    // this.playingTimeOut();
     console.info("next player", this.currentPlaying, "direction -> clockwise", this.direction);
     if (!this.mustPassTurn(a.UPDATE)) {
         console.log("not mustPassTurn");
@@ -182,12 +199,9 @@ p.sendDeck = function(a) {
     }
 };
 p.sendAllExcept = function(a, m) {
-    var foundId = GAME_POOL.findIndex(function (obj) {
-        return (obj.poolId == a);
-    });
-    if (foundId == -1) return ;
+    var foundId = GAME_POOL.get(a);
     for (var i = 0; i < this.players.length; i++) {
-        if (i !== foundId) this.players[i].send(j(m));
+        if (this.players[i].id !== foundId.id) this.players[i].send(j(m));
     }
 };
 p.sendAll = function(m) {
@@ -215,10 +229,7 @@ p.defUsername = function(a, b) {
     this.playersUsername.push({username: b.username, id: b.id})
 };
 p.removePool = function() {
-    var foundId = GAME_POOL.findIndex(function (obj) {
-        return (obj.poolId == this.poolId);
-    });
-    foundId !== -1 && GAME_POOL.splice(foundId, 1);
+    GAME_POOL.delete(this.poolId)
     if (this.playingTimeout)
         clearTimeout(this.playingTimeout);
     delete this
@@ -229,14 +240,16 @@ p.finish = function(a, b) {
     this.removePool();
 };
 p.disconnected = function(a) {
-    if (a) {
-        var foundId = this.players.findIndex(function (obj) {
-            return (obj.id == a);
-        });
-        foundId !== -1 && this.players.splice(foundId, 1);
-    }
     this.sendAll({USER_DISCONNECTED: a || true});
-    WAITINGPLAYERS = [...WAITINGPLAYERS, ...this.players]
+	this.players.forEach(e => {
+		if (e.id != a)
+		{
+			if (e.isAI)
+				delete e;
+			else
+				WAITINGPLAYERS.set(e.id, e);
+		}
+	});
     this.removePool();
 };
 p.mustPassTurn = function(u) {
@@ -281,41 +294,41 @@ cardAsEffects = function(a) {
     return (a && {pass: a[1] == "D", reverse: a[1] == "P"});
 }
 
-async function getPoolById(a) {
-    try {
-        return await new Promise((resolve, reject) => {
-            var foundId = GAME_POOL.findIndex(function (obj) {
-                return (obj.poolId == a);
-            });
-            if (foundId > -1) {
-                resolve(GAME_POOL[foundId]);
-            } else {
-                reject(null);
-            }
-        });
-    } catch (error) {
-        console.error(error);
-    }
-}
+// async function getPoolById(a) {
+//     try {
+//         return await new Promise((resolve, reject) => {
+//             var foundId = GAME_POOL.findIndex(function (obj) {
+//                 return (obj.poolId == a);
+//             });
+//             if (foundId > -1) {
+//                 resolve(GAME_POOL[foundId]);
+//             } else {
+//                 reject(null);
+//             }
+//         });
+//     } catch (error) {
+//         console.error(error);
+//     }
+// }
 
-async function removeClient(id, l) {
-    try {
-        return await new Promise((resolve, reject) => {
-            var foundId = l.findIndex(function (obj) {
-                return (obj.id == id);
-            });
+// async function removeClient(id, l) {
+//     try {
+//         return await new Promise((resolve, reject) => {
+//             var foundId = l.findIndex(function (obj) {
+//                 return (obj.id == id);
+//             });
         
-            if (foundId > -1) {
-                l.splice(foundId, 1);
-                resolve(true);
-            } else {
-                reject(false);
-            }
-        });
-    } catch (error) {
-        console.error(error);
-    }
-}
+//             if (foundId > -1) {
+//                 l.splice(foundId, 1);
+//                 resolve(true);
+//             } else {
+//                 reject(false);
+//             }
+//         });
+//     } catch (error) {
+//         console.error(error);
+//     }
+// }
 
 var createPlayerDeck = function(a, b) {
     var fullDeck = [],
@@ -389,7 +402,9 @@ random = function(mn, mx) {
 
 let tts = function() {
     // return [["WZ", "XZ", "G0", "GD", "BD", "YD", "RD"], ["WZ", "XZ", "G1", "GD", "BD", "YD", "RD"]]
-    return [["WZ", "XZ", "G0"], ["WZ", "XZ", "G0"]]
+    // return [["WZ", "XZ", "WZ", "XZ", "WZ", "XZ", "G0"], ["G1", "G2", "G0"]]
+    return [["WZ", "XZ", "WZ", "XZ", "WZ", "XZ", "G0"], ["WZ", "WZ"]]
+    // return [["WZ"], ["WZ", "WZ"]]
 }
 
 module.exports = wss;
