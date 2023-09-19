@@ -121,9 +121,9 @@ section {
 			// 	transform: rotateY(180deg) rotateZ(180deg) !important;
 			// }
 
-			&.grow-transition {
-				transition: 500ms ease !important;
-			}
+			// &.grow-transition {
+			// 	transition: width 500ms ease, height 500ms ease !important;
+			// }
 		}
 
 		.opponent {

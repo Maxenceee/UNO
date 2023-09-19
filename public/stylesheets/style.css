@@ -108,9 +108,6 @@ section #game-root .card .card-canvas.backface, section #game-root .pile .card-c
   z-index: 0;
   transform: rotateY(180deg);
 }
-section #game-root .card.grow-transition, section #game-root .pile.grow-transition, section #game-root .gamepack.grow-transition, section #game-root .opponent.grow-transition {
-  transition: 500ms ease !important;
-}
 section #game-root .opponent {
   transform-origin: center center;
 }

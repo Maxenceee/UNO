@@ -496,7 +496,6 @@ var mergeProto = function(a, b) {
 let sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 var moveEffect = function() {
-	console.log();
 },
 Jf = function(a, b) {
 	var c = a.bc;
@@ -605,12 +604,13 @@ var Card = function(a, b, c) {
 	(a && dkf(a)) && this.moveTo();
 	this.width = c ? c.width : S;
 	this.height = c ? c.height : T;
+	this.transitionManager = new Set();
 	genRandomId(this);
 };
 mergeProto(Card, CallBack);
 var c = Card.prototype;
 c.drawcard = function(a, b, c) {
-	let patern = this.patern ? this.patern : !ma(b) ? b : [0, 240*b, 360*c, 240, 360]
+	let patern = this.patern ? this.patern : !ma(b) ? b : [0, 240 * b, 360 * c, 240, 360]
 	this.wa = this.zc("card-canvas", this.card);
 	this.wa.width = uf().width;
 	this.wa.height = uf().height;
@@ -619,13 +619,31 @@ c.drawcard = function(a, b, c) {
 	jf(this.card, this.width, this.height);
 	a.appendChild(this.card);
 	this.d.ta(patern, 0, 0);
-	this.card.style.transition = "left " + L + "ms ease, top " + L + "ms ease, transform " + L + "ms ease";
+	this.addTransition("left", "top", "transform");
+	// this.card.style.transition = "left " + L + "ms ease, top " + L + "ms ease, transform " + L + "ms ease";
 	return (this);
 };
+c._remapTransitions = function() {
+	let r = [];
+	this.transitionManager.forEach(e => {
+		r.push([e, L + "ms", "ease"].join(" "));
+	});
+	this.card.style.transition = r.join(", ");
+};
+c.addTransition = function() {
+	[...arguments].forEach(e => this.transitionManager.add(e));
+	this._remapTransitions();
+};
+c.removeTransition = function() {
+	[...arguments].forEach(e => this.transitionManager.delete(e));
+	this._remapTransitions();
+};
+c.clearTransitions = function() {
+	this.transitionManager.forEach(e => this.transitionManager.delete(e));
+	this._remapTransitions();
+};
 c.createCardPatern = function(a, b) {
-	// console.log(a, b);
 	this.patern = [0, 240 * (a.x + (b || 0)), 360 * a.y, 240, 360]
-	// console.log(this.patern);
 	return (this);
 };
 c.redrawcard = function(b, c) {
@@ -635,12 +653,10 @@ c.redrawcard = function(b, c) {
 }
 c.moveTo = function(a, b) {
 	a && (this.left = a.left, this.top = a.top)
-	// console.log("m->", this.left, this.top);
 	this.card.style.left = this.left + "px";
 	this.card.style.top = this.top + "px";
 	undefined !== b && (this.card.style.transform = "rotate(" + b + "deg)");
 	b && (this.trotate = b);
-	// console.log(this.card);
 	return (this);
 },
 c.I = function(a, b, c) {
@@ -662,7 +678,8 @@ c.placeZ = function(a) {
 c.resize = function(a, b) {
 	this.width = a;
 	this.height = b;
-	this.card.classList.add('grow-transition');
+	this.addTransition("width", "height");
+	// this.card.classList.add('grow-transition');
 	jf(this.card, this.width, this.height);
 	// this.card.classList.remove('grow-transition');
 	return (this);
@@ -708,12 +725,10 @@ c.onClick = function(e) {
 c.dragMove = function(a) {
 	if (!this.gameParent.canPlay) return
 	this.clicked = false;
-	this.card.style.transition = "";
+	this.clearTransitions();
 	this.placeZ("10001");
 	let d = (a.clientX && a) || (a.changedTouches && a.changedTouches.length ? a.changedTouches[0] : null);
 	if (!d) return (this.dragCancel());
-	// console.log(this.deltaX, d.clientX, this.deltaY, d.clientY);
-	// console.log(new O(d.clientX-this.deltaX, d.clientY-this.deltaY));
 	this.moveTo(new O(d.clientX-this.deltaX, d.clientY-this.deltaY), 0);
 };
 c.dragMoveEnd = function(a) {
@@ -725,7 +740,7 @@ c.dragMoveEnd = function(a) {
 	if (!this.gameParent.canPlay) return
 
 	e.placeZ(e.tzIdx);
-	e.card.style.transition = "left " + L + "ms ease, top " + L + "ms ease, transform " + L + "ms ease";
+	e.addTransition("left", "top", "transform");
 
 	e.emit('dragend', function(a, b, c) {
 		// when card dropped OR clicked by the user
@@ -741,10 +756,8 @@ c.dragMoveEnd = function(a) {
 c.dragCancel = function(e) {
 	let t = this;
 	t.dragging = false;
-	
 	t.placeZ(t.tzIdx);
-	t.card.style.transition = "left " + L + "ms ease, top " + L + "ms ease, transform " + L + "ms ease";
-
+	t.addTransition("left", "top", "transform");
 	t.emit('dragend', function(a, b, c) {
 		t.moveTo(new O(t.lt, t.tp), t.trotate);
 	});
@@ -876,7 +889,6 @@ var Loader = function() {
 		// d = Ms(Me("CIRCLE", "path"), ["cx", "cy", "r", "fill", "stroke-width", "stroke-miterlimit"], ["50", "50", "20", "none", "5", "10"])
 	a.innerHTML = '<div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10"/></svg></div>';
 	// this.loader = Md(a, Md(b, Md(c, d)));
-	
 	this.loader = a;
 	return (this);
 };
@@ -922,7 +934,6 @@ var Socket = function(g, n) {
 	this.socket.onmessage = (message) => {
 		try {
 			let msg = this.p(message.data);
-			// console.log(msg);
 			if (msg.IS_CONNECTED) {
 				this.loader.delete();
 				let d = this.deck = msg.deck,
@@ -1121,11 +1132,10 @@ g.connectionTimeout = function() {
 				this.connectionTimeout();
 			}.bind(this));
 		}
-	}, 10 * 1000);
+	}, 15 * 1000);
 };
 g.socketBuilder = function(s) {
 	var gameSocket = this.gameSocket = s;
-	// console.log(gameSocket, this);
 
 	gameSocket.on('connection', function(a, b) {
 		this.connectionCreated = true;
@@ -1310,7 +1320,6 @@ g.reset = function() {
 	let cv = (s) => {
 		Mc(cnt,'-hide-dialog');
 		setTimeout(() => {
-			// console.log("restart on reset");
 			new UsernamePopup("Choose your username", function(a) {
 				t.start(a, s);
 			}, s && "Play" || void 0);
@@ -1563,9 +1572,10 @@ g.sendGameUpdate = async function(a, b) {
 	}, newColor ? 700 : 0);
 };
 g.createOpponentDeck = function(a) {
-	this.oppn = this.oppn || []
+	this.oppn = this.oppn || [];
+	this.oppnSizes = {bwidth: Bf() ? S : 60, bheight: Bf() ? T : 90, lwidth: Bf() ? S / 1.65 : 60, lheight: Bf() ? T / 1.65 : 90};
 	for(var i = 0; i < (a || 7); i++) {
-		let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: Bf() ? S / 1.65 : 60, height: Bf() ? T / 1.65 : 90});
+		let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: this.oppnSizes.bwidth, height: this.oppnSizes.bheight});
 		oc.gtc()
 			.placeZ(0)
 			.moveTo(this.pileCoords);
@@ -1589,9 +1599,12 @@ g.updateOpponentDeckAndGamepack = function(a) {
 		}, 10);
 	}
 	if (a.deckSize == this.oppn.length) return ;
+	// L = 5000
 	if (a.deckSize > this.oppn.length) {
 		for(var i = this.oppn.length; i < a.deckSize; i++) {
-			let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: Bf() ? S / 1.65 : 60, height: Bf() ? T / 1.65 : 90});
+			let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: this.oppnSizes.bwidth, height: this.oppnSizes.bheight});
+			// oc.pile.addTransition("left", "top", "transform");
+			// oc.pile.card.style.transition = "left " + 5000 + "ms ease, top " + 5000 + "ms ease, transform " + 5000 + "ms ease";
 			oc.gtc()
 				.placeZ(0)
 				.moveTo(this.pileCoords);
@@ -1611,37 +1624,19 @@ g.updateOpponentDeckAndGamepack = function(a) {
 				.moveTo(this.packCoords, 0)
 				.flip(a.card || this.gamepack.pack.cardCode, a.newColor || this.gamepack.customColor, 550, u);
 		}
-		// (async () => {
-		// 	return (new Promise(async (resolve) => {
-		// 		for(var i = 0; i < size; i++) {
-		// 			let del = this.oppn.pop();
-		// 			let u = () => {
-		// 				this.gamepack.update(a.card, a.newColor);
-		// 				del.delete();
-		// 			}
-		// 			del.gtc()
-		// 				.resize(S, T)
-		// 				.placeZ(1)
-		// 				.moveTo(this.packCoords, 0)
-		// 				.flip(a.card, a.newColor, 550, u);
-		// 			// await sleep(L + 550);
-		// 			if (i == size - 1)
-		// 				resolve(this.placeOpponentDeck());
-		// 		}
-		// 	}));
-		// })();
 	}
 	this.placeOpponentDeck();
 };
-g.placeOpponentDeck = function() {
+g.placeOpponentDeck = function(sizes = null) {
 	// same as placeDeck() but inverted on x-axis
+	sizes = sizes || this.oppnSizes
 	let n = window.innerWidth,
 		o = this.oppn.length,
 		p = Bf() ? n / 3 : 200,
 		lm = (p / o),
 		y = (50) * o >= p ? lm : 50,
 		q = y,
-		m = (n - (o * y + S - y )) / 2,
+		m = (n - (o * y + sizes.lwidth - y)) / 2,
 		r = 0,
 		s = o % 2,
 		g = (o - s) || 1,
@@ -1667,9 +1662,10 @@ g.placeOpponentDeck = function() {
 	}
 	var w = window.setInterval(() => {
 		if (r == o) return (clearInterval(w));
-		let d = c[o-r-1];
+		let d = c[o - r - 1];
 
 		d[0].gtc().moveTo(new O(d[1], d[2]), d[4]);
+		sizes && d[0].gtc().resize(sizes.lwidth, sizes.lheight);
 		r++;
 	}, k);
 };
