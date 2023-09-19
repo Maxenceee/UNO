@@ -472,6 +472,11 @@ section {
 	&[disabled] {
 		cursor: not-allowed;
 	}
+
+	&:focus {
+		outline: solid 2px var(--fire-color-dialog-background);
+		outline-offset: -4px;
+	}
 }
 
 .mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button {
@@ -744,6 +749,11 @@ section {
 				margin: 0 5px;
 				height: 40px;
 				border-radius: 10px;
+
+				&:focus {
+					outline: solid 1px var(--primary-dark);
+					// outline-offset: -4px;
+				}
 			
 				--ad-border-color: #f2f2f2;
 				--ad-primary-color: 0, 0, 0;

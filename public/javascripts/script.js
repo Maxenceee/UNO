@@ -2048,8 +2048,8 @@ var AlertPopup = function(t, a, b, c, d) {
 	that.l = l;
 	if (t.includes("\n")) t = t.replaceAll(/\n/g, "<br/>");
 	if (c && a != false) {
-		let n = Ms(Md(Me("div", "ad-err-close ad-demi ad-demi-sup left"), Me("p", "", {in: a})), "id", "ad-err-reset-btn"),
-			m = Ms(Md(Me("div", "ad-err-close ad-demi right"), Me("p", "", {in: c})), "id", "ad-err-close-btn");
+		let n = Ms(Md(Me("button", "ad-err-close ad-demi ad-demi-sup left"), Me("p", "", {in: a})), "id", "ad-err-reset-btn"),
+			m = Ms(Md(Me("button", "ad-err-close ad-demi right"), Me("p", "", {in: c})), "id", "ad-err-close-btn");
 		u = Md(Me("div", "ad-btn"), [n, m])
 		n.addEventListener("click", b);
 		r.push(...[n, m]);
@@ -2058,7 +2058,7 @@ var AlertPopup = function(t, a, b, c, d) {
 		if (undefined != a) {
 			if (a == false) w = Me("div", "progress-el", {style: "width: 0%;"}), v = Md(Me("div", "progress-bar"), Md(Me("div", "progress-body"), w));
 	
-			u = Md(Me("div", "ad-btn"), v || Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: a || "Close"})), "id", "ad-err-close-btn"));
+			u = Md(Me("div", "ad-btn"), v || Ms(Md(Me("button", "ad-err-close"), Me("p", "", {in: a || "Close"})), "id", "ad-err-close-btn"));
 			if (a && a != false) {
 				b && u.addEventListener("click", b);
 				r.push(u);
@@ -2091,7 +2091,7 @@ AlertPopup.prototype.remove = function() {
 
 var UsernamePopup = function(t, a, k) {
 	let o = false,
-		p = Ms(Md(Me("div", "ad-err-close"), Me("p", "", {in: k || "Search for opponent"})), "id", "ad-err-close-btn"),
+		p = Ms(Md(Me("button", "ad-err-close"), Me("p", "", {in: k || "Search for opponent"})), "id", "ad-err-close-btn"),
 		m = Me("label", "f0n8F"),
 		n = Ms(Me("input", "_2hvTZ pexuQ zyHYP"), ["autocomplete", "autocorrect", "autocapitalize", "autofocus", "required", "maxlength", "type", "aria-required", "name", "id", "value"], ["off", "off", "off", "", "", "15", "text", "true", "username", "on-user-input", ""]),
 		j = Md(Me("div", "ttpo"), Md(m, [Me("span", "_9nyy2", {in: "Username"}), n])),

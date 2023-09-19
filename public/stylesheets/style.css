@@ -426,6 +426,10 @@ section #game-root .opponent {
 .mat-raised-button[disabled] {
   cursor: not-allowed;
 }
+.mat-raised-button:focus {
+  outline: solid 2px var(--fire-color-dialog-background);
+  outline-offset: -4px;
+}
 
 .mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button {
   box-sizing: border-box;
@@ -682,6 +686,9 @@ section #game-root .opponent {
   --ad-red-primary-color: 211, 47, 47;
   background-color: transparent;
   border: 1.5px solid var(--ad-border-color);
+}
+.ad-pn-c .ad-panel .ad-btn .ad-err-close:focus, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close:focus, .ad-pn-cp .ad-panel .ad-btn .ad-err-close:focus, .ad-pn-cp .ad-status-panel .ad-btn .ad-err-close:focus {
+  outline: solid 1px var(--primary-dark);
 }
 .ad-pn-c .ad-panel .ad-btn .ad-err-close p, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close p, .ad-pn-cp .ad-panel .ad-btn .ad-err-close p, .ad-pn-cp .ad-status-panel .ad-btn .ad-err-close p {
   height: 100%;
