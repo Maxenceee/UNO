@@ -370,7 +370,7 @@ var createPlayerDeck = function(a, b) {
     *   Tests purpose
     */
     // fullDeck.splice(10);
-    pall = tts();
+    // pall = tts();
     /*
     *
     */
