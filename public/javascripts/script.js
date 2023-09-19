@@ -1515,7 +1515,7 @@ g.playCard = function(b, c, p) {
 		if (c.cards.length === 0) c.end();
 	}, 600);
 	c.gamepack.gtp().cardCode = b.cardCode;
-	-1 !== id && (n = c.cards.splice(id, 1), m = c.deck.splice(id, 1))
+	-1 !== id && (n = c.cards.splice(id, 1), c.deck.splice(id, 1))
 	window.setTimeout(() => {
 		c.placeDeck();
 	}, 50);
