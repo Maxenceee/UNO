@@ -122,24 +122,24 @@ Mr = function(a, b) {
 	a.classList.remove(b);
 },
 jl = function(a) {
-	return "string" == typeof a
+	return ("string" == typeof a);
 },
 Ms = function(a, b, c) {
 	jl(b) ? a.setAttribute(b, c !== undefined ? c : "") : Na(a, b, c)
-	return a
+	return (a);
 },
 Md = function(a, b) {
 	(b instanceof Node) ? a.appendChild(b) : dj(a, b)
-	return a
+	return (a);
 },
 Mg = function(a, b) {
-	return a.getElementsByClassName(b)
+	return (a.getElementsByClassName(b));
 },
 Mqa = function(a, b) {
-	return a.querySelectorAll(b)
+	return (a.querySelectorAll(b));
 },
 Mq = function(a, b) {
-	return a.querySelector(b)
+	return (a.querySelector(b));
 },
 dj = function(a, b) {
 	for(var i = 0; i < b.length; i++) 
@@ -285,13 +285,13 @@ Pe = function(a, b) {
 	a.appendChild(b)
 }
 var n = function(a) {
-	return void 0 !== a
+	return (void 0 !== a);
 },
 r = function(a) {
-	return "string" == typeof a
+	return ("string" == typeof a);
 },
 ma = function(a) {
-	return "number" == typeof a
+	return ("number" == typeof a);
 },
 Fe = function(a, b) {
 	return r(b) ? a.getElementById(b) : b
@@ -380,7 +380,7 @@ var Cf = function(a, b, e) {
 	d.width = b[3];
 	d.height = b[4];
 	c.drawImage(d.getContext("2d"), b, 0, 0);
-	return d
+	return (d);
 }
 let S = Math.round(uf().width * (Bf() ? .55 : .33)),
 	T = Math.round(uf().height * (Bf() ? .55 : .33)),
@@ -449,13 +449,13 @@ var Be = function(a, b) {
 };
 g = Be.prototype;
 g.clone = function() {
-	return new Be(this.width, this.height)
+	return (new Be(this.width, this.height));
 };
 g.toString = function() {
-	return "(" + this.width + " x " + this.height + ")"
+	return ("(" + this.width + " x " + this.height + ")");
 };
 g.aspectRatio = function() {
-	return this.width / this.height
+	return (this.width / this.height);
 };
 g.ceil = function() {
 	this.width = Math.ceil(this.width);
@@ -528,7 +528,7 @@ CallBack.prototype.emit = function(t) {
 		return ;
 	var i = this.listeners[t];
 	i && i.length && i.forEach(function(t) {
-		return t.apply(void 0, n)
+		return (t.apply(void 0, n));
 	})
 }
 
@@ -563,14 +563,14 @@ jdg = function(a, b) {
 	}
 },
 mdg = function(a) {
-	if (!a) return
+	if (!a) return ;
 	for(var i = 0; i < a.length; i++) {
 		let d = a[i];
 		d.removeEvent();
 	}
 },
 dkf = function(a) {
-	return typeof a === "object"
+	return (typeof a === "object");
 }
 
 var setTransformProperty = function(a, b, c) {
@@ -595,7 +595,7 @@ makeId = function(l) {
 	for ( var i = 0; i < l; i++ ) {
 		res += characters.charAt(Math.floor(Math.random() * characters.length));
 	}
-	return res
+	return (res);
 }
 
 var Card = function(a, b, c) {
@@ -644,16 +644,16 @@ c.moveTo = function(a, b) {
 	return (this);
 },
 c.I = function(a, b, c) {
-	return La(document, arguments)
+	return (La(document, arguments));
 };
 c.canv = function() {
-	return this.card
+	return (this.card);
 };
 c.zc = function(a, b) {
 	var c = b || document;
 	if (c.getElementsByClassName)
 		a = c.getElementsByClassName(a)[0];
-	return a || null
+	return (a || null);
 };
 c.placeZ = function(a) {
 	this.card.style.zIndex = a
@@ -689,7 +689,7 @@ c.flip = function(a, b, c, d) {
 	return (this);
 };
 c.dragMoveStart = function(a) {
-	if (this.dragging) return this.dragCancel();
+	if (this.dragging) return (this.dragCancel());
 	if (!this.gameParent.canPlay) return
 	let d = (a.clientX && a) || (a.changedTouches && a.changedTouches.length ? a.changedTouches[0] : null);
 	this.clicked = true;
@@ -702,7 +702,7 @@ c.dragMoveStart = function(a) {
 	// this.trotate = this.card.style.transform;
 };
 c.onClick = function(e) {
-	if (this.dragging) this.dragCancel();
+	if (this.dragging) (this.dragCancel());
 	e.preventDefault();
 };
 c.dragMove = function(a) {
@@ -711,7 +711,7 @@ c.dragMove = function(a) {
 	this.card.style.transition = "";
 	this.placeZ("10001");
 	let d = (a.clientX && a) || (a.changedTouches && a.changedTouches.length ? a.changedTouches[0] : null);
-	if (!d) return this.dragCancel();
+	if (!d) return (this.dragCancel());
 	// console.log(this.deltaX, d.clientX, this.deltaY, d.clientY);
 	// console.log(new O(d.clientX-this.deltaX, d.clientY-this.deltaY));
 	this.moveTo(new O(d.clientX-this.deltaX, d.clientY-this.deltaY), 0);
@@ -719,7 +719,7 @@ c.dragMove = function(a) {
 c.dragMoveEnd = function(a) {
 	let d = (a.clientX && a) || (a.changedTouches && a.changedTouches.length ? a.changedTouches[0] : null),
 	e = this;
-	if (!d) return this.dragCancel();
+	if (!d) return (this.dragCancel());
 	
 	e.dragging = false;
 	if (!this.gameParent.canPlay) return
@@ -750,7 +750,7 @@ c.dragCancel = function(e) {
 	});
 };
 c.clickEnd = function(a) {
-	if (!this.gameParent.canPlay) return
+	if (!this.gameParent.canPlay) return ;
 	let e = this;
 	e.emit('dragend', function(a, b, c) {
 		let o = iscompatible(a.gtp().cardCode, e.cardCode, a.customColor);
@@ -796,11 +796,11 @@ var Pile = function(a, b, c, d, e) {
 mergeProto(Pile, CallBack);
 var p = Pile.prototype;
 p.gtc = function() {
-	return this.pile
+	return (this.pile);
 };
 p.listen = function() {
 	this.clickEvent = new Events(["click"], this.pile.canv(), function(a) {
-		if(!this.gameParent.canPlay) return
+		if(!this.gameParent.canPlay) return ;
 		this.gameParent.canPlay = false;
 		this.emit('create');
 	}.bind(this));
@@ -823,7 +823,7 @@ p.gtp = function() {
 };
 p.sqrt = function() {
 	let b = this.pack;
-	return new O(b.left, b.top, b.width, b.height)
+	return (new O(b.left, b.top, b.width, b.height));
 };
 p.flipPack = function(a) {
 	// flip game pack
@@ -856,17 +856,17 @@ p.delete = function() {
 var hjr = function(a) {
 	return function(a) {
 		switch(a) {
-			case "R": return 1
-			case "Y": return 2
-			case "G": return 3
-			case "B": return 4
-			default: null
+			case "R": return (1);
+			case "Y": return (2);
+			case "G": return (3);
+			case "B": return (4);
+			default: (null);
 		}
 	}(a);
 },
 randomInt = function(mn, mx) {
 	if (!mx) mx = mn, mn = 0
-	return Math.floor(Math.random() * (mx - mn) + mn);
+	return (Math.floor(Math.random() * (mx - mn) + mn));
 };
 
 var Loader = function() {
@@ -911,7 +911,7 @@ var Socket = function(g, n) {
 
 	this.socket.onerror = (error) => {
 		this.gameParent.connectionError = true;
-		return this.gameParent.codeError(3);
+		return (this.gameParent.codeError(3));
 	}
 
 	this.socket.onopen = () => {
@@ -1039,7 +1039,7 @@ s.initPing = function() {
 s.pingServer = function() {
 	// check connection with server
 	this.ps = Date.now();
-	if (this.lastPing && this.ps - this.lastPing < 1 * 60 * 1000) return
+	if (this.lastPing && this.ps - this.lastPing < 1 * 60 * 1000) return ;
 	this.lastPing = this.ps;
 	this.socket.send(this.j({PING: this.ps}));
 };
@@ -1139,7 +1139,7 @@ g.socketBuilder = function(s) {
 	gameSocket.on('gamebegin', function(a, b, c, d) {
 		let t = this,
 			u = d.findIndex(function (obj) {
-				return obj.id == t.gameSocket.gameid;
+				return (obj.id == t.gameSocket.gameid);
 			});
 		d.splice(u, 1);
 		t.overlay = t.overlay || Md(Me("div", "display"), Md(Me("div", "display-inner"), [Me("h1", "display-inner-p"), Me("div", "dot-typing")]))
@@ -1297,7 +1297,7 @@ g.gameAlert = function() {
 		this.alert = new AlertPopup(...arguments)
 		.on('onclose', function() {
 			(t.pie && t.connectionCreated == true) && t.pie.show();
-		})
+		});
 	}, t.pie ? 1000 : 0);
 };
 g.reset = function() {
@@ -1327,7 +1327,7 @@ g.reset = function() {
 	// Fe(document, "pie-container") && Fe(document, "pie-container").remove();
 	document.querySelectorAll(".card, .pile, .gamepack, .opponent, .display, .ad-pn-c, .ad-pn-cp").forEach(e => {
 		e.remove();
-	}); 
+	});
 	// this.cards && this.cards.forEach(e => {
 	//     e.delete();
 	// });
@@ -1350,29 +1350,24 @@ g.initCloseGame = function() {
 	}
 };
 g.codeError = function(a) {
-	let m;
-	switch (a) {
-		case 1:
-			m = "Houston we have a connection problem!\nCheck your internet connection and try again.";
-			break;
-		case 2:
-			m = "Houston we have a problem!\nGame ended because something went wrong.";
-			break;
-		case 3:
-			m = "Houston we have a problem!\nSomething went wrong, the server closed the connection.";
-			break;
-		default:
-			m = "An error has occured."
-			break;
-	}
+	let m = (function() {
+		switch (a) {
+			case 1:
+				return ("Houston we have a connection problem!\nCheck your internet connection and try again.");
+			case 2:
+				return ("Houston we have a problem!\nGame ended because something went wrong.");
+			case 3:
+				return ("Houston we have a problem!\nSomething went wrong, the server closed the connection.");
+			default:
+				return ("An error has occured.");
+		}
+	})();
 	this.gameAlert(m, "Leave", function() {
 		this.stop();
 	}.bind(this));
 };
 g.connectionLoss = function() {
-	let m;
-	m = "Houston we have a connection problem!\nCheck your internet connection, we're trying to reconnect you.";
-	this.gameAlert(m);
+	this.gameAlert("Houston we have a connection problem!\nCheck your internet connection, we're trying to reconnect you.");
 };
 g.onReconnection = function() {
 	this.alert.remove();
@@ -1380,7 +1375,7 @@ g.onReconnection = function() {
 };
 g.onUpdate = function(a) {
 	this.canPlay = a.canPlay;
-	if (!this.gameStarted || !a.playerid) return
+	if (!this.gameStarted || !a.playerid) return ;
 
 	if (this.starting) return this.waitingUpdate.push(a);
 
@@ -1390,7 +1385,7 @@ g.onUpdate = function(a) {
 	if (a.fromPile) {
 		for(var i = 0; i < a.pileChanges.length; i++) {
 			let id = this.full.findIndex(function (obj) {
-				return obj == a.pileChanges[i];
+				return (obj == a.pileChanges[i]);
 			});
 			this.full.splice(id, 1);
 		}
@@ -1439,7 +1434,7 @@ g.crtCrad = function(a, b) {
 		n(p.gamepack, p.playCard, p);
 	});
 	!b && this.cards.push(ncard);
-	return ncard
+	return (ncard);
 };
 g.createPack = function(a) {
 	this.packCoords = new O(window.innerWidth/ 2 - S / 2, window.innerHeight / 2 - T / 1.5);
@@ -1511,10 +1506,8 @@ g.placeDeck = function() {
 	}, k);
 };
 g.playCard = function(b, c, p) {
-	let n,
-		m;
 	let id = c.cards.findIndex(function (obj) {
-		return obj.id == b.id;
+		return (obj.id == b.id);
 	});
 	window.setTimeout(() => {
 		c.gamepack.update(b.cardCode);
@@ -1531,7 +1524,7 @@ g.playCard = function(b, c, p) {
 g.pileEvent = function(a) {
 	var n = this;
 	a.on('create', function() {
-		if (!n.full.length) return n.end(false);
+		if (!n.full.length) return (n.end(false));
 		let b = [],
 			d = n.full.shift(),
 			l = false;
@@ -1557,7 +1550,7 @@ g.sendGameUpdate = async function(a, b) {
 	if (this.cards.length && a && (a[1] == "Z" && (a[0] == "W" || a[0] == "X"))) {
 		newColor = await this.chooseNewColor();
 		if (!newColor)
-			return this.codeError(2);
+			return (this.codeError(2));
 	}
 	this.canPlay = false;
 	new InfoMessage(this.overlay, "Waiting for next player...");
@@ -1595,7 +1588,7 @@ g.updateOpponentDeckAndGamepack = function(a) {
 				.flip(a.card, a.newColor, 550, u);
 		}, 10);
 	}
-	if (a.deckSize == this.oppn.length) return
+	if (a.deckSize == this.oppn.length) return ;
 	if (a.deckSize > this.oppn.length) {
 		for(var i = this.oppn.length; i < a.deckSize; i++) {
 			let oc = new Pile(new O(0, 0), qe, this.deckContainer, "opponent", {width: Bf() ? S / 1.65 : 60, height: Bf() ? T / 1.65 : 90});
@@ -1673,7 +1666,7 @@ g.placeOpponentDeck = function() {
 		d[0].gtc().placeZ(d[3]);
 	}
 	var w = window.setInterval(() => {
-		if (r == o) return clearInterval(w);
+		if (r == o) return (clearInterval(w));
 		let d = c[o-r-1];
 
 		d[0].gtc().moveTo(new O(d[1], d[2]), d[4]);
@@ -1690,7 +1683,7 @@ g.playCardEffects = function(a) {
 		} else if ((a[1] == "Z" && a[0] == "X") && this.full.length >= l) {
 			(a[1] == "Z" && a[0] == "X") && this.addCardsToDeck(l);
 		} else if (a[1] == "V" || (a[1] == "Z" && a[0] == "X")) {
-			return n.end(false);
+			return (n.end(false));
 		}
 	}, L + 150);
 };
@@ -1707,7 +1700,7 @@ g.chooseNewColor = async function() {
 	} catch (error) {
 		if (error) {
 			console.error(error);
-			return null;
+			return (null);
 		}
 	}
 };
@@ -1728,29 +1721,29 @@ g.updateCurrentPlayer = function(a, b, c) {
 };
 
 var iscompatible = function(a, b, c) {
-	return a[0] == b[0] || a[1] == b[1] || (a[1] == "Z" && c == b[0]) || b[1] == "Z"
+	return (a[0] == b[0] || a[1] == b[1] || (a[1] == "Z" && c == b[0]) || b[1] == "Z");
 },
 codeToCoord = function(a) {
 	if (!a) return ;
 	function e(h) {
 		switch (h.toUpperCase()) {
 			case "Z":
-			case "R": return 0
-			case "Y": return 1
-			case "G": return 2
-			case "B": return 3
-			case "W": return 4
-			case "X": return 5
-			case "D": return 10
-			case "P": return 11
-			case "V": return 12
-			default: return null
+			case "R": return (0);
+			case "Y": return (1);
+			case "G": return (2);
+			case "B": return (3);
+			case "W": return (4);
+			case "X": return (5);
+			case "D": return (10);
+			case "P": return (11);
+			case "V": return (12);
+			default: return (null);
 		}
 	}
 	let b = e(a.slice(0, 1)),
 		d = e(a.slice(1)),
 		c = d !== null ? d : parseInt(a.slice(1));
-	return {x: c, y: b}
+	return ({x: c, y: b});
 },
 kfg = function(a, b) {
 	b.gameParent = a;
@@ -1784,7 +1777,7 @@ replacePileAndPackOnResize = function(a) {
 jh = function(a, b) {
 	let o = false;
 	a.onclick = () => {
-		if (o) return
+		if (o) return ;
 		o = true, b();
 	};
 	// window.addEventListener("keyup", function(key) {
@@ -1800,7 +1793,7 @@ hko = function(a) {
 	for (var i = 0; i < l; i++) {
 		u += ((i > 0 && i < l - 1) ? ", " : i == l - 1 && l > 1 ? " and " : "") + a[i].username
 	}
-	return u
+	return (u);
 }
 
 var PiePopup = function(a) {
@@ -1857,7 +1850,7 @@ p.generate = function(a) {
 			d = "M" + o + "," + p + " A90,90 0 0 1 " + q + "," + o + " L90,90 A0,0 0 0 0 90,90 Z"
 		Ms(m, ["id", "fill", "d"], [i, c, d]);
 		this.ev.push(new Events(["click"], m, function() {
-			if (!t.canSelect) return
+			if (!t.canSelect) return ;
 			t.h.forEach(e => e.style.pointerEvents = "none");
 			t.canSelect = false;
 			t.callBack(j);
@@ -1988,7 +1981,7 @@ u.initPartucles = function() {
 	},
 	draw = function() {
 		t.ctx.clearRect(0, 0, w, h);
-		if (t.disabled) return
+		if (t.disabled) return ;
 		t.dots.forEach((_, i) => {
 			var pct = (Date.now() - t.dots[i].st) / t.dots[i].lt;
 			t.ctx.save();
@@ -2015,7 +2008,7 @@ u.initPartucles = function() {
 	}
 
 	t.innerBtn.onmouseover = function() {
-		if (t.disabled) return
+		if (t.disabled) return ;
 		t.hoverFlag = true;
 		t.timeout && clearTimeout(t.timeout);
 		emitter = setInterval(emitDots, particlesSettings.emitRate);
@@ -2026,7 +2019,7 @@ u.initPartucles = function() {
 		t.hoverFlag = false;
 		clearInterval(emitter);
 		t.timeout = setTimeout(() => {
-			if (t.hoverFlag == true) return
+			if (t.hoverFlag == true) return ;
 			cancelAnimationFrame(anim);
 			t.ctx.clearRect(0, 0, w, h);
 			t.dots = [];
@@ -2161,7 +2154,7 @@ Sheep.prototype.getDistance = function(a, b) {
 	let y = b.left - a.left;
 	let x = b.top - a.top;
 	
-	return Math.sqrt(x * x + y * y);
+	return (Math.sqrt(x * x + y * y));
 }
 Sheep.prototype.walk = function() {
 	this.moveTo(new O(-this.width, window.innerHeight - this.height));
@@ -2196,7 +2189,7 @@ Sheep.prototype.moveTo = async function(a) {
 	a && (this.left = a.left, this.top = a.top)
 	this.b.style.left = this.left+"px";
 	this.b.style.top = this.top+"px";
-	return await new Promise((resolve) => setTimeout(resolve, this.duration));
+	return (await new Promise((resolve) => setTimeout(resolve, this.duration)));
 }
 Sheep.prototype.flip = function() {
 	this.isflip = !this.isflip;
@@ -2217,7 +2210,7 @@ var Hh = function() {
 	var cnt = Fe(document, "dialog-container");
 	Mr(cnt, '-hide-dialog');
 	let cv = (s) => {
-		if (started) return
+		if (started) return ;
 		started = new Game;
 		Mc(cnt,'-hide-dialog');
 		setTimeout(() => {

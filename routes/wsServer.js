@@ -177,7 +177,7 @@ p.update = function(a) {
     console.info("same player", isSame);
     this.currentPlaying = nplayer;
     console.log("currentPlaying: ", this.currentPlaying);
-    // this.playingTimeOut();
+    this.playingTimeOut();
     console.info("next player", this.currentPlaying, "direction -> clockwise", this.direction);
     if (!this.mustPassTurn(a.UPDATE)) {
         console.log("not mustPassTurn");
