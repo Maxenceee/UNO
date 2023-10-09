@@ -4,7 +4,7 @@ Multiplayer UNO fully in Vanilla Javascript and running on Node.JS server.
 
 You can use this project on localhost or on a Node.js server to use it online.
 
-[Try it](https://uno.maxencegama.dev)
+[Try it here!](https://uno.maxencegama.dev)
 
 ## Usage
 
