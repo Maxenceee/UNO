@@ -4,6 +4,8 @@ Multiplayer UNO fully in Vanilla Javascript and running on Node.JS server.
 
 You can use this project on localhost or on a Node.js server to use it online.
 
+[Try it](https://uno.maxencegama.dev)
+
 ## Usage
 
 Clone this project and open current directory into a terminal, then install dependencies by running:
