@@ -61,3 +61,7 @@ To serve the WebSocket:
 ## Notes
 
 For the moment game can be played with only two players and UNO button is not working.
+
+# Known issues
+
+On certain versions of Firefox and Chrome, the front face of the cards may not be displayed.
