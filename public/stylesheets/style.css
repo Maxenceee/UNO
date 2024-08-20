@@ -195,6 +195,7 @@ section #game-root .opponent {
   display: flex;
   position: absolute;
   z-index: 10000;
+  will-change: opacity, transform;
   animation: show-pan 0.2s ease-in-out forwards;
 }
 
@@ -645,6 +646,7 @@ section #game-root .opponent {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  will-change: opacity, transform;
   animation: show-pan 0.3s ease-in-out forwards;
 }
 .ad-pn-c .ad-panel .ad-err, .ad-pn-c .ad-status-panel .ad-err, .ad-pn-cp .ad-panel .ad-err, .ad-pn-cp .ad-status-panel .ad-err {
@@ -808,6 +810,7 @@ section #game-root .opponent {
   background-color: var(--dot-color);
   color: var(--dot-color);
   box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+  will-change: box-shadow;
   animation: dotTyping 1.5s infinite linear;
 }
 @media screen and (max-width: 800px) {
@@ -877,13 +880,16 @@ section #game-root .opponent {
   padding: 50px;
 }
 .pie-container.remove {
+  will-change: opacity;
   animation: fade-out 0.2s ease-in-out forwards;
   animation-delay: 0.6s;
 }
 .pie-container.remove .color-pie .pie path {
+  will-change: transform;
   animation: ungrow-part 0.2s ease-in-out forwards;
 }
 .pie-container.adding .color-pie .pie path {
+  will-change: transform;
   animation: grow-part 0.5s ease-in-out forwards;
 }
 .pie-container .color-pie {
@@ -1051,6 +1057,7 @@ section #game-root .opponent {
   border-radius: 50%;
   background: #000;
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
+  will-change: transform;
 }
 .lds-ellipsis div:nth-child(1) {
   left: 8px;

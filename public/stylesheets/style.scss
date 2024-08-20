@@ -230,6 +230,7 @@ section {
 	display: flex;
 	position: absolute;
 	z-index: 10000;
+	will-change: opacity, transform;
 
 	animation: show-pan 0.2s ease-in-out forwards;
 }
@@ -712,7 +713,8 @@ section {
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-	
+		will-change: opacity, transform;
+
 		animation: show-pan 0.3s ease-in-out forwards;
 
 		.ad-err {
@@ -922,6 +924,7 @@ section {
 			background-color: var(--dot-color);
 			color: var(--dot-color);
 			box-shadow: 9984px 0 0 0 var(--dot-color), 9999px 0 0 0 var(--dot-color), 10014px 0 0 0 var(--dot-color);
+			will-change: box-shadow;
 			animation: dotTyping 1.5s infinite linear;
 
 			@media screen and (max-width: 800px) {
@@ -996,6 +999,7 @@ section {
     padding: 50px;
 
     &.remove {
+		will-change: opacity;
 		animation: fade-out 0.2s ease-in-out forwards;
 		animation-delay: 0.6s;
 		// .color-pie {
@@ -1003,12 +1007,14 @@ section {
 		// 	animation-delay: 0.6s;
 		// }
         .color-pie .pie path {
+			will-change: transform;
 			animation: ungrow-part 0.2s ease-in-out forwards;
         }
     }
 
     &.adding {
         .color-pie .pie path {
+			will-change: transform;
             animation: grow-part 0.5s ease-in-out forwards;
         }
     }
@@ -1203,6 +1209,7 @@ section {
 		border-radius: 50%;
 		background: #000;
 		animation-timing-function: cubic-bezier(0, 1, 1, 0);
+		will-change: transform;
 
 		&:nth-child(1) {
 			left: 8px;
