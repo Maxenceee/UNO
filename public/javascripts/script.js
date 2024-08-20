@@ -1335,7 +1335,7 @@ g.reset = function() {
 
 	// this.gamepack && this.gamepack.delete();
 	// Fe(document, "pie-container") && Fe(document, "pie-container").remove();
-	document.querySelectorAll(".card, .pile, .gamepack, .opponent, .display, .ad-pn-c, .ad-pn-cp").forEach(e => {
+	document.querySelectorAll(".card, .pile, .gamepack, .opponent, .display, .un-pn-c, .un-pn-cp").forEach(e => {
 		e.remove();
 	});
 	// this.cards && this.cards.forEach(e => {
@@ -1795,8 +1795,8 @@ hko = function(a) {
 
 var PiePopup = function(a) {
 	this.callBack = a;
-	let m = Me("div", "color-pie ad-status-panel"),
-		n = this.n = Md(Me("div", "pie-container ad-pn-cp"), m);
+	let m = Me("div", "color-pie un-status-panel"),
+		n = this.n = Md(Me("div", "pie-container un-pn-cp"), m);
 	this.colors = ["#ff5555", "#ffaa00", "#55aa55", "#5555ff"],
 	this.canSelect = false;
 	this.ev = [];
@@ -2033,8 +2033,8 @@ u.initPartucles = function() {
 };
 
 var AlertPopup = function(t, a, b, c, d) {
-	Fa(document, "ad-pn-c") && Fa(document, "ad-pn-c").remove();
-	let l = Me("div", "ad-pn-c"),
+	Fa(document, "un-pn-c") && Fa(document, "un-pn-c").remove();
+	let l = Me("div", "un-pn-c"),
 		u,
 		v,
 		that = this,
@@ -2045,9 +2045,9 @@ var AlertPopup = function(t, a, b, c, d) {
 	that.l = l;
 	if (t.includes("\n")) t = t.replaceAll(/\n/g, "<br/>");
 	if (c && a != false) {
-		let n = Ms(Md(Me("button", "ad-err-close ad-demi ad-demi-sup left"), Me("p", "", {in: a})), "id", "ad-err-reset-btn"),
-			m = Ms(Md(Me("button", "ad-err-close ad-demi right"), Me("p", "", {in: c})), "id", "ad-err-close-btn");
-		u = Md(Me("div", "ad-btn"), [n, m])
+		let n = Ms(Md(Me("button", "un-err-close un-demi un-demi-sup left"), Me("p", "", {in: a})), "id", "un-err-reset-btn"),
+			m = Ms(Md(Me("button", "un-err-close un-demi right"), Me("p", "", {in: c})), "id", "un-err-close-btn");
+		u = Md(Me("div", "un-btn"), [n, m])
 		n.addEventListener("click", b);
 		r.push(...[n, m]);
 		d && m.addEventListener("click", d);
@@ -2055,7 +2055,7 @@ var AlertPopup = function(t, a, b, c, d) {
 		if (undefined != a) {
 			if (a == false) w = Me("div", "progress-el", {style: "width: 0%;"}), v = Md(Me("div", "progress-bar"), Md(Me("div", "progress-body"), w));
 	
-			u = Md(Me("div", "ad-btn"), v || Ms(Md(Me("button", "ad-err-close"), Me("p", "", {in: a || "Close"})), "id", "ad-err-close-btn"));
+			u = Md(Me("div", "un-btn"), v || Ms(Md(Me("button", "un-err-close"), Me("p", "", {in: a || "Close"})), "id", "un-err-close-btn"));
 			if (a && a != false) {
 				b && u.addEventListener("click", b);
 				r.push(u);
@@ -2064,7 +2064,7 @@ var AlertPopup = function(t, a, b, c, d) {
 			u = Md(Me("div", "lds-ellipsis"), [Me("div"), Me("div"), Me("div"), Me("div")]);
 		}
 	}
-	Md(l, Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), Me("p", "", {in: t})), u]));
+	Md(l, Md(Me("div", "un-panel grow-anim"), [Md(Me("div", "un-err"), Me("p", "", {in: t})), u]));
 	r.map(e => e.addEventListener("click", function() {
 		l.remove(),
 		that.emit('onclose');
@@ -2088,11 +2088,11 @@ AlertPopup.prototype.remove = function() {
 
 var UsernamePopup = function(t, a, k) {
 	let o = false,
-		p = Ms(Md(Me("button", "ad-err-close"), Me("p", "", {in: k || "Search for opponent"})), "id", "ad-err-close-btn"),
+		p = Ms(Md(Me("button", "un-err-close"), Me("p", "", {in: k || "Search for opponent"})), "id", "un-err-close-btn"),
 		m = Me("label", "f0n8F"),
 		n = Ms(Me("input", "_2hvTZ pexuQ zyHYP"), ["autocomplete", "autocorrect", "autocapitalize", "autofocus", "required", "maxlength", "type", "aria-required", "name", "id", "value"], ["off", "off", "off", "", "", "15", "text", "true", "username", "on-user-input", ""]),
 		j = Md(Me("div", "ttpo"), Md(m, [Me("span", "_9nyy2", {in: "Username"}), n])),
-		l = Md(Me("div", "ad-pn-c"), Md(Me("div", "ad-panel grow-anim"), [Md(Me("div", "ad-err"), [Me("p", "", {style: "min-height: auto;", in: t}), j]), Md(Me("div", "ad-btn"), p)]));
+		l = Md(Me("div", "un-pn-c"), Md(Me("div", "un-panel grow-anim"), [Md(Me("div", "un-err"), [Me("p", "", {style: "min-height: auto;", in: t}), j]), Md(Me("div", "un-btn"), p)]));
 	let y = function(a) {
 		if (n.value.length)
 			m.classList.add("FATdn");

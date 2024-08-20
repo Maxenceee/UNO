@@ -684,7 +684,7 @@ section {
 	}
 }
 
-.ad-pn-c, .ad-pn-cp {
+.un-pn-c, .un-pn-cp {
     position: fixed;
     top: 0;
     left: 0;
@@ -699,7 +699,7 @@ section {
 	-webkit-backdrop-filter: blur(5px);
     z-index: 5005;
 
-	.ad-panel, .ad-status-panel {
+	.un-panel, .un-status-panel {
 		position: relative;
 		width: 350px;
 		height: max-content;
@@ -717,7 +717,7 @@ section {
 
 		animation: show-pan 0.3s ease-in-out forwards;
 
-		.ad-err {
+		.un-err {
 			height: 100%;
 			min-height: calc(130px - 40px);
 			width: 100%;
@@ -738,14 +738,14 @@ section {
 			}
 		}
 
-		.ad-btn {
+		.un-btn {
 			height: 40px;
 			width: 100%;
 			display: flex;
 			flex-direction: row;
 			margin: 0 0 5px;
 
-			.ad-err-close {
+			.un-err-close {
 				position: relative;
 				width: calc(100% - 10px);
 				margin: 0 5px;
@@ -757,11 +757,11 @@ section {
 					// outline-offset: -4px;
 				}
 			
-				--ad-border-color: #f2f2f2;
-				--ad-primary-color: 0, 0, 0;
-				--ad-red-primary-color: 211, 47, 47;
+				--un-border-color: #f2f2f2;
+				--un-primary-color: 0, 0, 0;
+				--un-red-primary-color: 211, 47, 47;
 				background-color: transparent;
-				border: 1.5px solid var(--ad-border-color);
+				border: 1.5px solid var(--un-border-color);
 				
 				p {
 					height: 100%;
@@ -770,26 +770,26 @@ section {
 					text-align: center;
 				}
 				
-				&.ad-demi {
+				&.un-demi {
 					width: 50%;
 				}
 		
 				&:hover {
-					border-color: rgba($color: var(--ad-primary-color), $alpha: 0.4);
+					border-color: rgba($color: var(--un-primary-color), $alpha: 0.4);
 				}
 				
-				&.ad-demi-sup {
+				&.un-demi-sup {
 					&:hover {
-						border-color: rgba($color: var(--ad-red-primary-color), $alpha: 0.4);
+						border-color: rgba($color: var(--un-red-primary-color), $alpha: 0.4);
 					}
-					color: rgba($color: var(--ad-red-primary-color), $alpha: 1);
-					background-color: var(--ad-border-color);
+					color: rgba($color: var(--un-red-primary-color), $alpha: 1);
+					background-color: var(--un-border-color);
 				}
 			}
 		}
 	}
 
-	.ad-status-panel p {
+	.un-status-panel p {
 		width: 100%;
 		padding-top: 10%;
 		padding: 10px;

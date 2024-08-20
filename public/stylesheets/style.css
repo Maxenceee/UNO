@@ -616,7 +616,7 @@ section #game-root .opponent {
   height: 100%;
 }
 
-.ad-pn-c, .ad-pn-cp {
+.un-pn-c, .un-pn-cp {
   position: fixed;
   top: 0;
   left: 0;
@@ -631,7 +631,7 @@ section #game-root .opponent {
   -webkit-backdrop-filter: blur(5px);
   z-index: 5005;
 }
-.ad-pn-c .ad-panel, .ad-pn-c .ad-status-panel, .ad-pn-cp .ad-panel, .ad-pn-cp .ad-status-panel {
+.un-pn-c .un-panel, .un-pn-c .un-status-panel, .un-pn-cp .un-panel, .un-pn-cp .un-status-panel {
   position: relative;
   width: 350px;
   height: -moz-max-content;
@@ -649,7 +649,7 @@ section #game-root .opponent {
   will-change: opacity, transform;
   animation: show-pan 0.3s ease-in-out forwards;
 }
-.ad-pn-c .ad-panel .ad-err, .ad-pn-c .ad-status-panel .ad-err, .ad-pn-cp .ad-panel .ad-err, .ad-pn-cp .ad-status-panel .ad-err {
+.un-pn-c .un-panel .un-err, .un-pn-c .un-status-panel .un-err, .un-pn-cp .un-panel .un-err, .un-pn-cp .un-status-panel .un-err {
   height: 100%;
   min-height: 90px;
   width: 100%;
@@ -660,7 +660,7 @@ section #game-root .opponent {
   justify-content: center;
   padding: 10px 20px;
 }
-.ad-pn-c .ad-panel .ad-err p, .ad-pn-c .ad-status-panel .ad-err p, .ad-pn-cp .ad-panel .ad-err p, .ad-pn-cp .ad-status-panel .ad-err p {
+.un-pn-c .un-panel .un-err p, .un-pn-c .un-status-panel .un-err p, .un-pn-cp .un-panel .un-err p, .un-pn-cp .un-status-panel .un-err p {
   display: inline-block;
   vertical-align: middle;
   width: 100%;
@@ -668,48 +668,48 @@ section #game-root .opponent {
   text-align: center;
   color: #686868;
 }
-.ad-pn-c .ad-panel .ad-btn, .ad-pn-c .ad-status-panel .ad-btn, .ad-pn-cp .ad-panel .ad-btn, .ad-pn-cp .ad-status-panel .ad-btn {
+.un-pn-c .un-panel .un-btn, .un-pn-c .un-status-panel .un-btn, .un-pn-cp .un-panel .un-btn, .un-pn-cp .un-status-panel .un-btn {
   height: 40px;
   width: 100%;
   display: flex;
   flex-direction: row;
   margin: 0 0 5px;
 }
-.ad-pn-c .ad-panel .ad-btn .ad-err-close, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close, .ad-pn-cp .ad-panel .ad-btn .ad-err-close, .ad-pn-cp .ad-status-panel .ad-btn .ad-err-close {
+.un-pn-c .un-panel .un-btn .un-err-close, .un-pn-c .un-status-panel .un-btn .un-err-close, .un-pn-cp .un-panel .un-btn .un-err-close, .un-pn-cp .un-status-panel .un-btn .un-err-close {
   position: relative;
   width: calc(100% - 10px);
   margin: 0 5px;
   height: 40px;
   border-radius: 10px;
-  --ad-border-color: #f2f2f2;
-  --ad-primary-color: 0, 0, 0;
-  --ad-red-primary-color: 211, 47, 47;
+  --un-border-color: #f2f2f2;
+  --un-primary-color: 0, 0, 0;
+  --un-red-primary-color: 211, 47, 47;
   background-color: transparent;
-  border: 1.5px solid var(--ad-border-color);
+  border: 1.5px solid var(--un-border-color);
 }
-.ad-pn-c .ad-panel .ad-btn .ad-err-close:focus, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close:focus, .ad-pn-cp .ad-panel .ad-btn .ad-err-close:focus, .ad-pn-cp .ad-status-panel .ad-btn .ad-err-close:focus {
+.un-pn-c .un-panel .un-btn .un-err-close:focus, .un-pn-c .un-status-panel .un-btn .un-err-close:focus, .un-pn-cp .un-panel .un-btn .un-err-close:focus, .un-pn-cp .un-status-panel .un-btn .un-err-close:focus {
   outline: solid 1px var(--primary-dark);
 }
-.ad-pn-c .ad-panel .ad-btn .ad-err-close p, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close p, .ad-pn-cp .ad-panel .ad-btn .ad-err-close p, .ad-pn-cp .ad-status-panel .ad-btn .ad-err-close p {
+.un-pn-c .un-panel .un-btn .un-err-close p, .un-pn-c .un-status-panel .un-btn .un-err-close p, .un-pn-cp .un-panel .un-btn .un-err-close p, .un-pn-cp .un-status-panel .un-btn .un-err-close p {
   height: 100%;
   line-height: 37px;
   font-size: 16px;
   text-align: center;
 }
-.ad-pn-c .ad-panel .ad-btn .ad-err-close.ad-demi, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close.ad-demi, .ad-pn-cp .ad-panel .ad-btn .ad-err-close.ad-demi, .ad-pn-cp .ad-status-panel .ad-btn .ad-err-close.ad-demi {
+.un-pn-c .un-panel .un-btn .un-err-close.un-demi, .un-pn-c .un-status-panel .un-btn .un-err-close.un-demi, .un-pn-cp .un-panel .un-btn .un-err-close.un-demi, .un-pn-cp .un-status-panel .un-btn .un-err-close.un-demi {
   width: 50%;
 }
-.ad-pn-c .ad-panel .ad-btn .ad-err-close:hover, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close:hover, .ad-pn-cp .ad-panel .ad-btn .ad-err-close:hover, .ad-pn-cp .ad-status-panel .ad-btn .ad-err-close:hover {
-  border-color: rgba(var(--ad-primary-color), 0.4);
+.un-pn-c .un-panel .un-btn .un-err-close:hover, .un-pn-c .un-status-panel .un-btn .un-err-close:hover, .un-pn-cp .un-panel .un-btn .un-err-close:hover, .un-pn-cp .un-status-panel .un-btn .un-err-close:hover {
+  border-color: rgba(var(--un-primary-color), 0.4);
 }
-.ad-pn-c .ad-panel .ad-btn .ad-err-close.ad-demi-sup, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close.ad-demi-sup, .ad-pn-cp .ad-panel .ad-btn .ad-err-close.ad-demi-sup, .ad-pn-cp .ad-status-panel .ad-btn .ad-err-close.ad-demi-sup {
-  color: rgba(var(--ad-red-primary-color), 1);
-  background-color: var(--ad-border-color);
+.un-pn-c .un-panel .un-btn .un-err-close.un-demi-sup, .un-pn-c .un-status-panel .un-btn .un-err-close.un-demi-sup, .un-pn-cp .un-panel .un-btn .un-err-close.un-demi-sup, .un-pn-cp .un-status-panel .un-btn .un-err-close.un-demi-sup {
+  color: rgba(var(--un-red-primary-color), 1);
+  background-color: var(--un-border-color);
 }
-.ad-pn-c .ad-panel .ad-btn .ad-err-close.ad-demi-sup:hover, .ad-pn-c .ad-status-panel .ad-btn .ad-err-close.ad-demi-sup:hover, .ad-pn-cp .ad-panel .ad-btn .ad-err-close.ad-demi-sup:hover, .ad-pn-cp .ad-status-panel .ad-btn .ad-err-close.ad-demi-sup:hover {
-  border-color: rgba(var(--ad-red-primary-color), 0.4);
+.un-pn-c .un-panel .un-btn .un-err-close.un-demi-sup:hover, .un-pn-c .un-status-panel .un-btn .un-err-close.un-demi-sup:hover, .un-pn-cp .un-panel .un-btn .un-err-close.un-demi-sup:hover, .un-pn-cp .un-status-panel .un-btn .un-err-close.un-demi-sup:hover {
+  border-color: rgba(var(--un-red-primary-color), 0.4);
 }
-.ad-pn-c .ad-status-panel p, .ad-pn-cp .ad-status-panel p {
+.un-pn-c .un-status-panel p, .un-pn-cp .un-status-panel p {
   width: 100%;
   padding-top: 10%;
   padding: 10px;
