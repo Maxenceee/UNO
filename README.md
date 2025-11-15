@@ -28,36 +28,6 @@ Multiplayer WebSocket server will automaticaly start on port 8081 nothing more i
 
 Multiple games can be played in the same time, players are automatically matched.
 
-## Play online
-
-### Example configuration of a Node.js Apache server
-
-An easy way to do is to enable ProxyPass on virtual host and configure the server as follow.
-
-To serve the Node application:
-
-```sh
-<VirtualHost *:80 *:443 >
-
-	...
-
-    ProxyPass / http://localhost:[app-port]/
-    ProxyPassReverse / http://localhost:[app-port]/
-</VirtualHost>
-```
-
-To serve the WebSocket:
-
-```sh
-<VirtualHost *:80 *:443 >
-
-	...
-
-    ProxyPass / ws://localhost:[socket-port]/
-    ProxyPassReverse / ws://localhost:[socket-port]/
-</VirtualHost>
-```
-
 ## Notes
 
 For the moment game can be played with only two players and UNO button is not working.
