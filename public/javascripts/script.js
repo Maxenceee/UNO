@@ -234,7 +234,11 @@ g.drawImage = function(a, b, c, d, e, f, h, k, p, q) {
 	b = this.vb[je(b)];
 	if (!b.xb())
 		throw Error("Spritesheet is not loaded, can't draw.");
-	0 < ua && 0 < va && a.drawImage(b.image, Q, R, ua, va, c, d, e, f)
+	console.log('====================================');
+	console.log(ua, va);
+	console.log(a, b.image, Q, R, ua, va, c, d, e, f);
+	console.log('====================================');
+	0 < ua && 0 < va && a.drawImage(b.image, Q, R, ua, va, c, d, e, f);
 };
 g.ta = function(a, b, c, d) {
 	var e = void 0 === e ? 1 : e;
@@ -247,7 +251,7 @@ g.ta = function(a, b, c, d) {
 	b.translate(c, d);
 	b.scale(h ? -e : e, k ? -e : e);
 	this.drawImage(b, a, 0, 0, p, q, -p * (f ? .5 : h ? 1 : 0), -q * (f ? .5 : k ? 1 : 0), p, q);
-	b.restore()
+	b.restore();
 };
 
 var qd = function(a) {
